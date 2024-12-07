@@ -21,7 +21,7 @@ The **Smart Home System** is a comprehensive platform for managing, monitoring, 
 
 - **Role-based Access:**
   - **Admin/Technician:** Add, update, and remove devices, view logs, and manage system settings.
-  - **Resident-Family:** Control devices and view statuses.
+  - **Normal User:** Control devices and view statuses.
   - **Guest:** Limited access to assigned devices and areas.
 
 - **Device Management:**
