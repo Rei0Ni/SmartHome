@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using SmartHome.App.Services;
+using SmartHome.Shared.Interfaces;
 
 namespace SmartHome.App
 {
@@ -16,8 +18,11 @@ namespace SmartHome.App
 
             builder.Services.AddMauiBlazorWebView();
 
+            // Add device-specific services used by the MauiApp1.Shared project
+            builder.Services.AddSingleton<IFormFactor, FormFactor>();
+
 #if DEBUG
-    		builder.Services.AddBlazorWebViewDeveloperTools();
+            builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
 

@@ -1,10 +1,15 @@
+using SmartHome.Shared.Interfaces;
 using SmartHome.Web.Components;
+using SmartHome.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// Add device-specific services used by the MauiApp1.Shared project
+builder.Services.AddSingleton<IFormFactor, FormFactor>();
 
 var app = builder.Build();
 
@@ -22,6 +27,7 @@ app.UseStaticFiles();
 app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+    .AddInteractiveServerRenderMode()
+    .AddAdditionalAssemblies(typeof(SmartHome.Shared._Imports).Assembly);
 
 app.Run();

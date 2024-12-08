@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SmartHome.Shared\SmartHome.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
