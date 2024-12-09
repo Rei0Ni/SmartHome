@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,6 +13,7 @@ namespace SmartHome.API.Controllers
         [HttpGet]
         public ActionResult Get()
         {
+            Log.Information("API is Responding");
             return Ok(new { Status = 200, Message = "API is Responding"});
         }
     }
