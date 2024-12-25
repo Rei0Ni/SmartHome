@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using SmartHome.Application.Interfaces.MongoDBHealth.Service;
 //using SmartHome.Application.Exceptions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -10,13 +11,20 @@ namespace SmartHome.API.Controllers
     [ApiController]
     public class healthController : ControllerBase
     {
+        public readonly IMongoDBHealth MongoDBHealth;
+
+        public healthController(IMongoDBHealth mongoDBHealth)
+        {
+            MongoDBHealth = mongoDBHealth;
+        }
         // GET: api/health
         [HttpGet]
-        public ActionResult Get()
+        public async Task<ActionResult> GetAsync()
         {
             Log.Information("API is Responding");
             //throw new AppException("API Malfunctioned");
-            return Ok(new { Status = 200, Message = "API is Responding"});
+            var DBHealth = await MongoDBHealth.Ping();
+            return Ok(new { status = 200, message = "API is Responding", db_health = DBHealth});
         }
     }
 }

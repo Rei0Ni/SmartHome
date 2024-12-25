@@ -1,6 +1,13 @@
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
+using SmartHome.API.Models;
+using SmartHome.Application.Interfaces.MongoDBHealth.Repository;
+using SmartHome.Application.Interfaces.MongoDBHealth.Service;
 using SmartHome.Application.Middleware;
+using SmartHome.Application.Services;
+using SmartHome.Domain.Contexts;
+using SmartHome.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,14 +33,25 @@ builder.Logging.ClearProviders();
 //builder.Logging.AddSerilog(logger);
 builder.Host.UseSerilog(logger);
 
+Log.Logger = logger;
+
 // Add services to the container.
+
+builder.Services.Configure<MongoDBConfig>(builder.Configuration.GetSection("MongoDBConfig"));
+
+builder.Services.AddSingleton(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<MongoDBConfig>>().Value;
+    return new ApplicationDBContext(settings.ConnectionURI, settings.DatabaseName);
+});
+
+builder.Services.AddScoped<IMongoDBHealth, MongoDBHealth>();
+builder.Services.AddScoped<IMongoDBHealthRepository, MongoDBHealthRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-Log.Logger = logger;
 
 var app = builder.Build();
 
