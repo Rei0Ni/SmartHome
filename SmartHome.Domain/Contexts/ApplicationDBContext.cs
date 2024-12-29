@@ -16,10 +16,5 @@ namespace SmartHome.Domain.Contexts
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase(databaseName);
         }
-
-        public IMongoDatabase MongoDB()
-        {
-            return _database;
-        }
     }
 }
