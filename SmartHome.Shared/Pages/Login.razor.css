@@ -1,0 +1,154 @@
+﻿.container .logo  {
+    text-align: center;
+}
+
+.container .text  {
+    font-size: 20px;
+    font-weight: 600;
+    text-align: left;
+    color: #fff;
+}
+
+.container form  {
+    margin-top: -20px;
+    color: #fff;
+}
+
+.container form .data  {
+    height: 45px;
+    width: 100%;
+    margin: 40px 0;
+}
+
+form .data label  {
+    font-size: 14px;
+}
+
+form .data input  {
+    height: 100%;
+    width: 100%;
+    padding-left: 10px;
+    font-size: 17px;
+    border: 1px solid silver;
+    border-radius: 10px;
+}
+
+form .data input:focus  {
+    border-color: #3498db;
+    border-bottom-width: 2px;
+}
+
+form .forgot-pass  {
+    margin-top: 0px;
+}
+
+form .forgot-pass a  {
+    color: #3498db;
+    text-decoration: none;
+}
+
+form .forgot-pass a:hover  {
+    text-decoration: underline;
+}
+
+form .LoginBtn  {
+    margin-bottom: 10%;
+    margin-top: 7%;
+}
+
+form .LoginBtn button  {
+    height: 100%;
+    width: 100%;
+    background-color: #454B60;
+    border: none;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    border-radius: 7.11px;
+}
+
+.error-message  {
+    color: red;
+    text-align: start;
+}
+
+@media (min-width: 300px) {
+    .container form  {
+        color: #000;
+    }
+
+    .container .text  {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #000;
+    }
+}
+
+@media (min-width: 576px) {
+    .container form  {
+        color: #000;
+    }
+
+    .container .text  {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #000;
+    }
+}
+
+@media (min-width: 768px) {
+    .container form  {
+        color: #000;
+    }
+
+    .container .text  {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #000;
+    }
+}
+
+@media (min-width: 992px) {
+    .container form  {
+        color: #fff;
+    }
+
+    .container .text  {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #fff;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container form  {
+        color: #fff;
+    }
+
+    .container .text  {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #fff;
+    }
+}
+
+@media (min-width: 1400px) {
+    .container form  {
+        color: #fff;
+    }
+
+    .container .text  {
+        font-size: 20px;
+        font-weight: 600;
+        text-align: left;
+        color: #fff;
+    }
+}
