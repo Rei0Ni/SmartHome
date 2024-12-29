@@ -1,15 +1,20 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using Serilog;
 using Serilog.Events;
 using SmartHome.API.Models;
-using SmartHome.Application.Interfaces.MongoDBHealth.Repository;
-using SmartHome.Application.Interfaces.MongoDBHealth.Service;
+using SmartHome.Application.Delegates;
+using SmartHome.Application.Enums;
+using SmartHome.Application.Health_Checks;
+using SmartHome.Application.Interfaces.Health;
 using SmartHome.Application.Middleware;
 using SmartHome.Application.Services;
 using SmartHome.Domain.Contexts;
-using SmartHome.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+var config = builder.Configuration;
 
 // add serilog
 
@@ -45,8 +50,19 @@ builder.Services.AddSingleton(sp =>
     return new ApplicationDBContext(settings.ConnectionURI, settings.DatabaseName);
 });
 
-builder.Services.AddScoped<IMongoDBHealth, MongoDBHealth>();
-builder.Services.AddScoped<IMongoDBHealthRepository, MongoDBHealthRepository>();
+builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
+
+builder.Services.AddTransient<MongodbHealthCheck>();
+//builder.Services.AddScoped<IMongoDBHealthRepository, MongoDBHealthRepository>();
+
+builder.Services.AddTransient<ServiceResolver<IComponentHealthCheck>>(sp => key =>
+{
+    return key switch
+    {
+        ComponentHealthChecks.MongodbHealthCheck => sp.GetService<MongodbHealthCheck>()!,
+        _ => throw new KeyNotFoundException($"Service with key {key} not found."),
+    };
+});
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
