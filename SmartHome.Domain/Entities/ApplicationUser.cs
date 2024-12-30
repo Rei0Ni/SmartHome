@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using AspNetCore.Identity.Mongo.Model;
+
+namespace SmartHome.Domain.Entities
+{
+    public class ApplicationUser : MongoUser<Guid>
+    {
+        public bool IsEnabled { get; set; } = true;
+
+        public virtual DateTime? LastLogin { get; set; } = null;
+        public virtual DateTime? CreationDate { get; set; } = DateTime.Now;
+    }
+}

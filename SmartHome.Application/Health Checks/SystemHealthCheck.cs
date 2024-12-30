@@ -16,9 +16,11 @@ namespace SmartHome.Application.Health_Checks
     public class SystemHealthCheck : IHealthCheck
     {
         public readonly IComponentHealthCheck _mongodbHealthCheck;
+        public readonly IComponentHealthCheck _jwtTokenServiceHealthCheck;
         public SystemHealthCheck(ServiceResolver<IComponentHealthCheck> serviceResolver)
         {
             _mongodbHealthCheck = serviceResolver(ComponentHealthChecks.MongodbHealthCheck);
+            _jwtTokenServiceHealthCheck = serviceResolver(ComponentHealthChecks.JwtTokenServiceHealthCheck);
         }
 
         public async Task<HealthCheckDto> CheckHealthAsync(CancellationToken cancellationToken = default)
@@ -26,6 +28,7 @@ namespace SmartHome.Application.Health_Checks
             List<ComponentHealthCheckDto> componentHealthChecks = new List<ComponentHealthCheckDto>();
 
             componentHealthChecks.Add(await _mongodbHealthCheck.CheckHealthAsync(cancellationToken));
+            componentHealthChecks.Add(await _jwtTokenServiceHealthCheck.CheckHealthAsync(cancellationToken));
 
             var systemHealth = new HealthCheckDto()
             {

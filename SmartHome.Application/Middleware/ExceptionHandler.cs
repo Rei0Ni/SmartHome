@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using SmartHome.Application.Exceptions;
+using FluentValidation;
 
 namespace SmartHome.Application.Middleware
 {
@@ -37,10 +38,29 @@ namespace SmartHome.Application.Middleware
 
                 switch (error)
                 {
-                    case AppException e:
+                    case NullReferenceException:
+                    case AppException:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         break;
+                    case LoginFailedException lfe:
+                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        break;
+                    case ValidationException e:
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        var validationErrors = e.Errors.Select(e => new
+                        {
+                            Field = e.PropertyName,
+                            Error = e.ErrorMessage
+                        });
+                        var validationResult = new
+                        {
+                            Message = e.Message,
+                            Errors = validationErrors
+                        };
+                        await response.WriteAsync(JsonSerializer.Serialize(validationResult));
+                        return;
+                        
                     case KeyNotFoundException e:
                         // not found error
                         response.StatusCode = (int)HttpStatusCode.NotFound;

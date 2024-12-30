@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace SmartHome.Application.Enums
 {
-    public enum ComponentHealthChecks
+    public enum Role
     {
-        MongodbHealthCheck,
-        JwtTokenServiceHealthCheck
+        Admin = 0,
+        Normal_User = 1,
+        Guest = 2
     }
 }
