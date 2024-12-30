@@ -1,20 +1,37 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using MongoDB.Bson.Serialization.Serializers;
+using MongoDB.Bson.Serialization;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Serilog;
 using Serilog.Events;
 using SmartHome.API.Models;
+using SmartHome.Application.Configuration;
 using SmartHome.Application.Delegates;
 using SmartHome.Application.Enums;
 using SmartHome.Application.Health_Checks;
+using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Health;
 using SmartHome.Application.Middleware;
 using SmartHome.Application.Services;
 using SmartHome.Domain.Contexts;
+using SmartHome.Domain.Entities;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection;
+using AspNetCore.Identity.Mongo;
+using SmartHome.Application.Interfaces.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
+
+BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard));
 
 // add serilog
 
@@ -42,6 +59,13 @@ Log.Logger = logger;
 
 // Add services to the container.
 
+builder.Services.AddDataProtection().UseCryptographicAlgorithms(
+new AuthenticatedEncryptorConfiguration
+{
+    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+});
+
 builder.Services.Configure<MongoDBConfig>(builder.Configuration.GetSection("MongoDBConfig"));
 
 builder.Services.AddSingleton(sp =>
@@ -50,9 +74,60 @@ builder.Services.AddSingleton(sp =>
     return new ApplicationDBContext(settings.ConnectionURI, settings.DatabaseName);
 });
 
+builder.Services.AddApplicationCore();
+
+builder.Services.AddIdentityCore<ApplicationUser>(config =>
+{
+    // TODO: chnge Settings For Production
+    config.Password.RequiredLength = 4;
+    config.Password.RequireDigit = false;
+    config.Password.RequireNonAlphanumeric = false;
+    config.Password.RequireUppercase = false;
+
+    config.User.RequireUniqueEmail = true;
+    config.SignIn.RequireConfirmedAccount = false;
+
+    config.Lockout.AllowedForNewUsers = true;
+    config.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+    config.Lockout.MaxFailedAccessAttempts = 5;
+})
+.AddRoles<ApplicationRole>()
+.AddMongoDbStores<ApplicationUser, ApplicationRole, Guid>
+(
+    mongo =>
+    {
+        mongo.ConnectionString = config["MongoDBConfig:ConnectionURI"]+ config["MongoDBConfig:DatabaseName"];
+    }
+)
+.AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.SaveToken = true;
+    options.RequireHttpsMetadata = false;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = false,
+        ValidIssuer = config["Jwt:Issuer"],
+        ValidAudience = config["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]!))
+    };
+});
+
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
 builder.Services.AddTransient<MongodbHealthCheck>();
+builder.Services.AddTransient<JwtTokenServiceHealthCheck>();
 //builder.Services.AddScoped<IMongoDBHealthRepository, MongoDBHealthRepository>();
 
 builder.Services.AddTransient<ServiceResolver<IComponentHealthCheck>>(sp => key =>
@@ -60,6 +135,7 @@ builder.Services.AddTransient<ServiceResolver<IComponentHealthCheck>>(sp => key 
     return key switch
     {
         ComponentHealthChecks.MongodbHealthCheck => sp.GetService<MongodbHealthCheck>()!,
+        ComponentHealthChecks.JwtTokenServiceHealthCheck => sp.GetService<JwtTokenServiceHealthCheck>()!,
         _ => throw new KeyNotFoundException($"Service with key {key} not found."),
     };
 });
@@ -88,8 +164,15 @@ app.UseCors(options => options
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var seedDataService = scope.ServiceProvider.GetRequiredService<ISeedDataService>();
+    await seedDataService.InitializeAsync();
+}
 
 app.Run();

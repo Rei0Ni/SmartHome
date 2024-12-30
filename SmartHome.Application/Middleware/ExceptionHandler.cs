@@ -37,7 +37,8 @@ namespace SmartHome.Application.Middleware
 
                 switch (error)
                 {
-                    case AppException e:
+                    case NullReferenceException:
+                    case AppException:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;
                         break;
