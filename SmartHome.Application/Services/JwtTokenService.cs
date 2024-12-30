@@ -21,7 +21,7 @@ namespace SmartHome.Application.Services
             _configuration = configuration;
         }
 
-        public string GenerateJwtToken(string userId, string username, string email, List<string> userRoles)
+        public string GenerateJwtToken(string userId, string username, string email, IList<string> userRoles)
         {
             try
             {

@@ -1,0 +1,37 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using SmartHome.Application.DTOs.User;
+using SmartHome.Application.Interfaces.User;
+using SmartHome.Application.Services.User;
+
+namespace SmartHome.API.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class authController : ControllerBase
+    {
+        private readonly IUserService _userService;
+
+        public authController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult> LoginAsync(LoginDto dto)
+        {
+            var token = await _userService.LoginAsync(dto);
+            return Ok(new {
+                token = token
+            });
+        }
+
+        [HttpGet("test_auth")]
+        [Authorize]
+        public ActionResult TestAuthentication()
+        {
+            return Ok(new { message = "it's working " });
+        }
+    }
+}

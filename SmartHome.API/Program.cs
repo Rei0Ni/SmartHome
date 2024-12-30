@@ -27,6 +27,12 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.AspNetCore.DataProtection;
 using AspNetCore.Identity.Mongo;
 using SmartHome.Application.Interfaces.Jwt;
+using FluentValidation;
+using System.Reflection.Metadata;
+using System.Reflection;
+using SmartHome.Application.Interfaces.User;
+using SmartHome.Application.Services.User;
+using SmartHome.Application.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -79,15 +85,15 @@ builder.Services.AddApplicationCore();
 builder.Services.AddIdentityCore<ApplicationUser>(config =>
 {
     // TODO: chnge Settings For Production
-    config.Password.RequiredLength = 4;
-    config.Password.RequireDigit = false;
-    config.Password.RequireNonAlphanumeric = false;
-    config.Password.RequireUppercase = false;
+    config.Password.RequiredLength = 8;
+    config.Password.RequireDigit = true;
+    config.Password.RequireNonAlphanumeric = true;
+    config.Password.RequireUppercase = true;
 
     config.User.RequireUniqueEmail = true;
     config.SignIn.RequireConfirmedAccount = false;
 
-    config.Lockout.AllowedForNewUsers = true;
+    config.Lockout.AllowedForNewUsers = false;
     config.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
     config.Lockout.MaxFailedAccessAttempts = 5;
 })
@@ -96,7 +102,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(config =>
 (
     mongo =>
     {
-        mongo.ConnectionString = config["MongoDBConfig:ConnectionURI"]+ config["MongoDBConfig:DatabaseName"];
+        mongo.ConnectionString = config["MongoDBConfig:ConnectionURI"] + config["MongoDBConfig:DatabaseName"];
     }
 )
 .AddDefaultTokenProviders();
@@ -123,8 +129,16 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// adding FluentValidation
+builder.Services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
+
+
+// registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IUserService, UserService>();
+
+
 
 builder.Services.AddTransient<MongodbHealthCheck>();
 builder.Services.AddTransient<JwtTokenServiceHealthCheck>();
