@@ -20,6 +20,10 @@ namespace SmartHome.App
 
             // Add device-specific services used by the MauiApp1.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
+            builder.Services.AddHttpClient("AuthClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7019/api");
+            });
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
