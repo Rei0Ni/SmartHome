@@ -15,6 +15,7 @@ namespace SmartHome.Application.Configuration
         public static IServiceCollection AddApplicationCore(this IServiceCollection services)
         {
             services.AddScoped<ISeedDataService, SeedDataService>();
+            services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
             return services;
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Application.DTOs.User;
@@ -25,6 +26,19 @@ namespace SmartHome.API.Controllers
             return Ok(new {
                 token = token
             });
+        }
+
+        [HttpGet("userinfo")]
+        public async Task<UserInfoDto> UserInfo()
+        {
+            var user = await _userService.GetUserProfileAsync(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? String.Empty) ?? new UserInfoDto();
+            user.IsAuthenticated = HttpContext.User.Identity!.IsAuthenticated;
+            // Keys to exclude
+            var excludedKeys = new HashSet<string> { "jti", "exp", "iss", "aud" };
+            user.Claims = HttpContext.User.Claims
+                .Where(c => !excludedKeys.Contains(c.Type))
+                .ToDictionary(c => c.Type, c => c.Value);
+            return user;
         }
 
         [HttpGet("test_auth")]

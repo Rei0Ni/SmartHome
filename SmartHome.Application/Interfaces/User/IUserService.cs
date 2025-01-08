@@ -10,5 +10,6 @@ namespace SmartHome.Application.Interfaces.User
     public interface IUserService
     {
         Task<string> LoginAsync(LoginDto dto);
+        Task<UserInfoDto> GetUserProfileAsync(string userId);
     }
 }
