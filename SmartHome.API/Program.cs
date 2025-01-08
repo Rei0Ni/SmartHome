@@ -43,9 +43,9 @@ BsonSerializer.RegisterSerializer(new GuidSerializer(GuidRepresentation.Standard
 
 var logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
-    .MinimumLevel.Override("Default", LogEventLevel.Fatal)
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Fatal)
-    .MinimumLevel.Override("System", LogEventLevel.Fatal)
+    .MinimumLevel.Override("Default", LogEventLevel.Information)
+    //.MinimumLevel.Override("Microsoft", LogEventLevel.Fatal)
+    //.MinimumLevel.Override("System", LogEventLevel.Fatal)
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     .Enrich.FromLogContext()
     .WriteTo.Console()
@@ -138,7 +138,7 @@ builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-
+builder.Services.AddApplicationCore();
 
 builder.Services.AddTransient<MongodbHealthCheck>();
 builder.Services.AddTransient<JwtTokenServiceHealthCheck>();

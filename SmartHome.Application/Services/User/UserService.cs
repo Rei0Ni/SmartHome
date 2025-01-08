@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
@@ -19,16 +20,34 @@ namespace SmartHome.Application.Services.User
         private readonly IValidator<LoginDto> _loginValidator;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IJwtTokenService _jwtTokenService;
+        private readonly IMapper _mapper;
 
         public UserService(
             IValidator<LoginDto> loginValidator,
             UserManager<ApplicationUser> userManager,
-            IJwtTokenService jwtTokenService
+            IJwtTokenService jwtTokenService,
+            IMapper mapper
             )
         {
             _loginValidator = loginValidator;
             _userManager = userManager;
             _jwtTokenService = jwtTokenService;
+            _mapper = mapper;
+        }
+
+        public async Task<UserInfoDto> GetUserProfileAsync(string userId)
+        {
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user != null)
+                {
+                    var applicationUser = _mapper.Map<UserInfoDto>(user);
+                    return applicationUser;
+                }
+            }
+            
+            return new();
         }
 
         public async Task<string> LoginAsync(LoginDto dto)
