@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartHome.Shared.Models.Auth;
 
-namespace SmartHome.Shared.Services.Auth.Interface
+namespace SmartHome.Shared.Interfaces
 {
     internal interface IAuthService
     {

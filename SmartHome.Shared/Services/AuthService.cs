@@ -7,11 +7,11 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using SmartHome.Shared.Interfaces;
 using SmartHome.Shared.Models.Auth;
 using SmartHome.Shared.Policies;
-using SmartHome.Shared.Services.Auth.Interface;
 
-namespace SmartHome.Shared.Services.Auth.Service
+namespace SmartHome.Shared.Services
 {
     public class AuthService : IAuthService
     {
