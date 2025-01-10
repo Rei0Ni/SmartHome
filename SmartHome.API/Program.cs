@@ -129,9 +129,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// adding FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
-
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
