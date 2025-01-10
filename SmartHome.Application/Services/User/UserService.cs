@@ -7,7 +7,9 @@ using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
+using SmartHome.Application.DTOs;
 using SmartHome.Application.DTOs.User;
+using SmartHome.Application.Enums;
 using SmartHome.Application.Exceptions;
 using SmartHome.Application.Interfaces.Jwt;
 using SmartHome.Application.Interfaces.User;
@@ -50,34 +52,43 @@ namespace SmartHome.Application.Services.User
             return new();
         }
 
-        public async Task<string> LoginAsync(LoginDto dto)
+        public async Task<ApiResponse<object>> LoginAsync(LoginDto dto)
         {
             ValidationResult result = await _loginValidator.ValidateAsync(dto);
 
             if (!result.IsValid)
             {
-                throw new ValidationException("Invalid Credentials", result.Errors);
+                throw new FluentValidationException(ApiResponseStatus.Error.ToString(),"Invalid Credentials", result.Errors);
             }
 
             var user = await _userManager.FindByNameAsync(dto.Username);
 
             if (user == null)
             {
-                throw new LoginFailedException("Invalid Username or Password");
+                throw new LoginFailedException(ApiResponseStatus.Error.ToString(), "Invalid Username or Password");
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, dto.Password);
 
             if (!passwordValid)
             {
-                throw new LoginFailedException("Invalid Username or Password");
+                throw new LoginFailedException(ApiResponseStatus.Error.ToString(),"Invalid Username or Password");
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
             var token = _jwtTokenService.GenerateJwtToken(user.Id.ToString(), user.UserName!, user.Email!, userRoles);
 
-            return token;
+            var response = new ApiResponse<object>
+            {
+                Status = ApiResponseStatus.Success.ToString(),
+                Message = "Login Successful",
+                Data = new
+                {
+                    Token = token
+                }
+            };
+            return response;
         }
     }
 }

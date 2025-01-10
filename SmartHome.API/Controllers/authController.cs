@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SmartHome.Application.DTOs;
 using SmartHome.Application.DTOs.User;
+using SmartHome.Application.Enums;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Application.Services.User;
 
@@ -22,10 +24,8 @@ namespace SmartHome.API.Controllers
         [HttpPost("login")]
         public async Task<ActionResult> LoginAsync(LoginDto dto)
         {
-            var token = await _userService.LoginAsync(dto);
-            return Ok(new {
-                token = token
-            });
+            var response = await _userService.LoginAsync(dto);
+            return Ok(response);
         }
 
         [HttpGet("userinfo")]
@@ -45,7 +45,11 @@ namespace SmartHome.API.Controllers
         [Authorize]
         public ActionResult TestAuthentication()
         {
-            return Ok(new { message = "it's working " });
+            return Ok(new ApiResponse<object>()
+            {
+                Status = ApiResponseStatus.Success.ToString(),
+                Message = "it's working"
+            });
         }
     }
 }

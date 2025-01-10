@@ -9,6 +9,7 @@ namespace SmartHome.Application.Exceptions
 {
     public class LoginFailedException : Exception
     {
+        public string? Status { get; set; }
         public LoginFailedException()
         {
         }
@@ -19,6 +20,11 @@ namespace SmartHome.Application.Exceptions
 
         public LoginFailedException(string? message, Exception? innerException) : base(message, innerException)
         {
+        }
+
+        public LoginFailedException(string? status, string? message) : base(message)
+        {
+            Status = status;
         }
     }
 }
