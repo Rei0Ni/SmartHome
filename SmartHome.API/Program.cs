@@ -33,6 +33,10 @@ using System.Reflection;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Application.Services.User;
 using SmartHome.Application.Validations;
+using System.Text.Json;
+using System.Text.Encodings.Web;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -129,9 +133,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// adding FluentValidation
-builder.Services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
-
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
@@ -155,6 +156,15 @@ builder.Services.AddTransient<ServiceResolver<IComponentHealthCheck>>(sp => key 
 });
 
 builder.Services.AddControllers();
+
+// Configure global JSON options
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    //options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // Ignore null values
+    options.SerializerOptions.WriteIndented = true;
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
