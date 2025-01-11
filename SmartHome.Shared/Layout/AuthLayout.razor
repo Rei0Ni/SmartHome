@@ -1,5 +1,12 @@
 ﻿@inherits LayoutComponentBase
 
-<div class="container">
-	@Body
-</div>
+<AuthorizeView>
+	<Authorizing>
+		@Body
+	</Authorizing>
+	<NotAuthorized>
+		<div class="container">
+			@Body
+		</div>
+	</NotAuthorized>
+</AuthorizeView>

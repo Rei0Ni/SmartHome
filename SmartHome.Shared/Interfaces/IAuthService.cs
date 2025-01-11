@@ -7,7 +7,7 @@ using SmartHome.Shared.Models.Auth;
 
 namespace SmartHome.Shared.Interfaces
 {
-    internal interface IAuthService
+    public interface IAuthService
     {
         Task<HttpResponseMessage> Login(LoginDto Dto);
         Task<bool> Logout();

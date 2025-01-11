@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace SmartHome.Shared.Models.Auth
 {
-    public class LoginDto
+    internal class LoginSuccessResponse
     {
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Token { get; set; }
     }
 }

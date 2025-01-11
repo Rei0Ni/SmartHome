@@ -1,4 +1,9 @@
+using System.Text.Json;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http.Json;
 using SmartHome.Shared.Interfaces;
+using SmartHome.Shared.Providers;
+using SmartHome.Shared.Services;
 using SmartHome.Web.Components;
 using SmartHome.Web.Services;
 
@@ -10,9 +15,22 @@ builder.Services.AddRazorComponents()
 
 // Add device-specific services used by the MauiApp1.Shared project
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IJwtStorageService, JwtStorageService>();
+builder.Services.AddScoped<JwtAuthStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<JwtAuthStateProvider>());
+
+// Configure global JSON options
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    //options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // Ignore null values
+    options.SerializerOptions.WriteIndented = true;
+});
+
 builder.Services.AddHttpClient("AuthClient", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7019/api");
+    client.BaseAddress = new Uri("https://localhost:7019/");
 });
 
 var app = builder.Build();
