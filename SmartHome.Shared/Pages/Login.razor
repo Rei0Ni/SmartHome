@@ -11,7 +11,7 @@
 <form>
     <div class="data">
         <label>User Name</label>
-        <input type="text" placeholder="username" @bind="username">
+        <input type="text" placeholder="username" @bind="LoginModel.Username">
         @if (!string.IsNullOrEmpty(usernameErrorMessage))
         {
             <p class="error-message">@usernameErrorMessage</p>
@@ -19,7 +19,7 @@
     </div>
     <div class="data">
         <label>Password</label>
-        <input type="password" placeholder="password" @bind="password">
+        <input type="password" placeholder="password" @bind="LoginModel.Password">
         @if (!string.IsNullOrEmpty(passwordErrorMessage)) 
         {
             <p class="error-message">@passwordErrorMessage</p>
@@ -34,26 +34,40 @@
 </form>
 
 @code {
-    private string username;
-    private string password;
+    private LoginDto LoginModel = new();
     private string usernameErrorMessage;
     private string passwordErrorMessage;
 
-    private void HandleLogin()
+    private async void HandleLogin()
     {
         usernameErrorMessage = null;  // Clear previous error messages
         passwordErrorMessage = null;
 
-        if (string.IsNullOrWhiteSpace(username))
+        if (string.IsNullOrWhiteSpace(LoginModel.Username))
         {
             ShowUsernameError("Please fill user name.");
         }
-        if (string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(LoginModel.Password))
         {
             ShowPasswordError("Please fill password.");
         }
 
         // Remember to handle API call in this location
+        var result = await authStateProvider.Login(LoginModel);
+        if (result.IsSuccessStatusCode)
+        {
+            navigationManager.NavigateTo("/", true);
+        }
+        else if (result.StatusCode == HttpStatusCode.BadRequest)
+        {
+            var ErrorResposne = await result.Content.ReadFromJsonAsync<ApiResponse<List<LoginErrorResponse>>>();
+            Console.WriteLine(ErrorResposne.Message.ToString());
+        }
+		else if (result.StatusCode == HttpStatusCode.Unauthorized)
+		{
+            var ErrorResposne = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
+            Console.WriteLine(ErrorResposne.Message.ToString());
+		}
     }
 
     private void ShowUsernameError(string message)
