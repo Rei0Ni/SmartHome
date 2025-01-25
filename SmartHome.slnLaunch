@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "fullStack",
+    "Projects": [
+      {
+        "Path": "SmartHome.Web\\SmartHome.Web.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "SmartHome.API\\SmartHome.API.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      }
+    ]
+  }
+]

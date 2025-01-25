@@ -1,13 +1,14 @@
 ﻿@inherits LayoutComponentBase
+<link href="https://cdnjs.cloudflare.com/ajax/libs/open-iconic/1.1.1/font/css/open-iconic.min.css" rel="stylesheet" />
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
+    <div class="sidebar" style="@IconMenuCssClass">
+        <NavMenu ShowIconMenu="ToggleIconMenu" />
     </div>
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
         </div>
 
         <article class="content px-4">
@@ -15,3 +16,13 @@
         </article>
     </main>
 </div>
+
+@code {
+    private bool _iconMenuActive { get; set; }
+    private string? IconMenuCssClass => _iconMenuActive ? "width: 80px;" : null;
+
+    protected void ToggleIconMenu(bool iconMenuActive)
+    {
+        _iconMenuActive = iconMenuActive;
+    }
+}
