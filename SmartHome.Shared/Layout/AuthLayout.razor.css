@@ -1,91 +1,102 @@
-﻿.container {
+﻿body {
+    background-color: #F4E7FF !important;
+}
+
+.container {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     /*border:1px solid #000;*/
-    background-color: #BEBEBE;
+    background-color: #F4E7FF;
     border-radius: 28.46px;
+    margin-top:0;
 }
 
 @media (min-width: 300px) {
-    .container  {
+    .container {
         width: 75%;
         position: unset;
         top: 50%;
         left: 50%;
         transform: translate(0, 0);
         /*border:1px solid #000;*/
-        background-color: #ffffff;
+        background-color: #F4E7FF;
         border-radius: 0px;
         color: #000000;
+        margin-top: 65px;
     }
 }
 
 @media (min-width: 576px) {
-    .container  {
+    .container {
         width: 75%;
         position: unset;
         top: 50%;
         left: 50%;
         transform: translate(0, 0);
         /*border:1px solid #000;*/
-        background-color: #ffffff;
+        background-color: #F4E7FF;
         border-radius: 0px;
         color: #000000;
+        margin-top: 65px;
     }
 }
 
 @media (min-width: 768px) {
-    .container  {
+    .container {
         width: 75%;
         position: unset;
         top: 50%;
         left: 50%;
         transform: translate(0, 0);
         /*border:1px solid #000;*/
-        background-color: #ffffff;
+        background-color: #F4E7FF;
         border-radius: 0px;
         color: #000000;
+        margin-top: 65px;
     }
 }
 
 @media (min-width: 992px) {
-    .container  {
+    .container {
         width: 40%;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #BEBEBE;
+        background-color: #F4E7FF;
         border-radius: 28.46px;
+        margin-top: 0;
     }
 }
 
 @media (min-width: 1200px) {
-    .container  {
+    .container {
         width: 30%;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #BEBEBE;
+        background-color: #F4E7FF;
         border-radius: 28.46px;
+        margin-top: 0;
     }
 }
 
 @media (min-width: 1400px) {
-    .container  {
+    .container {
         width: 28%;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #BEBEBE;
+        background-color: #F4E7FF;
         border-radius: 28.46px;
+        margin-top: 0;
     }
 }
 

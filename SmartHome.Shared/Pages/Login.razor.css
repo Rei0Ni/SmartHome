@@ -2,11 +2,11 @@
     text-align: center;
 }
 
-.container .text  {
+.container .text {
     font-size: 20px;
-    font-weight: 600;
-    text-align: left;
-    color: #fff;
+    font-weight: 900;
+    text-align: center;
+    color: #2E0163;
 }
 
 .container form  {
@@ -24,19 +24,20 @@ form .data label  {
     font-size: 14px;
 }
 
-form .data input  {
+form .data input {
     height: 100%;
     width: 100%;
     padding-left: 10px;
     font-size: 17px;
     border: 1px solid silver;
-    border-radius: 10px;
+    border-radius: 22px;
+    box-shadow: 0px 5px #D4EFFF;
 }
 
-form .data input:focus  {
-    border-color: #3498db;
-    border-bottom-width: 2px;
-}
+    form .data input:focus {
+        box-shadow: 0 0 5pt 2pt #D4EFFF;
+        outline-width: 0px;
+    }
 
 form .forgot-pass  {
     margin-top: 0px;
@@ -53,22 +54,29 @@ form .forgot-pass a:hover  {
 
 form .LoginBtn  {
     margin-bottom: 10%;
-    margin-top: 7%;
+    margin-top: 7%; 
 }
 
-form .LoginBtn button  {
-    height: 100%;
-    width: 100%;
-    background-color: #454B60;
-    border: none;
-    color: #fff;
-    font-size: 18px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    border-radius: 7.11px;
-}
+    form .LoginBtn button {
+        height: 100%;
+        width: 100%;
+        background-color: #2E0163;
+        border: none;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        border-radius: 22px;
+        box-shadow: 0px 5px #D4EFFF;
+        padding: 8px 0%;
+    }
+
+    form .LoginBtn button:hover {
+            box-shadow: 0 0 5pt 2pt #D4EFFF;
+            outline-width: 0px;
+        }
 
 .error-message  {
     color: red;
@@ -80,11 +88,11 @@ form .LoginBtn button  {
         color: #000;
     }
 
-    .container .text  {
+    .container .text {
         font-size: 20px;
-        font-weight: 600;
-        text-align: left;
-        color: #000;
+        font-weight: 900;
+        text-align: center;
+        color: #2E0163;
     }
 }
 
@@ -93,11 +101,11 @@ form .LoginBtn button  {
         color: #000;
     }
 
-    .container .text  {
+    .container .text {
         font-size: 20px;
-        font-weight: 600;
-        text-align: left;
-        color: #000;
+        font-weight: 900;
+        text-align: center;
+        color: #2E0163;
     }
 }
 
@@ -106,11 +114,11 @@ form .LoginBtn button  {
         color: #000;
     }
 
-    .container .text  {
+    .container .text {
         font-size: 20px;
-        font-weight: 600;
-        text-align: left;
-        color: #000;
+        font-weight: 900;
+        text-align: center;
+        color: #2E0163;
     }
 }
 
@@ -119,11 +127,11 @@ form .LoginBtn button  {
         color: #fff;
     }
 
-    .container .text  {
+    .container .text {
         font-size: 20px;
-        font-weight: 600;
-        text-align: left;
-        color: #fff;
+        font-weight: 900;
+        text-align: center;
+        color: #2E0163;
     }
 }
 
@@ -132,11 +140,11 @@ form .LoginBtn button  {
         color: #fff;
     }
 
-    .container .text  {
+    .container .text {
         font-size: 20px;
-        font-weight: 600;
-        text-align: left;
-        color: #fff;
+        font-weight: 900;
+        text-align: center;
+        color: #2E0163;
     }
 }
 
@@ -145,10 +153,10 @@ form .LoginBtn button  {
         color: #fff;
     }
 
-    .container .text  {
+    .container .text {
         font-size: 20px;
-        font-weight: 600;
-        text-align: left;
-        color: #fff;
+        font-weight: 900;
+        text-align: center;
+        color: #2E0163;
     }
 }
