@@ -11,13 +11,15 @@
     position: absolute;
     bottom: 0;
     padding-bottom: 10px;
-    text-align: right;
-    width: 100%;
-    padding-right: 28px;
+    text-align:left;
+/*    text-align: right;
+    width: 100%;*/
+/*    padding-right: 28px;*/
+    width:100%;
 }
 
 .icon-menu-arrow {
-    text-align: right;
+/*    text-align: center;*/
 }
 
 .navbar-brand {
@@ -34,6 +36,16 @@
 .nav-item {
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
+}
+
+.nav-item label {
+/*    display: none;*/
+    transition: opacity 0.3s ease;
+}
+
+.expanded .nav-item label {
+    display: inline;
+    opacity: 1;
 }
 
     .nav-item:first-of-type {

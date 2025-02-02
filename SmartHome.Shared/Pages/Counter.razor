@@ -1,10 +1,22 @@
 ﻿@page "/counter"
 @layout MainLayout
+
 <h1>Counter</h1>
 
 <p role="status">Current count: @currentCount</p>
 
 <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+<details>
+    <summary></summary>
+    <nav class="menu">
+        <a href="#link">Home</a>
+        <a href="#link">Work</a>
+        <a href="#link">Links</a>
+        <a href="#link">Contact</a>
+        <a href="#link">About</a>
+    </nav>
+</details>
 
 @code {
     private int currentCount = 0;

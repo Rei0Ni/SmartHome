@@ -8,7 +8,7 @@
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <span class="bi bi-list" style="color:white;" aria-hidden="true" @onclick="ToggleIconMenu"></span>
-        @if (!@IconMenuActive)
+        @if (@IconMenuActive)
         {
             <a class="navbar-brand" href="">Smart Home</a>
         }
@@ -24,7 +24,7 @@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="oi bi-layout-wtf" aria-hidden="true"></span>
-                @if (!@IconMenuActive)
+                @if (@IconMenuActive)
                 {
                     <label>Home</label>
                 }
@@ -33,7 +33,7 @@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="oi oi-plus" aria-hidden="true"></span>
-                @if (!@IconMenuActive)
+                @if (@IconMenuActive)
                 {
                     <label>Counter</label>
                 }
@@ -42,7 +42,7 @@
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="fetchdata">
                 <span class="oi oi-list-rich" aria-hidden="true"></span>
-                @if (!@IconMenuActive)
+                @if (@IconMenuActive)
                 {
                     <label>Fetch data</label>
                 }
@@ -55,14 +55,19 @@
 
 <div class="bottom-row">
     <div class="icon-menu-arrow">
-        @if (!@IconMenuActive)
-        {
-            <span class="oi oi-arrow-left" style="color: white;" @onclick="ToggleIconMenu"></span>
-        }
-        else
-        {
-            <span class="oi oi-arrow-right" style="color: white;" @onclick="ToggleIconMenu"></span>
-        }
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="setting">
+                <span class="oi bi bi-gear" aria-hidden="true"></span>
+                @if (@IconMenuActive)
+                {
+                    <label>Settings</label>
+                }
+                else
+                {
+                    <label></label>
+                }
+            </NavLink>
+        </div>
     </div>
 </div>
 
@@ -76,7 +81,7 @@
 
     private bool collapseNavMenu = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? NavMenuCssClass => collapseNavMenu ? "expanded" : "collapsed";
 
     private void ToggleNavMenu()
     {

@@ -1,6 +1,10 @@
-﻿body {
-    background-color: #F4E7FF !important;
+﻿/*body {
+    background-color: #FFFFFF !important;
 }
+*/
+
+
+/* contianer */
 
 .container {
     position: absolute;
@@ -8,7 +12,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     /*border:1px solid #000;*/
-    background-color: #F4E7FF;
+    background-color: #FFFFFF;
     border-radius: 28.46px;
     margin-top:0;
 }
@@ -16,57 +20,54 @@
 @media (min-width: 300px) {
     .container {
         width: 75%;
-        position: unset;
+        position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(0, 0);
+        transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #F4E7FF;
-        border-radius: 0px;
-        color: #000000;
-        margin-top: 65px;
+        background-color: #FFFFFF;
+        border-radius: 28.46px;
+        margin-top: 0;
     }
 }
 
 @media (min-width: 576px) {
     .container {
         width: 75%;
-        position: unset;
+        position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(0, 0);
+        transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #F4E7FF;
-        border-radius: 0px;
-        color: #000000;
-        margin-top: 65px;
+        background-color: #FFFFFF;
+        border-radius: 28.46px;
+        margin-top: 0;
     }
 }
 
 @media (min-width: 768px) {
     .container {
         width: 75%;
-        position: unset;
-        top: 50%;
-        left: 50%;
-        transform: translate(0, 0);
-        /*border:1px solid #000;*/
-        background-color: #F4E7FF;
-        border-radius: 0px;
-        color: #000000;
-        margin-top: 65px;
-    }
-}
-
-@media (min-width: 992px) {
-    .container {
-        width: 40%;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #F4E7FF;
+        background-color: #FFFFFF;
+        border-radius: 28.46px;
+        margin-top: 0;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        width: 32%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /*border:1px solid #000;*/
+        background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -80,7 +81,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #F4E7FF;
+        background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -94,7 +95,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         /*border:1px solid #000;*/
-        background-color: #F4E7FF;
+        background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }

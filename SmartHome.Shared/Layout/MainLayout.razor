@@ -11,10 +11,26 @@
             @* <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a> *@
             <div class="d-flex w-100 align-items-center justify-content-between">
                 <div>Weather</div>
-            <div class="d-flex align-items-center">
-                <div><span>bill</span></div>
-                <div><img src="_content/SmartHome.Shared/imgs/user.png" alt="user" style="border-radius:50%" width="50px" /></div>
-            </div>
+                <div class="d-flex align-items-center">
+                    <div><span><img src="_content/SmartHome.Shared/imgs/bellNotification.png" alt="Notification" style="width:50px" /></span></div>
+                    <div class="menuDown">
+
+                        <input type="checkbox" id="toggleMenu" />
+                        <label for="toggleMenu" class="m-0">
+                            <img src="_content/SmartHome.Shared/imgs/user.png" alt="user" class="user-image" />
+                        </label>
+
+                        <!-- القائمة المنبثقة -->
+                        <div class="menu">
+                            <a href="./">Home</a>
+                            <a href="./Counter">Logs</a>
+                            <a href="#settings">Settings</a>
+                            
+                        </div>
+
+                        
+                     </div>
+                </div>
             </div>
         </div>
 
@@ -25,8 +41,8 @@
 </div>
 
 @code {
-    private bool _iconMenuActive { get; set; }
-    private string? IconMenuCssClass => _iconMenuActive ? "width: 80px;" : null;
+    private bool _iconMenuActive { get; set; } = false;
+    private string? IconMenuCssClass => _iconMenuActive ? "width: 250px;" : "width: 80px;";
 
     protected void ToggleIconMenu(bool iconMenuActive)
     {
