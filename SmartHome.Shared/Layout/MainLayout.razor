@@ -1,5 +1,5 @@
 ﻿@inherits LayoutComponentBase
-
+@inject NavigationManager NavManager
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,27 +17,25 @@
             <div class="p-4">
                 <!-- Collapse Toggle -->
                 <div class="flex justify-start mb-4">
-                   
                     <button @onclick="ToggleSidebar" class="text-white">
                         <i class="fas fa-@(isCollapsed ? "chevron-right" : "chevron-left")"></i>
                     </button>
-
                     <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Smart Home</span>
                 </div>
 
                 <!-- Menu Items -->
                 <nav class="space-y-4">
-                    <NavLink href="/" class="flex items-center p-2 hover:bg-gray-700 rounded-lg">
+                    <NavLink href="/" class="@GetNavItemClass("/")">
                         <i class="bi bi-columns-gap text-xl w-8"></i>
                         <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Overview</span>
                     </NavLink>
 
-                    <NavLink href="/Counter" class="flex items-center p-2 hover:bg-gray-700 rounded-lg">
+                    <NavLink href="/Counter" class="@GetNavItemClass("/Counter")">
                         <i class="fas fa-list text-xl w-8"></i>
                         <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Logs</span>
                     </NavLink>
 
-                    <NavLink href="/Weather" class="flex items-center p-2 hover:bg-gray-700 rounded-lg">
+                    <NavLink href="/Weather" class="@GetNavItemClass("/Weather")">
                         <i class="fas fa-chart-bar text-xl w-8"></i>
                         <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Dashboard</span>
                     </NavLink>
@@ -66,16 +64,36 @@
                         @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
 
                         <!-- Right Section (User & Notifications) -->
-                        <div class="flex items-center space-x-4">
+                       
+                        <div class="flex items-center space-x-4 relative">
                             <button class="text-gray-600 relative">
                                 <i class="fas fa-bell text-xl"></i>
                                 <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                             </button>
                             <div class="flex items-center space-x-2">
                                 <img src="_content/SmartHome.Shared/imgs/Profile-Main.webp"
-                                     class="w-8 h-8 rounded-full"
-                                     alt="User Avatar">
+                                     class="w-8 h-8 rounded-full cursor-pointer"
+                                     alt="User Avatar"
+                                     @onclick="ToggleUserMenu">
                             </div>
+
+                            <!-- User Menu Popup -->
+                            @if (showUserMenu)
+                            {
+                                <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
+                                <div class="absolute top-6 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
+                                        <span><i class="fa-solid fa-circle-user"></i> Profile</span>
+                                    </div>
+                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
+                                        <span><i class="fa-solid fa-gear"></i> Settings</span>
+                                    </div>
+                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
+                                        <span @onclick="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</span>
+                                    </div>
+                                </div>
+                            }
+                            <!-- end User Menu Popup -->
                         </div>
                     </div>
                 </div>
@@ -99,6 +117,9 @@
             </div>
         </div>
     }
+    <!-- end Mobile Menu (popup)-->
+
+    <script src="_content/SmartHome.Shared/DeviceType.js"></script>
 </body>
 </html>
 
@@ -111,4 +132,40 @@
 
     private void ToggleSidebar() => isCollapsed = !isCollapsed;
     private void ToggleMobileMenu() => showMobileMenu = !showMobileMenu;
+
+    private string GetNavItemClass(string page)
+    {
+        bool isActive = NavManager.Uri.EndsWith(page);
+        return $"flex items-center p-2 hover:bg-gray-700 rounded-lg {(isActive ? "bg-gray-800" : "")}";
+    }
+    // to centerlized icons
+    // private string GetIconAlignmentClass()
+    // {
+    //     return isCollapsed ? "display: flex; justify - content: center; align - items: center; " : "";
+    // }
+
+
+    private bool showUserMenu = false;
+
+    private void ToggleUserMenu()
+    {
+        showUserMenu = !showUserMenu;
+    }
+
+    // to close other menu
+    protected override void OnInitialized()
+    {
+        NavManager.LocationChanged += (sender, args) =>
+        {
+            showUserMenu = false;
+            showMobileMenu = false;
+            StateHasChanged();
+        };
+    }
+
+    // logout 
+    private async void logout()
+    {
+        await authStateProvider.Logout();
+    }
 }
