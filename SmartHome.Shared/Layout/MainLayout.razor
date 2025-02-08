@@ -64,14 +64,46 @@
                         @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
 
                         <!-- Right Section (User & Notifications) -->
-                       
+
                         <div class="flex items-center space-x-4 relative">
-                            <button class="text-gray-600 relative">
-                                <i class="fas fa-bell text-xl"></i>
-                                <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                            </button>
+                            <!-- زر الإشعارات -->
+                            <div class="relative">
+                                <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
+                                    <i class="fas fa-bell text-xl" style="color:#ffd26a"></i>
+                                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                                </button>
+
+                                <!-- Notifications list -->
+                                @if (showNotifications)
+                                {
+                                    <!-- start Notification pop -->
+                                    <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                        <div class="p-4 border-b">
+                                            <h6 class="font-semibold text-gray-800">Notification</h6>
+                                        </div>
+                                        <div class="max-h-64 overflow-y-auto">
+                                            <!--  Notification pop menu -->
+                                            <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
+                                                <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
+                                                <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
+                                            </div>
+                                            <div class="p-3 hover:bg-gray-50 cursor-pointer">
+                                                <div class="text-sm text-gray-800">The temperature is high</div>
+                                                <div class="text-xs text-gray-500 mt-1">An hour ago</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-2 border-t text-center">
+                                            <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
+                                        </div>
+                                    </div>
+                                    <!-- end notification pop-->
+                                    <!-- close menu when you clicked out of Area -->
+                                    <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
+                                }
+                            </div>
                             <div class="flex items-center space-x-2">
-                                <img src="_content/SmartHome.Shared/imgs/Profile-Main.webp"
+                                <img src="_content/SmartHome.Shared/imgs/Abdelrhman.png"
                                      class="w-8 h-8 rounded-full cursor-pointer"
                                      alt="User Avatar"
                                      @onclick="ToggleUserMenu">
@@ -81,7 +113,7 @@
                             @if (showUserMenu)
                             {
                                 <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
-                                <div class="absolute top-6 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                                     <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
                                         <span><i class="fa-solid fa-circle-user"></i> Profile</span>
                                     </div>
@@ -147,10 +179,10 @@
 
     private bool showUserMenu = false;
 
-    private void ToggleUserMenu()
-    {
-        showUserMenu = !showUserMenu;
-    }
+    // private void ToggleUserMenu()
+    // {
+    //     showUserMenu = !showUserMenu;
+    // }
 
     // to close other menu
     protected override void OnInitialized()
@@ -168,4 +200,39 @@
     {
         await authStateProvider.Logout();
     }
+
+
+    // Notification
+    private bool showNotifications = false;
+
+    private void ToggleNotifications()
+    {
+        showNotifications = !showNotifications;
+        if (showNotifications)
+        {
+            showUserMenu = false;
+            showMobileMenu = false;
+        }
+    }
+
+    // close Notification
+    private void ToggleUserMenu()
+    {
+        showUserMenu = !showUserMenu;
+        if (showUserMenu)
+        {
+            showNotifications = false;
+            showMobileMenu = false;
+        }
+    }
+
+    // private void ToggleMobileMenu()
+    // {
+    //     showMobileMenu = !showMobileMenu;
+    //     if (showMobileMenu)
+    //     {
+    //         showNotifications = false;
+    //         showUserMenu = false;
+    //     }
+    // }
 }
