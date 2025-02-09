@@ -13,36 +13,47 @@
 <body>
     <!-- Vertical Sidebar -->
     <div class="flex min-h-screen ">
-        <aside class="@sidebarClass hidden md:block text-white fixed h-full transition-all duration-300 ease-in-out" style="background-color: #120126;">
-            <div class="p-4">
-                <!-- Collapse Toggle -->
-                <div class="flex justify-start mb-4">
-                    <button @onclick="ToggleSidebar" class="text-white">
-                        <i class="fas fa-@(isCollapsed ? "chevron-right" : "chevron-left")"></i>
-                    </button>
-                    <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Smart Home</span>
+        <aside class="@sidebarClass hidden md:block text-white fixed h-full transition-all duration-300 ease-in-out flex flex-col " style="background-color: #120126;">
+            <div class="flex-1">
+                <div class="p-4">
+                    <!-- Collapse Toggle -->
+                    <div class="flex justify-start mb-4">
+                        <button @onclick="ToggleSidebar" class="text-white">
+                            <i class="fas fa-@(isCollapsed ? "bars" : "chevron-left")"></i>
+                        </button>
+                        <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Smart Home</span>
+                    </div>
+
+                    <!-- Menu Items -->
+                    <nav class="space-y-4">
+
+                            <NavLink href="/" class="@GetNavItemClass("/")">
+                                <i class="bi bi-columns-gap text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Overview</span>
+                            </NavLink>
+                
+
+                        <NavLink href="/Counter" class="@GetNavItemClass("/Counter")">
+                            <i class="fas fa-list text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
+                            <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Logs</span>
+                        </NavLink>
+
+                        <NavLink href="/Weather" class="@GetNavItemClass("/Weather")">
+                            <i class="fas fa-chart-bar text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
+                            <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Dashboard</span>
+                        </NavLink>
+                    </nav>
                 </div>
+            </div>
 
-                <!-- Menu Items -->
-                <nav class="space-y-4">
-                    <NavLink href="/" class="@GetNavItemClass("/")">
-                        <i class="bi bi-columns-gap text-xl w-8"></i>
-                        <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Overview</span>
-                    </NavLink>
-
-                    <NavLink href="/Counter" class="@GetNavItemClass("/Counter")">
-                        <i class="fas fa-list text-xl w-8"></i>
-                        <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Logs</span>
-                    </NavLink>
-
-                    <NavLink href="/Weather" class="@GetNavItemClass("/Weather")">
-                        <i class="fas fa-chart-bar text-xl w-8"></i>
-                        <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Dashboard</span>
-                    </NavLink>
-                </nav>
+            <!-- Settings at Bottom -->
+            <div class="absolute p-3 bottom-0 left-0 right-0  border-t border-gray-700 hover:bg-gray-700 ">
+                <NavLink href="/Settings" class="@GetNavItemClass("/Settings")">
+                    <i class="fas fa-cog text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
+                    <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Settings</span>
+                </NavLink>
             </div>
         </aside>
-
         <!-- Main Content -->
         <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
             <!-- Horizontal Navbar -->
@@ -165,10 +176,14 @@
     private void ToggleSidebar() => isCollapsed = !isCollapsed;
     private void ToggleMobileMenu() => showMobileMenu = !showMobileMenu;
 
+
+
     private string GetNavItemClass(string page)
     {
         bool isActive = NavManager.Uri.EndsWith(page);
-        return $"flex items-center p-2 hover:bg-gray-700 rounded-lg {(isActive ? "bg-gray-800" : "")}";
+        string justifyClass = isCollapsed ? "justify-center" : "justify-start";
+        // string sizeClass = isCollapsed ? "w-12 h-12 justify-center" : "w-full";
+        return $"flex items-center p-2 hover:bg-gray-700 rounded-lg {justifyClass} {(isActive ? "bg-gray-800" : "")}";
     }
     // to centerlized icons
     // private string GetIconAlignmentClass()
