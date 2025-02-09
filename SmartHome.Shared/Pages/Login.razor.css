@@ -1,5 +1,7 @@
-﻿.container .logo  {
+﻿.container .logoSmartHome {
+    display:flex;
     text-align: center;
+    justify-content: center;
 }
 
 .container .text {
