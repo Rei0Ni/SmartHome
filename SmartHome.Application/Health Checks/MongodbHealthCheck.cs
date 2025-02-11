@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using SmartHome.Application.Interfaces.Health;
 using Microsoft.Extensions.Configuration;
-using SmartHome.Application.DTOs;
+using SmartHome.Dto;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using MongoDB.Driver;
 using Serilog;

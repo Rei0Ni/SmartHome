@@ -37,6 +37,8 @@ using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
+using SmartHome.Application.Interfaces.Area;
+using SmartHome.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -133,11 +135,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// registering repositories
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAreaService, AreaService>();
 
 builder.Services.AddApplicationCore();
 

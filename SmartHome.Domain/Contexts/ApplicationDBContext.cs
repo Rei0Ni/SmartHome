@@ -22,5 +22,8 @@ namespace SmartHome.Domain.Contexts
                 _database.GetCollection<ApplicationUser>("Users");
         public IMongoCollection<ApplicationRole> Roles =>
                 _database.GetCollection<ApplicationRole>("Roles");
+
+        public IMongoCollection<Area> Areas => 
+                _database.GetCollection<Area>("Areas");
     }
 }

@@ -7,13 +7,13 @@ using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
-using SmartHome.Application.DTOs;
-using SmartHome.Application.DTOs.User;
 using SmartHome.Application.Enums;
 using SmartHome.Application.Exceptions;
 using SmartHome.Application.Interfaces.Jwt;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Domain.Entities;
+using SmartHome.Dto;
+using SmartHome.Dto.User;
 
 namespace SmartHome.Application.Services.User
 {
