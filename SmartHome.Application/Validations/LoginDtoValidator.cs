@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
-using SmartHome.Application.DTOs.User;
+using SmartHome.Dto.User;
 
 namespace SmartHome.Application.Validations
 {

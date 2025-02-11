@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SmartHome.Application.Delegates;
-using SmartHome.Application.DTOs;
+using SmartHome.Dto;
 using SmartHome.Application.Enums;
 using SmartHome.Application.Interfaces.Health;
 using HealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;

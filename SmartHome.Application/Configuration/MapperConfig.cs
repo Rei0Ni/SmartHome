@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using SmartHome.Application.DTOs.User;
+using SmartHome.Dto.Area;
+using SmartHome.Dto.User;
 using SmartHome.Domain.Entities;
 
 namespace SmartHome.Application.Configuration
@@ -13,8 +14,12 @@ namespace SmartHome.Application.Configuration
     {
         public MapperConfig()
         {
-            CreateMap<ApplicationUser,
-                UserInfoDto>().ReverseMap();
+            CreateMap<ApplicationUser, UserInfoDto>().ReverseMap();
+
+            CreateMap<Area, CreateAreaDto>().ReverseMap();
+            CreateMap<Area, UpdateAreaDto>().ReverseMap();
+            CreateMap<Area, DeleteAreaDto>().ReverseMap();
+            CreateMap<Area, GetAreaDto>().ReverseMap();
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartHome.Application.DTOs.User
+namespace SmartHome.Dto.User
 {
     public class LoginDto
     {
