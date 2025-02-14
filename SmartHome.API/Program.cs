@@ -155,6 +155,9 @@ builder.Services.AddScoped<IControllerService, ControllerService>();
 builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
 builder.Services.AddScoped<IDeviceFunctionService, DeviceFunctionService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+
+builder.Services.AddHttpClient("ControllerClient");
 
 builder.Services.AddApplicationCore();
 

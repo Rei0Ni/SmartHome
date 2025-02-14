@@ -129,6 +129,12 @@ namespace SmartHome.Application.Services
             return _mapper.Map<List<DeviceDto>>(devices);
         }
 
+        public async Task<List<DeviceDto>> GetDevicesByArea(Guid Id)
+        {
+            var devices = await _deviceRepository.GetDevicesByArea(Id);
+            return _mapper.Map<List<DeviceDto>>(devices);
+        }
+
         public async Task UpdateDevice(UpdateDeviceDto updateDeviceDto)
         {
             var validationResult = await _updateDeviceDtoValidator.ValidateAsync(updateDeviceDto);
