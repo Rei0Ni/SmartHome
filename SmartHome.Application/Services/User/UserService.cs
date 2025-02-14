@@ -7,7 +7,7 @@ using AutoMapper;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Exceptions;
 using SmartHome.Application.Interfaces.Jwt;
 using SmartHome.Application.Interfaces.User;

@@ -8,6 +8,7 @@ namespace SmartHome.Dto.Area
 {
     public class CreateAreaDto
     {
+        public Guid ControllerId { get; set; }
         public string Name { get; set; }
     }
 }

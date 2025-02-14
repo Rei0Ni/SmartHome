@@ -25,5 +25,10 @@ namespace SmartHome.Domain.Contexts
 
         public IMongoCollection<Area> Areas => 
                 _database.GetCollection<Area>("Areas");
+        public IMongoCollection<Controller> Controllers =>
+                _database.GetCollection<Controller>("Controllers");
+
+        public IMongoCollection<DeviceType> DeviceTypes =>
+                _database.GetCollection<DeviceType>("DeviceTypes");
     }
 }

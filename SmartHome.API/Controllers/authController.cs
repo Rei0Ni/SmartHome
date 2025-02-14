@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Dto;
 using SmartHome.Dto.User;
-using SmartHome.Application.Enums;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Application.Services.User;
+using SmartHome.Enum;
 
 namespace SmartHome.API.Controllers
 {

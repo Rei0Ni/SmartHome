@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartHome.Application.Enums
+namespace SmartHome.Dto.Controller
 {
-    public enum Role
+    public class DeleteControllerDto
     {
-        Admin = 0,
-        Normal_User = 1,
-        Guest = 2
+        public Guid Id { get; set; }
     }
 }

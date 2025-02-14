@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SmartHome.Application.Delegates;
 using SmartHome.Dto;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Interfaces.Health;
 using HealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
 using IHealthCheck = SmartHome.Application.Interfaces.Health.IHealthCheck;
@@ -40,7 +40,7 @@ namespace SmartHome.Application.Health_Checks
 
         private HealthStatus DetermineMostSevereStatus(List<ComponentHealthCheckDto> componentHealthChecks)
         {
-            var statuses = componentHealthChecks.Select(c => Enum.Parse<HealthStatus>(c.Status)).ToList();
+            var statuses = componentHealthChecks.Select(c => System.Enum.Parse<HealthStatus>(c.Status)).ToList();
 
             // Return the most severe status (Unhealthy > Degraded > Healthy)
             if (statuses.Contains(HealthStatus.Unhealthy))
