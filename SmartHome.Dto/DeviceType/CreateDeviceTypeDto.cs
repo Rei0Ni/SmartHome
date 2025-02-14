@@ -9,5 +9,6 @@ namespace SmartHome.Dto.DeviceType
     public class CreateDeviceTypeDto
     {
         public string Name { get; set; }
+        public ICollection<Guid> Functions { get; set; } = new List<Guid>();
     }
 }

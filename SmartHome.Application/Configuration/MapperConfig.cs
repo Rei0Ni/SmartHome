@@ -9,6 +9,7 @@ using SmartHome.Dto.User;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.Controller;
 using SmartHome.Dto.DeviceType;
+using SmartHome.Dto.DeviceFunction;
 
 namespace SmartHome.Application.Configuration
 {
@@ -21,6 +22,7 @@ namespace SmartHome.Application.Configuration
             CreateMap<Area, CreateAreaDto>().ReverseMap();
             CreateMap<Area, UpdateAreaDto>().ReverseMap();
             CreateMap<Area, DeleteAreaDto>().ReverseMap();
+            CreateMap<Area, GetAreaDto>().ReverseMap();
             CreateMap<Area, AreaDto>().ReverseMap();
 
             CreateMap<Controller, CreateControllerDto>().ReverseMap();
@@ -34,6 +36,12 @@ namespace SmartHome.Application.Configuration
             CreateMap<DeviceType, DeleteDeviceTypeDto>().ReverseMap();
             CreateMap<DeviceType, GetDeviceTypeDto>().ReverseMap();
             CreateMap<DeviceType, DeviceTypeDto>().ReverseMap();
+
+            CreateMap<DeviceFunction, CreateDeviceFunctionDto>().ReverseMap();
+            CreateMap<DeviceFunction, UpdateDeviceFunctionDto>().ReverseMap();
+            CreateMap<DeviceFunction, DeleteDeviceFunctionDto>().ReverseMap();
+            CreateMap<DeviceFunction, GetDeviceFunctionDto>().ReverseMap();
+            CreateMap<DeviceFunction, DeviceFunctionDto>().ReverseMap();
         }
     }
 }
