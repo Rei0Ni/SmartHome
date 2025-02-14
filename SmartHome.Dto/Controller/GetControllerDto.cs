@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartHome.Dto.Area;
 
-namespace SmartHome.Application.Enums
+namespace SmartHome.Dto.Controller
 {
-    public enum ApiResponseStatus
+    public class GetControllerDto
     {
-        Success,
-        Error
+        public Guid Id { get; set; }
     }
 }

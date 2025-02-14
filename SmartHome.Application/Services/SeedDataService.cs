@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Interfaces;
 using SmartHome.Domain.Entities;
 
@@ -30,7 +30,7 @@ namespace SmartHome.Application.Services
 
         public async Task InitializeAsync(CancellationToken cancellationToken = default)
         {
-            var roles = Enum.GetNames(typeof(Role)).ToList();
+            var roles = System.Enum.GetNames(typeof(Role)).ToList();
 
             foreach (var role in roles)
             {
@@ -53,7 +53,7 @@ namespace SmartHome.Application.Services
                 };
                 await _userManager.CreateAsync(default_administrator, password);
                 await _userManager.AddToRoleAsync(default_administrator,
-                            Enum.GetName(typeof(Role), Role.Admin)!);
+                            System.Enum.GetName(typeof(Role), Role.Admin)!);
             }
         }
     }

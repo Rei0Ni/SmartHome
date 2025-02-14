@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.Shared", "SmartHo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.Dto", "SmartHome.Dto\SmartHome.Dto.csproj", "{3A330FB6-4583-4D46-A234-D798405A3D19}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartHome.Enum", "SmartHome.Enum\SmartHome.Enum.csproj", "{BE24DFF0-6DDA-44B6-AE2A-56AF27D06EF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{3A330FB6-4583-4D46-A234-D798405A3D19}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A330FB6-4583-4D46-A234-D798405A3D19}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A330FB6-4583-4D46-A234-D798405A3D19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE24DFF0-6DDA-44B6-AE2A-56AF27D06EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE24DFF0-6DDA-44B6-AE2A-56AF27D06EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE24DFF0-6DDA-44B6-AE2A-56AF27D06EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE24DFF0-6DDA-44B6-AE2A-56AF27D06EF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,5 +84,6 @@ Global
 		{BECB83C4-18DB-49E6-98D4-80A45B87F5AA} = {F99B5A16-4C8F-4CFB-90DD-12AB25E62261}
 		{E0A4ACD0-94C0-462E-8636-430452AB0315} = {F99B5A16-4C8F-4CFB-90DD-12AB25E62261}
 		{3A330FB6-4583-4D46-A234-D798405A3D19} = {637B2111-B0A9-47E5-9ABC-605D7090769A}
+		{BE24DFF0-6DDA-44B6-AE2A-56AF27D06EF9} = {637B2111-B0A9-47E5-9ABC-605D7090769A}
 	EndGlobalSection
 EndGlobal

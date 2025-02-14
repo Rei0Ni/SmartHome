@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FluentValidation;
-using SmartHome.Dto.Area;
+using SmartHome.Dto.Controller;
 
-namespace SmartHome.Application.Validations.Area
+namespace SmartHome.Application.Validations.Controller
 {
-    public class CreateAreaDtoValidator : AbstractValidator<CreateAreaDto>
+    public class UpdateControllerDtoValidator : AbstractValidator<UpdateControllerDto>
     {
-        public CreateAreaDtoValidator()
+        public UpdateControllerDtoValidator()
         {
-            RuleFor(x => x.ControllerId)
-                .NotEmpty().WithMessage("ControllerId is required.");
+            RuleFor(x => x.Id)
+                .NotEmpty().WithMessage("Id is required.");
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
                 .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");

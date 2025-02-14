@@ -11,6 +11,8 @@ namespace SmartHome.Domain.Entities
         public Guid Id { get; set; }
         public string Name { get; set; } = "Unnamed Area";
 
+        // Foreign key to the controller
+        public Guid ControllerId { get; set; }
         //public virtual ICollection<Device> Devices { get; set; }
     }
 }

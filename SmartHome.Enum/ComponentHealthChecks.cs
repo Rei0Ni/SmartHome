@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmartHome.Application.Enums
+namespace SmartHome.Enum
 {
     public enum ComponentHealthChecks
     {

@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using Serilog;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Exceptions;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Dto.Area;
+using SmartHome.Application.Interfaces.Controller;
 
 namespace SmartHome.Application.Services
 {
@@ -20,6 +21,7 @@ namespace SmartHome.Application.Services
         private readonly IValidator<CreateAreaDto> _createAreaDtoValidator;
         private readonly IValidator<DeleteAreaDto> _deleteAreaDtoValidator;
         private readonly IAreaRepository _areaRepository;
+        private readonly IControllerRepository _controllerRepository;
         private IMapper _mapper { get; set; }
 
         public AreaService(
@@ -28,7 +30,8 @@ namespace SmartHome.Application.Services
             IValidator<GetAreaDto> getAreaDtoValidator,
             IValidator<UpdateAreaDto> updateAreaDtoValidator,
             IValidator<CreateAreaDto> createAreaDtoValidator,
-            IValidator<DeleteAreaDto> deleteAreaDtoValidator)
+            IValidator<DeleteAreaDto> deleteAreaDtoValidator,
+            IControllerRepository controllerRepository)
         {
             _areaRepository = areaRepository;
             _mapper = mapper;
@@ -36,6 +39,7 @@ namespace SmartHome.Application.Services
             _updateAreaDtoValidator = updateAreaDtoValidator;
             _createAreaDtoValidator = createAreaDtoValidator;
             _deleteAreaDtoValidator = deleteAreaDtoValidator;
+            _controllerRepository = controllerRepository;
         }
 
         public async Task CreateArea(CreateAreaDto createAreaDto)
@@ -55,10 +59,24 @@ namespace SmartHome.Application.Services
                 throw new ArgumentNullException(nameof(createAreaDto));
             }
 
-            await _areaRepository.CreateArea(new Domain.Entities.Area
+            var Controller = await _controllerRepository.GetController(createAreaDto.ControllerId);
+            if (Controller == null)
             {
-                Name = createAreaDto.Name
-            });
+                Log.Error("Controller with ID: {Id} not found", createAreaDto.ControllerId);
+                throw new ArgumentNullException(nameof(createAreaDto.ControllerId));
+            }
+
+            var newArea = new Domain.Entities.Area
+            {
+                Name = createAreaDto.Name,
+                ControllerId = Controller.Id,
+            };
+
+            await _areaRepository.CreateArea(newArea);
+
+            Controller.Areas.Add(newArea.Id);
+
+            await _controllerRepository.UpdateController(Controller);
 
             Log.Information("Area created successfully with name: {Name}", createAreaDto.Name);
         }
@@ -81,7 +99,7 @@ namespace SmartHome.Application.Services
             Log.Information("Area deleted successfully with ID: {Id}", deleteArea.Id);
         }
 
-        public async Task<GetAreaDto> GetArea(GetAreaDto getArea)
+        public async Task<AreaDto> GetArea(GetAreaDto getArea)
         {
             Log.Information("Getting area with ID: {Id}", getArea.Id);
             var validationResult = await _getAreaDtoValidator.ValidateAsync(getArea);
@@ -96,16 +114,16 @@ namespace SmartHome.Application.Services
                 throw new ArgumentNullException(nameof(getArea));
             }
             var area = await _areaRepository.GetArea(getArea.Id);
-            var getAreaDto = _mapper.Map<GetAreaDto>(area);
+            var getAreaDto = _mapper.Map<AreaDto>(area);
             Log.Information("Area retrieved successfully with ID: {Id}", getArea.Id);
             return getAreaDto;
         }
 
-        public async Task<List<GetAreaDto>> GetAreas()
+        public async Task<List<AreaDto>> GetAreas()
         {
             Log.Information("Getting all areas");
             var areas = await _areaRepository.GetAreas();
-            var getAreaDtos = _mapper.Map<List<GetAreaDto>>(areas);
+            var getAreaDtos = _mapper.Map<List<AreaDto>>(areas);
             Log.Information("Areas retrieved successfully");
             return getAreaDtos;
         }

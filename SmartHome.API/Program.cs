@@ -14,7 +14,7 @@ using Serilog.Events;
 using SmartHome.API.Models;
 using SmartHome.Application.Configuration;
 using SmartHome.Application.Delegates;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Health_Checks;
 using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Health;
@@ -39,6 +39,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Infrastructure.Repositories;
+using SmartHome.Application.Interfaces.Controller;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -137,12 +138,14 @@ builder.Services.AddAuthentication(options =>
 
 // registering repositories
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
+builder.Services.AddScoped<IControllerService, ControllerService>();
 
 builder.Services.AddApplicationCore();
 
