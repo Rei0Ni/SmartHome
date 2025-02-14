@@ -24,9 +24,9 @@ namespace SmartHome.Infrastructure.Repositories
             await _context.Areas.InsertOneAsync(Area);
         }
 
-        public async Task DeleteArea(DeleteAreaDto deleteArea)
+        public async Task DeleteArea(Area Area)
         {
-            var filter = Builders<Area>.Filter.Eq(x => x.Id, deleteArea.Id);
+            var filter = Builders<Area>.Filter.Eq(x => x.Id, Area.Id);
             await _context.Areas.DeleteOneAsync(filter);
         }
 
@@ -42,11 +42,9 @@ namespace SmartHome.Infrastructure.Repositories
             return Areas;
         }
 
-        public async Task UpdateArea(UpdateAreaDto updateAreaDto)
+        public async Task UpdateArea(Area Area)
         {
-            var filter = Builders<Area>.Filter.Eq(x => x.Id, updateAreaDto.Id);
-            var update = Builders<Area>.Update.Set(x => x.Name, updateAreaDto.Name);
-            await _context.Areas.UpdateOneAsync(filter, update);
+            await _context.Areas.ReplaceOneAsync(x=> x.Id == Area.Id, Area);
         }
     }
 }

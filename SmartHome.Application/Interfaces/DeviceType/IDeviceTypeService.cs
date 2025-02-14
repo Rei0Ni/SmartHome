@@ -9,8 +9,8 @@ namespace SmartHome.Application.Interfaces.DeviceType
 {
     public interface IDeviceTypeService
     {
-        Task<List<GetDeviceTypeDto>> GetDeviceTypes();
-        Task<GetDeviceTypeDto> GetDeviceType(Guid id);
+        Task<List<DeviceTypeDto>> GetDeviceTypes();
+        Task<DeviceTypeDto> GetDeviceType(Guid id);
         Task CreateDeviceType(CreateDeviceTypeDto createDeviceTypeDto);
         Task UpdateDeviceType(UpdateDeviceTypeDto updateDeviceTypeDto);
         Task DeleteDeviceType(DeleteDeviceTypeDto deleteDeviceType);

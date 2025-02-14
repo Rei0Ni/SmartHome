@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartHome.Enum;
 
-namespace SmartHome.Dto.DeviceType
+namespace SmartHome.Dto.Device
 {
-    public class GetDeviceTypeDto
+    public class DevicePin
     {
-        public Guid Id { get; set; }
+        public int PinNumber { get; set; }
+        public DevicePinPurpose Purpose { get; set; }
     }
 }

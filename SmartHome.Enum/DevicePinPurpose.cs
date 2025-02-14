@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHome.Enum;
 
-namespace SmartHome.Dto.DeviceType
+namespace SmartHome.Enum
 {
-    public class GetDeviceTypeDto
+    public enum DevicePinPurpose
     {
-        public Guid Id { get; set; }
+        Power,
+        Control,
+        Speed_Control,
+        Sensor,
     }
 }

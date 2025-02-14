@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SmartHome.Enum\SmartHome.Enum.csproj" />
+  </ItemGroup>
+
 </Project>

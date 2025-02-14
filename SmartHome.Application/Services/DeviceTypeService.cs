@@ -76,7 +76,7 @@ namespace SmartHome.Application.Services
             }
         }
 
-        public async Task<GetDeviceTypeDto> GetDeviceType(Guid id)
+        public async Task<DeviceTypeDto> GetDeviceType(Guid id)
         {
             var getDeviceTypeDto = new GetDeviceTypeDto { Id = id };
             var validationResult = await _getDeviceTypeDtoValidator.ValidateAsync(getDeviceTypeDto);
@@ -91,13 +91,13 @@ namespace SmartHome.Application.Services
             {
                 return null;
             }
-            return _mapper.Map<GetDeviceTypeDto>(deviceType);
+            return _mapper.Map<DeviceTypeDto>(deviceType);
         }
 
-        public async Task<List<GetDeviceTypeDto>> GetDeviceTypes()
+        public async Task<List<DeviceTypeDto>> GetDeviceTypes()
         {
             var deviceTypes = await _deviceTypeRepository.GetDeviceTypes();
-            return _mapper.Map<List<GetDeviceTypeDto>>(deviceTypes);
+            return _mapper.Map<List<DeviceTypeDto>>(deviceTypes);
         }
 
         public async Task UpdateDeviceType(UpdateDeviceTypeDto updateDeviceTypeDto)

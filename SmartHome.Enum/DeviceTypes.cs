@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHome.Enum;
 
-namespace SmartHome.Dto.DeviceType
+namespace SmartHome.Enum
 {
-    public class GetDeviceTypeDto
+    public enum DeviceTypes
     {
-        public Guid Id { get; set; }
+        Lamp,
+        DHT11_TEMP_SENSOR,
+        FAN
     }
 }

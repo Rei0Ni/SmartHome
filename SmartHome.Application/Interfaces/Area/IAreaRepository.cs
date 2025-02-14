@@ -12,7 +12,7 @@ namespace SmartHome.Application.Interfaces.Area
         Task<List<Domain.Entities.Area>> GetAreas();
         Task<Domain.Entities.Area> GetArea(Guid id);
         Task CreateArea(Domain.Entities.Area createAreaDto);
-        Task UpdateArea(UpdateAreaDto updateAreaDto);
-        Task DeleteArea(DeleteAreaDto deleteArea);
+        Task UpdateArea(Domain.Entities.Area updateAreaDto);
+        Task DeleteArea(Domain.Entities.Area deleteArea);
     }
 }

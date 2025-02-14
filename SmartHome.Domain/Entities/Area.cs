@@ -13,6 +13,6 @@ namespace SmartHome.Domain.Entities
 
         // Foreign key to the controller
         public Guid ControllerId { get; set; }
-        //public virtual ICollection<Device> Devices { get; set; }
+        public ICollection<Guid> Devices { get; set; }
     }
 }

@@ -33,5 +33,8 @@ namespace SmartHome.Domain.Contexts
 
         public IMongoCollection<DeviceFunction> DeviceFunctions =>
                 _database.GetCollection<DeviceFunction>("DeviceFunctions");
+
+        public IMongoCollection<Device> Devices =>
+                _database.GetCollection<Device>("Devices");
     }
 }
