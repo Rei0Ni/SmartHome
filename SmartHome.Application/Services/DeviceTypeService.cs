@@ -7,6 +7,7 @@ using AutoMapper;
 using FluentValidation;
 using Serilog;
 using SmartHome.Application.Exceptions;
+using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.DeviceType;
@@ -17,6 +18,7 @@ namespace SmartHome.Application.Services
     public class DeviceTypeService : IDeviceTypeService
     {
         public IDeviceTypeRepository _deviceTypeRepository { get; set; }
+        public IDeviceFunctionService _deviceFunctionService { get; set; }
         public IValidator<CreateDeviceTypeDto> _createDeviceTypeDtoValidator { get; set; }
         public IValidator<UpdateDeviceTypeDto> _updateDeviceTypeDtoValidator { get; set; }
         public IValidator<DeleteDeviceTypeDto> _deleteDeviceTypeDtoValidator { get; set; }
@@ -28,8 +30,8 @@ namespace SmartHome.Application.Services
             IValidator<CreateDeviceTypeDto> createDeviceTypeDtoValidator,
             IValidator<UpdateDeviceTypeDto> updateDeviceTypeDtoValidator,
             IValidator<DeleteDeviceTypeDto> deleteDeviceTypeDtoValidator,
-            IValidator<GetDeviceTypeDto> getDeviceTypeDtoValidator
-            )
+            IValidator<GetDeviceTypeDto> getDeviceTypeDtoValidator,
+            IDeviceFunctionService deviceFunctionService)
         {
             _deviceTypeRepository = deviceTypeRepository;
             _mapper = mapper;
@@ -37,6 +39,7 @@ namespace SmartHome.Application.Services
             _updateDeviceTypeDtoValidator = updateDeviceTypeDtoValidator;
             _deleteDeviceTypeDtoValidator = deleteDeviceTypeDtoValidator;
             _getDeviceTypeDtoValidator = getDeviceTypeDtoValidator;
+            _deviceFunctionService = deviceFunctionService;
         }
 
         public async Task CreateDeviceType(CreateDeviceTypeDto createDeviceTypeDto)
@@ -50,6 +53,11 @@ namespace SmartHome.Application.Services
 
             var deviceType = _mapper.Map<DeviceType>(createDeviceTypeDto);
             await _deviceTypeRepository.CreateDeviceType(deviceType);
+            foreach (var Function in createDeviceTypeDto.Functions)
+            {
+                deviceType.Functions.Add(Function);
+            }
+            await _deviceTypeRepository.UpdateDeviceType(deviceType);
         }
 
         public async Task DeleteDeviceType(DeleteDeviceTypeDto deleteDeviceType)
@@ -105,6 +113,11 @@ namespace SmartHome.Application.Services
             if (deviceType != null)
             {
                 deviceType.Name = updateDeviceTypeDto.Name;
+                deviceType.Functions.Clear();
+                foreach (var Function in updateDeviceTypeDto.Functions)
+                {
+                    deviceType.Functions.Add(Function);
+                }
                 await _deviceTypeRepository.UpdateDeviceType(deviceType);
             }
         }

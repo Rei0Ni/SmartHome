@@ -41,6 +41,7 @@ using SmartHome.Application.Interfaces.Area;
 using SmartHome.Infrastructure.Repositories;
 using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Interfaces.DeviceType;
+using SmartHome.Application.Interfaces.DeviceFunction;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -141,6 +142,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
 builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
+builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>();
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
@@ -149,6 +151,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IControllerService, ControllerService>();
 builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
+builder.Services.AddScoped<IDeviceFunctionService, DeviceFunctionService>();
 
 builder.Services.AddApplicationCore();
 
