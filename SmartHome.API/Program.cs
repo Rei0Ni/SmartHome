@@ -40,6 +40,7 @@ using Microsoft.AspNetCore.Http.Json;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Infrastructure.Repositories;
 using SmartHome.Application.Interfaces.Controller;
+using SmartHome.Application.Interfaces.DeviceType;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -139,6 +140,7 @@ builder.Services.AddAuthentication(options =>
 // registering repositories
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
+builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
@@ -146,6 +148,7 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAreaService, AreaService>();
 builder.Services.AddScoped<IControllerService, ControllerService>();
+builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
 
 builder.Services.AddApplicationCore();
 
