@@ -12,5 +12,6 @@ namespace SmartHome.Dto.Area
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid ControllerId { get; set; }
+        public ICollection<Guid> Devices { get; set; }
     }
 }

@@ -8,11 +8,11 @@ namespace SmartHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class devicefunctionsController : ControllerBase
+    public class devicefunctionController : ControllerBase
     {
         private readonly IDeviceFunctionService _deviceFunctionService;
 
-        public devicefunctionsController(IDeviceFunctionService deviceFunctionService)
+        public devicefunctionController(IDeviceFunctionService deviceFunctionService)
         {
             _deviceFunctionService = deviceFunctionService;
         }

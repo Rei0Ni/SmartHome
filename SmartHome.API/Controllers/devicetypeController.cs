@@ -8,10 +8,10 @@ namespace SmartHome.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class devicetypesController : ControllerBase
+    public class devicetypeController : ControllerBase
     {
         public IDeviceTypeService _deviceTypeService { get; set; }
-        public devicetypesController(IDeviceTypeService deviceTypeService)
+        public devicetypeController(IDeviceTypeService deviceTypeService)
         {
             _deviceTypeService = deviceTypeService;
         }

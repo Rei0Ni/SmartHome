@@ -66,11 +66,7 @@ namespace SmartHome.Application.Services
                 throw new ArgumentNullException(nameof(createAreaDto.ControllerId));
             }
 
-            var newArea = new Domain.Entities.Area
-            {
-                Name = createAreaDto.Name,
-                ControllerId = Controller.Id,
-            };
+            var newArea = _mapper.Map<Domain.Entities.Area>(createAreaDto);
 
             await _areaRepository.CreateArea(newArea);
 
@@ -95,13 +91,18 @@ namespace SmartHome.Application.Services
                 Log.Error("DeleteAreaDto is null");
                 throw new ArgumentNullException(nameof(deleteArea));
             }
-            await _areaRepository.DeleteArea(deleteArea);
+            var area = await _areaRepository.GetArea(deleteArea.Id);
+            if (area == null)
+            {
+                Log.Error("Area with ID: {Id} not found", deleteArea.Id);
+                throw new KeyNotFoundException(nameof(deleteArea.Id));
+            }
+            await _areaRepository.DeleteArea(area);
             Log.Information("Area deleted successfully with ID: {Id}", deleteArea.Id);
         }
 
         public async Task<AreaDto> GetArea(GetAreaDto getArea)
         {
-            Log.Information("Getting area with ID: {Id}", getArea.Id);
             var validationResult = await _getAreaDtoValidator.ValidateAsync(getArea);
             if (!validationResult.IsValid)
             {
@@ -115,16 +116,13 @@ namespace SmartHome.Application.Services
             }
             var area = await _areaRepository.GetArea(getArea.Id);
             var getAreaDto = _mapper.Map<AreaDto>(area);
-            Log.Information("Area retrieved successfully with ID: {Id}", getArea.Id);
             return getAreaDto;
         }
 
         public async Task<List<AreaDto>> GetAreas()
         {
-            Log.Information("Getting all areas");
             var areas = await _areaRepository.GetAreas();
             var getAreaDtos = _mapper.Map<List<AreaDto>>(areas);
-            Log.Information("Areas retrieved successfully");
             return getAreaDtos;
         }
 
@@ -142,7 +140,15 @@ namespace SmartHome.Application.Services
                 Log.Error("UpdateAreaDto is null");
                 throw new ArgumentNullException(nameof(updateAreaDto));
             }
-            await _areaRepository.UpdateArea(updateAreaDto);
+
+            var area = await _areaRepository.GetArea(updateAreaDto.Id);
+            if (area == null)
+            {
+                Log.Error("Area with ID: {Id} not found", updateAreaDto.Id);
+                throw new KeyNotFoundException(nameof(updateAreaDto.Id));
+            }
+
+            await _areaRepository.UpdateArea(area);
             Log.Information("Area updated successfully with ID: {Id}", updateAreaDto.Id);
         }
     }

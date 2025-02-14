@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHome.Enum;
 
-namespace SmartHome.Dto.DeviceType
+namespace SmartHome.Dto.Device
 {
-    public class GetDeviceTypeDto
+    public class GetDeviceDto
     {
         public Guid Id { get; set; }
     }

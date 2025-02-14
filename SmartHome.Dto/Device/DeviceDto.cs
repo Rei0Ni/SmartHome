@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHome.Dto.Device;
+using SmartHome.Dto.DeviceFunction;
+using SmartHome.Dto.DeviceType;
 
-namespace SmartHome.Domain.Entities
+namespace SmartHome.Dto.Device
 {
-    public class Device
+    public class DeviceDto
     {
         public Guid Id { get; set; }
         public string Name { get; set; } = "Unnamed Device";
@@ -19,10 +20,11 @@ namespace SmartHome.Domain.Entities
 
         public ICollection<DevicePin> Pins { get; set; } = new List<DevicePin>();
         public Dictionary<string, object> State { get; set; } = new();
-        public Guid DeviceTypeId { get; set; }
 
-        public DateTime LastUpdated { get; set; } = DateTime.Now;
+        public DeviceTypeDto DeviceType { get; set; }
+        public List<DeviceFunctionDto> DeviceFunctions { get; set; }
 
+        public DateTime LastUpdated { get; set; }
         public Guid AreaId { get; set; }
     }
 }
