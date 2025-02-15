@@ -10,6 +10,7 @@ namespace SmartHome.Application.Interfaces.Controller
     public interface IControllerService
     {
         Task<List<ControllerDto>> GetControllers();
+        Task<string> GetControllerIpAsync(Guid Id);
         Task<ControllerDto> GetController(GetControllerDto getController);
         Task CreateController(CreateControllerDto createControllerDto);
         Task UpdateController(UpdateControllerDto updateControllerDto);

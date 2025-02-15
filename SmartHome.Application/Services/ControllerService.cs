@@ -114,6 +114,18 @@ namespace SmartHome.Application.Services
             return _mapper.Map<ControllerDto>(controller);
         }
 
+        public async Task<string> GetControllerIpAsync(Guid id)
+        {
+            var controller = await _controllerRepository.GetController(id);
+
+            if (controller == null)
+            {
+                throw new KeyNotFoundException($"Controller with Id: {id} not found");
+            }
+
+            return controller.IPAddress;
+        }
+
         public async Task<List<ControllerDto>> GetControllers()
         {
             var controllers = await _controllerRepository.GetControllers();
