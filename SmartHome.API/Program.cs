@@ -139,6 +139,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Configure global JSON options
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    //options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // Ignore null values
+    options.SerializerOptions.WriteIndented = true;
+});
+
 // registering repositories
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
@@ -156,6 +164,7 @@ builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
 builder.Services.AddScoped<IDeviceFunctionService, DeviceFunctionService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ICommandService, CommandService>();
 
 builder.Services.AddHttpClient("ControllerClient");
 
