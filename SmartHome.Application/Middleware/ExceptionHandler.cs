@@ -10,9 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Serilog;
 using SmartHome.Application.Exceptions;
 using FluentValidation;
-using SmartHome.Application.DTOs;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Http.Json;
+using SmartHome.Dto;
 
 namespace SmartHome.Application.Middleware
 {

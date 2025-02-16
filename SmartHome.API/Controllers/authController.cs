@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using SmartHome.Application.DTOs;
-using SmartHome.Application.DTOs.User;
-using SmartHome.Application.Enums;
+using SmartHome.Dto;
+using SmartHome.Dto.User;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Application.Services.User;
+using SmartHome.Enum;
 
 namespace SmartHome.API.Controllers
 {

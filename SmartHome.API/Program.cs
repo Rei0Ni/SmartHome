@@ -14,7 +14,7 @@ using Serilog.Events;
 using SmartHome.API.Models;
 using SmartHome.Application.Configuration;
 using SmartHome.Application.Delegates;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Health_Checks;
 using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Health;
@@ -37,6 +37,12 @@ using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
+using SmartHome.Application.Interfaces.Area;
+using SmartHome.Infrastructure.Repositories;
+using SmartHome.Application.Interfaces.Controller;
+using SmartHome.Application.Interfaces.DeviceType;
+using SmartHome.Application.Interfaces.DeviceFunction;
+using SmartHome.Application.Interfaces.Device;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -133,11 +139,34 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+// Configure global JSON options
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    //options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // Ignore null values
+    options.SerializerOptions.WriteIndented = true;
+});
+
+// registering repositories
+builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
+builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
+builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>();
+builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 
 // registering services
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAreaService, AreaService>();
+builder.Services.AddScoped<IControllerService, ControllerService>();
+builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
+builder.Services.AddScoped<IDeviceFunctionService, DeviceFunctionService>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<ICommandService, CommandService>();
+
+builder.Services.AddHttpClient("ControllerClient");
 
 builder.Services.AddApplicationCore();
 

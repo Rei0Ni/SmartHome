@@ -1,17 +1,253 @@
 ﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+    <!-- Vertical Sidebar -->
+    <div class="flex min-h-screen ">
+        <aside class="@sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col " style="background-color: #120126;">
+            <div class="flex-1">
+                <div>
+                    <!-- Collapse Toggle -->
+                    <div class="flex justify-start p-4">
+                        <button @onclick="ToggleSidebar" class="text-white">
+                            <i class="fas fa-@(isCollapsed ? "bars" : "chevron-left")"></i>
+                        </button>
+                        <span class="ml-3 @(isCollapsed ? "hidden" : "block")" id="navbar-title">Smart Home</span>
+                    </div>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+                    <!-- Menu Items -->
+                    <nav class="space-y-4 px-2">
+
+                            <NavLink href="/" class="@GetNavItemClass("/")">
+                                <i class="bi bi-columns-gap text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Overview</span>
+                            </NavLink>
+                
+
+                        <NavLink href="/Counter" class="@GetNavItemClass("/Counter")">
+                            <i class="fas fa-list text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                            <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Logs</span>
+                        </NavLink>
+
+                        <NavLink href="/Weather" class="@GetNavItemClass("/Weather")">
+                            <i class="fas fa-chart-bar text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                            <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Dashboard</span>
+                        </NavLink>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Settings at Bottom -->
+            <div class="absolute p-3 bottom-0 left-0 right-0  border-t border-gray-700 hover:bg-gray-700 ">
+                <NavLink href="/Settings" class="@GetNavItemClass("/Settings")">
+                    <i class="fas fa-cog text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
+                    <span class="ml-3 @(isCollapsed ? "hidden" : "block")">Settings</span>
+                </NavLink>
+            </div>
+        </aside>
+        <!-- Main Content -->
+        <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
+            <!-- Horizontal Navbar -->
+            <nav class="" style="background-color: #F9F9F9;">
+                <div class="mx-auto px-4">
+                    <div class="flex justify-between items-center h-16">
+                        <!-- Left Section (Weather on Desktop) -->
+                        <div class="hidden md:flex items-center space-x-2 " style="color:#FBB03B;">
+                            <i class="fas fa-cloud-sun text-xl"></i>
+                            <span class="text-black">28°C</span>
+                        </div>
+
+                        <!-- Mobile Menu Button -->
+                        <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+
+                        <!-- Center Logo -->
+                        @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
+
+                        <!-- Right Section (User & Notifications) -->
+
+                        <div class="flex items-center space-x-4 relative">
+                            <!-- زر الإشعارات -->
+                            <div class="relative">
+                                <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
+                                    <i class="fas fa-bell text-xl" style="color:#ffd26a"></i>
+                                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                                </button>
+
+                                <!-- Notifications list -->
+                                @if (showNotifications)
+                                {
+                                    <!-- start Notification pop -->
+                                    <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                        <div class="p-4 border-b">
+                                            <h6 class="font-semibold text-gray-800">Notification</h6>
+                                        </div>
+                                        <div class="max-h-64 overflow-y-auto">
+                                            <!--  Notification pop menu -->
+                                            <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
+                                                <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
+                                                <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
+                                            </div>
+                                            <div class="p-3 hover:bg-gray-50 cursor-pointer">
+                                                <div class="text-sm text-gray-800">The temperature is high</div>
+                                                <div class="text-xs text-gray-500 mt-1">An hour ago</div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="p-2 border-t text-center">
+                                            <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
+                                        </div>
+                                    </div>
+                                    <!-- end notification pop-->
+                                    <!-- close menu when you clicked out of Area -->
+                                    <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
+                                }
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <img src="_content/SmartHome.Shared/imgs/Abdelrhman.png"
+                                     class="w-8 h-8 rounded-full cursor-pointer"
+                                     alt="User Avatar"
+                                     @onclick="ToggleUserMenu">
+                            </div>
+
+                            <!-- User Menu Popup -->
+                            @if (showUserMenu)
+                            {
+                                <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
+                                <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
+                                        <span><i class="fa-solid fa-circle-user"></i> Profile</span>
+                                    </div>
+                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
+                                        <span><i class="fa-solid fa-gear"></i> Settings</span>
+                                    </div>
+                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
+                                        <span @onclick="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</span>
+                                    </div>
+                                </div>
+                            }
+                            <!-- end User Menu Popup -->
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <article class="content px-4">
+                @Body
+            </article>
+        </main>
     </div>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+    <!-- Mobile Menu (Popup) -->
+    @if (showMobileMenu)
+    {
+        <div class="fixed inset-0 z-50 bg-black bg-opacity-50" @onclick="ToggleMobileMenu">
+            <div class="bg-white w-3/4 h-full p-4 transform transition-transform">
+                <nav class="space-y-4">
+                    <NavLink href="/" class="block p-2 hover:bg-gray-100">OverView</NavLink>
+                    <NavLink href="/Counter" class="block p-2 hover:bg-gray-100">Logs</NavLink>
+                    <NavLink href="/Weather" class="block p-2 hover:bg-gray-100">Dashboard</NavLink>
+                </nav>
+            </div>
         </div>
+    }
+    <!-- end Mobile Menu (popup)-->
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    <script src="_content/SmartHome.Shared/DeviceType.js"></script>
+</body>
+</html>
+
+@code {
+    private bool isCollapsed = true;
+    private bool showMobileMenu = false;
+
+    private string sidebarClass => isCollapsed ? "w-16" : "w-64";
+    private string mainContentClass => isCollapsed ? "ml-0 md:ml-16 lg:ml-16" : "ml-0 md:ml-64 lg:ml-64";
+
+    private void ToggleSidebar() => isCollapsed = !isCollapsed;
+    private void ToggleMobileMenu() => showMobileMenu = !showMobileMenu;
+
+
+
+    private string GetNavItemClass(string page)
+    {
+        bool isActive = NavManager.Uri.EndsWith(page);
+        string justifyClass = isCollapsed ? "justify-center" : "justify-start";
+        // string sizeClass = isCollapsed ? "w-12 h-12 justify-center" : "w-full";
+        return $"flex items-center p-2 hover:bg-gray-700 rounded-lg {justifyClass} {(isActive ? "bg-gray-800" : "")}";
+    }
+    // to centerlized icons
+    // private string GetIconAlignmentClass()
+    // {
+    //     return isCollapsed ? "display: flex; justify - content: center; align - items: center; " : "";
+    // }
+
+
+    private bool showUserMenu = false;
+
+    // private void ToggleUserMenu()
+    // {
+    //     showUserMenu = !showUserMenu;
+    // }
+
+    // to close other menu
+    protected override void OnInitialized()
+    {
+        NavManager.LocationChanged += (sender, args) =>
+        {
+            showUserMenu = false;
+            showMobileMenu = false;
+            StateHasChanged();
+        };
+    }
+
+    // logout 
+    private async void logout()
+    {
+        await authStateProvider.Logout();
+    }
+
+
+    // Notification
+    private bool showNotifications = false;
+
+    private void ToggleNotifications()
+    {
+        showNotifications = !showNotifications;
+        if (showNotifications)
+        {
+            showUserMenu = false;
+            showMobileMenu = false;
+        }
+    }
+
+    // close Notification
+    private void ToggleUserMenu()
+    {
+        showUserMenu = !showUserMenu;
+        if (showUserMenu)
+        {
+            showNotifications = false;
+            showMobileMenu = false;
+        }
+    }
+
+    // private void ToggleMobileMenu()
+    // {
+    //     showMobileMenu = !showMobileMenu;
+    //     if (showMobileMenu)
+    //     {
+    //         showNotifications = false;
+    //         showUserMenu = false;
+    //     }
+    // }
+}

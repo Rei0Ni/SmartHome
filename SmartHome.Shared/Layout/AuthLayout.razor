@@ -1,10 +1,63 @@
 ﻿@inherits LayoutComponentBase
 
+
+
 <AuthorizeView>
 	<Authorizing>
 		@Body
 	</Authorizing>
 	<NotAuthorized>
+		<style>
+			body {
+				background-color: #FFFFFF;
+                overflow-x:clip;
+                overflow-y:clip;
+                /* background-image: linear-gradient(to right, #2e0163b8, #f5f3f7); */
+                /* background-image: url(_content/SmartHome.Shared/imgs/LoginBackground.jpg); */
+                /* background-repeat: no-repeat; */
+                /* background-position: 57% 0; */
+                /* background-size: cover; */
+			}
+
+            /* Dotted Pattern */
+            /* .dots { */
+            /*     position: absolute; */
+            /*     width: 250px; */
+            /*     height: 250px; */
+            /*     background-image: radial-gradient(#1201269c 10%, transparent 10%); */
+            /*     background-size: 25px 25px; */
+            /*     opacity: 0.5; */
+            /*     animation: floatDots 4s infinite alternate ease-in-out; */
+            /* } */
+
+            /*     .dots.top-left { */
+            /*         top: 5%; */
+            /*         left: 5%; */
+            /*         rotate: 13deg; */
+            /*     } */
+
+            /*     .dots.top-right { */
+            /*         top: 9%; */
+            /*         right: 1%; */
+            /*         rotate: 20deg; */
+            /*     } */
+
+            /*     .dots.bottom-left { */
+            /*         bottom: 5%; */
+            /*         left: 0%; */
+            /*         rotate: -8deg; */
+            /*     } */
+
+            /*     .dots.bottom-right { */
+            /*         bottom: -5%; */
+            /*         right: 0%; */
+            /*         rotate: -22deg; */
+            /*     } */
+		</style>
+		@* <div class="dots top-left"></div> *@
+		@* <div class="dots top-right"></div> *@
+		@* <div class="dots bottom-left"></div> *@
+		@* <div class="dots bottom-right"></div> *@
 		<div class="container">
 			@Body
 		</div>

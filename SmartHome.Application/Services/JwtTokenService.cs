@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using SmartHome.Application.Enums;
+using SmartHome.Enum;
 using SmartHome.Application.Interfaces.Jwt;
 
 namespace SmartHome.Application.Services

@@ -10,8 +10,4 @@
 		<ProjectReference Include="..\SmartHome.Application\SmartHome.Application.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="Repositories\" />
-	</ItemGroup>
-
 </Project>

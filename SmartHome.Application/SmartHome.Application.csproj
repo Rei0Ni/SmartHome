@@ -22,6 +22,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SmartHome.Domain\SmartHome.Domain.csproj" />
+    <ProjectReference Include="..\SmartHome.Dto\SmartHome.Dto.csproj" />
+    <ProjectReference Include="..\SmartHome.Enum\SmartHome.Enum.csproj" />
   </ItemGroup>
 
 </Project>
