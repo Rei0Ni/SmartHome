@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
 
 namespace SmartHome.Application.Interfaces.Device
@@ -14,6 +15,7 @@ namespace SmartHome.Application.Interfaces.Device
         Task<DeviceDto> GetDevice(Guid id);
         Task CreateDevice(CreateDeviceDto createDeviceDto);
         Task UpdateDevice(UpdateDeviceDto updateDeviceDto);
+        Task UpdateDeviceStateFromResponseAsync(DeviceResponseDto deviceResponse);
         Task DeleteDevice(DeleteDeviceDto deleteDevice);
     }
 }

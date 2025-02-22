@@ -1,0 +1,135 @@
+﻿@using SmartHome.Dto.Command
+@using SmartHome.Dto.Dashboard
+@using SmartHome.Shared.Interfaces
+@using SmartHome.Shared.Models
+@inject IApiService ApiService
+
+<!-- Lamp Card -->
+<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="background-color:#FFFDEB; cursor: pointer;" @onclick="ToggleDevicePower">
+    @if (DeviceModel.State.ContainsKey("power_state"))
+    {
+        <div class="flex align-items-center justify-content-between w-100">
+            @if (!isPowerOn)
+            {
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/LampOff.png" alt="Lamp Off" class="w-12 h-12 object-contain">
+                </div>
+                <div>Turn On<i class="bi bi-power"></i></div>
+            }
+            else
+            {
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/LampOn.png" alt="Lamp On" class="w-12 h-12 object-contain">
+                </div>
+                <div>Turn Off<i class="bi bi-power"></i></div>
+            }
+        </div>
+
+        <div class="flex align-items-center justify-content-between w-100">
+            <div><h3 class="text-gray-600 font-semibold">@DeviceModel.Name</h3></div>
+            @if (!isPowerOn)
+            {
+                <div><img src="_content/SmartHome.Shared/imgs/CircleOff.png" alt="StatusOff" /></div>
+            }
+            else
+            {
+                <div><img src="_content/SmartHome.Shared/imgs/CircleOnLamp.png" alt="StatusOn" /></div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div>Device is Malfunctioning</div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public OverviewDeviceDto DeviceModel { get; set; } = new();
+
+    [Parameter]
+    public Guid ControllerId { get; set; }
+
+    private bool isPowerOn = false; // Default state is off
+
+    protected override void OnParametersSet() // Use OnParametersSet to react to parameter changes
+    {
+        base.OnParametersSet();
+        Console.WriteLine($"LampCard: OnParametersSet called for Device: {DeviceModel.Name}, DeviceId: {DeviceModel.Id}"); // Debug print
+        UpdateVisualState(); // Call UpdateVisualState when parameters are set or updated
+    }
+
+    private void UpdateVisualState()
+    {
+        if (DeviceModel.State.TryGetValue("power_state", out var powerStateValue))
+        {
+            isPowerOn = powerStateValue?.ToString()?.ToLower() == "on";
+        }
+        else
+        {
+            isPowerOn = false;
+        }
+        StateHasChanged(); // Ensure UI updates after state change
+    }
+
+
+    private async Task ToggleDevicePower()
+    {
+        if (!DeviceModel.State.ContainsKey("power_state"))
+        {
+            Console.WriteLine("Device state does not contain 'power_state'. Cannot toggle.");
+            return; // Or handle error appropriately
+        }
+
+        bool turnOn = !isPowerOn; // Toggle to the opposite of the *current visual state*
+
+        var commandRequest = new CommandRequestDto()
+            {
+                AreaId = DeviceModel.AreaId,
+                ControllerId = ControllerId,
+                Devices = new List<DeviceCommandDto>()
+            {
+                new DeviceCommandDto()
+                {
+                    DeviceId = DeviceModel.Id,
+                    Function = "toggle",
+                    Parameters = new Dictionary<string, object>()
+                    {
+                        { "state", turnOn }
+                    }
+                }
+            }
+            };
+
+        try
+        {
+            // Assuming you have a CommandResponseDto defined to handle the response from the command endpoint
+            var commandResponse = await ApiService.PostAsync<CommandResponseDto, CommandRequestDto>("/api/command/send-command", commandRequest);
+
+            if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
+            {
+                // Command was successful. Update the UI to reflect the new state.
+
+                if (DeviceModel.State.ContainsKey("power_state"))
+                {
+                    DeviceModel.State["power_state"] = turnOn ? "on" : "off";
+                }
+                UpdateVisualState(); // Update visual state based on the new DeviceModel.State
+                StateHasChanged(); // Re-render the component to reflect the state change
+            }
+            else
+            {
+                // Command failed. Handle error (e.g., display error message to user)
+                Console.WriteLine($"Command failed: {commandResponse?.Devices[0].Message ?? "Unknown error"}");
+                // Optionally, show an error message to the user.
+            }
+        }
+        catch (Exception ex)
+        {
+            // Exception during API call. Handle error.
+            Console.WriteLine($"Exception during command: {ex.Message}");
+            // Optionally, show an error message to the user.
+        }
+    }
+}

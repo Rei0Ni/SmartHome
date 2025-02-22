@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Serilog;
 using SmartHome.Application.Interfaces;
+using SmartHome.Application.Interfaces.Device;
 using SmartHome.Dto.Command;
 
 namespace SmartHome.Application.Services
@@ -14,10 +15,12 @@ namespace SmartHome.Application.Services
     public class CommandService : ICommandService
     {
         private readonly HttpClient _httpClient;
+        private readonly IDeviceService _deviceService;
 
-        public CommandService(IHttpClientFactory httpClientFactory)
+        public CommandService(IHttpClientFactory httpClientFactory, IDeviceService deviceService)
         {
             _httpClient = httpClientFactory.CreateClient("ControllerClient");
+            _deviceService = deviceService;
         }
 
         public async Task<CommandResponseDto> SendCommandAsync(string controllerIp, CommandRequestDto commandRequest)
@@ -34,19 +37,40 @@ namespace SmartHome.Application.Services
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var requestUri = $"http://{controllerIp}:2826/api/command/send";
 
-            Log.Information("Sending command to {RequestUri}: {JsonContent}", requestUri, json);
-
             // Use PostAsync to send the request
             var response = await _httpClient.PostAsync(requestUri, content);
-            Log.Information("Response: {@Response}", response);
 
             // Throws an exception if the response indicates an error status.
             response.EnsureSuccessStatusCode();
 
             string responseBody = await response.Content.ReadAsStringAsync();
-            Log.Information("Response Body: {ResponseBody}", responseBody);
 
             var commandResponse = JsonSerializer.Deserialize<CommandResponseDto>(responseBody, options);
+
+            // **--- Device State Update Logic using DeviceService ---**
+            if (commandResponse?.Devices != null)
+            {
+                foreach (var deviceResponse in commandResponse.Devices)
+                {
+                    if (deviceResponse.Status == "success") // Process only on success
+                    {
+                        // **Delegate state update to DeviceService**
+                        await _deviceService.UpdateDeviceStateFromResponseAsync(deviceResponse);
+                    }
+                    else
+                    {
+                        // Handle error status for this specific device if needed
+                        Log.Error($"Command failed for device {deviceResponse.DeviceId}: {deviceResponse.Message}");
+                        // ... error handling ...
+                    }
+                }
+                commandResponse.Status = "Success";
+            }
+            else
+            {
+                Log.Error("No device responses found in CommandResponseDto.");
+                // ... handle missing device responses ...
+            }
 
             return commandResponse;
         }

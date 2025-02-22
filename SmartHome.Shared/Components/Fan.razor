@@ -1,0 +1,132 @@
+﻿@using SmartHome.Dto.Command
+@using SmartHome.Dto.Dashboard
+@using SmartHome.Shared.Interfaces
+@using SmartHome.Shared.Models
+@inject IApiService ApiService
+
+<!-- Fan Card -->
+<div class="bg-[#F9FFF4] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="background-color:#F9FFF4">
+    <div class="flex align-items-center justify-content-between w-100">
+        <div>
+            <img src="_content/SmartHome.Shared/imgs/FanOn.png" alt="Fan" class="w-12 h-12 object-contain">
+        </div>
+        <div class="flex items-center gap-2">
+            <input type="range"
+                   min="0"
+                   max="100"
+                   step="10"
+                   @bind="sliderValue"
+                   @bind:event="oninput"
+                   class="green-range w-24"
+                   style="accent-color: #059212;"
+                   @onchange="SetFanSpeed">  @* Call SetFanSpeed on change *@
+            <span class="text-gray-700 font-medium"></span> <!-- Optional: Display value here -->
+        </div>
+    </div>
+
+    <div class="flex align-items-center justify-content-between w-100">
+        <div>
+            <h3 class="text-gray-600 font-semibold">Fan Speed @sliderValue%</h3>
+        </div>
+        <div>
+            @if (sliderValue > 0)
+            {
+                <img src="_content/SmartHome.Shared/imgs/CircleOnFan.png" alt="StatusOn" class="w-6 h-6">
+            }
+            else
+            {
+                <img src="_content/SmartHome.Shared/imgs/CircleOff.png" alt="StatusOff" class="w-6 h-6">
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public OverviewDeviceDto DeviceModel { get; set; } = new();
+
+    [Parameter]
+    public Guid ControllerId { get; set; }
+
+    private int sliderValue = 0; // Initial value, 0 for off
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        UpdateFanSpeedFromState(); // Initialize slider value from DeviceModel.State
+    }
+
+    private void UpdateFanSpeedFromState()
+    {
+        if (DeviceModel.State.ContainsKey("fan_speed"))
+        {
+            if (DeviceModel.State["fan_speed"] is int speedPercentage)
+            {
+                sliderValue = speedPercentage;
+            }
+            else if (DeviceModel.State["fan_speed"] is string speedString && int.TryParse(speedString, out int parsedSpeed))
+            {
+                sliderValue = parsedSpeed;
+            }
+            else
+            {
+                Console.WriteLine($"Warning: fan_speed in DeviceState is not an integer or valid integer string.");
+                sliderValue = 0; // Default to 0 if not valid
+            }
+        }
+        else
+        {
+            sliderValue = 0; // Default to 0 if fan_speed is not in State
+        }
+    }
+
+    private async Task SetFanSpeed()
+    {
+        var commandRequest = new CommandRequestDto()
+            {
+                AreaId = DeviceModel.AreaId,
+                ControllerId = ControllerId,
+                Devices = new List<DeviceCommandDto>()
+            {
+                new DeviceCommandDto()
+                {
+                    DeviceId = DeviceModel.Id,
+                    Function = "setspeed",
+                    Parameters = new Dictionary<string, object>()
+                    {
+                        { "speed", sliderValue } // Send the slider value as 'speed' parameter
+                    }
+                }
+            }
+            };
+
+        try
+        {
+            var commandResponse = await ApiService.PostAsync<CommandResponseDto, CommandRequestDto>("/api/command/send-command", commandRequest);
+
+            if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
+            {
+                // Command successful, update local DeviceModel.State
+                if (DeviceModel.State.ContainsKey("fan_speed"))
+                {
+                    DeviceModel.State["fan_speed"] = sliderValue; // Update with the slider value
+                }
+                else
+                {
+                    DeviceModel.State.Add("fan_speed", sliderValue); // Add if not present
+                }
+                StateHasChanged(); // Re-render to update UI
+            }
+            else
+            {
+                Console.WriteLine($"Fan Speed Command failed: {commandResponse?.Devices[0].Message ?? "Unknown error"}");
+                // Optionally: Revert slider value on error or display error to user
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception setting fan speed: {ex.Message}");
+            // Optionally: Revert slider value on exception or display error to user
+        }
+    }
+}

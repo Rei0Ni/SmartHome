@@ -67,10 +67,11 @@ namespace SmartHome.Application.Services
                     OverviewDevice.DeviceFunctions = deviceFunctions;
                     OverviewArea.AreaDevices.Add(OverviewDevice);
                 }
-                if (!OverviewArea.AreaDevices.IsNullOrEmpty())
-                {
-                    Overview.Areas.Add(OverviewArea);
-                }
+                //if (!OverviewArea.AreaDevices.IsNullOrEmpty())
+                //{
+                //    Overview.Areas.Add(OverviewArea);
+                //}
+                Overview.Areas.Add(OverviewArea);
             }
 
             return Overview;

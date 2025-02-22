@@ -8,7 +8,7 @@ namespace SmartHome.Dto.Command
 {
     public class CommandResponseDto
     {
-        public string Status { get; set; }
-        public string Message { get; set; }
+        public string Status { get; set; } // "success" or "error" for the overall command
+        public List<DeviceResponseDto> Devices { get; set; } // Array of device responses
     }
 }
