@@ -2,6 +2,7 @@
 @using SmartHome.Dto.Dashboard
 @using SmartHome.Shared.Interfaces
 @using SmartHome.Shared.Models
+@using System.Text.Json
 @inject IApiService ApiService
 
 <!-- Fan Card -->
@@ -60,25 +61,43 @@
     {
         if (DeviceModel.State.ContainsKey("fan_speed"))
         {
-            if (DeviceModel.State["fan_speed"] is int speedPercentage)
+            var value = DeviceModel.State["fan_speed"];
+            if (value is JsonElement element)
             {
-                sliderValue = speedPercentage;
+                if (element.ValueKind == JsonValueKind.Number && element.TryGetInt32(out int speed))
+                {
+                    sliderValue = speed;
+                }
+                else if (element.ValueKind == JsonValueKind.String && int.TryParse(element.GetString(), out int parsedSpeed))
+                {
+                    sliderValue = parsedSpeed;
+                }
+                else
+                {
+                    Console.WriteLine("Warning: fan_speed in DeviceState is not a valid number or string.");
+                    sliderValue = 0;
+                }
             }
-            else if (DeviceModel.State["fan_speed"] is string speedString && int.TryParse(speedString, out int parsedSpeed))
+            else if (value is int directSpeed)
+            {
+                sliderValue = directSpeed;
+            }
+            else if (value is string speedString && int.TryParse(speedString, out int parsedSpeed))
             {
                 sliderValue = parsedSpeed;
             }
             else
             {
-                Console.WriteLine($"Warning: fan_speed in DeviceState is not an integer or valid integer string.");
-                sliderValue = 0; // Default to 0 if not valid
+                Console.WriteLine("Warning: fan_speed in DeviceState is not in a recognized format.");
+                sliderValue = 0;
             }
         }
         else
         {
-            sliderValue = 0; // Default to 0 if fan_speed is not in State
+            sliderValue = 0;
         }
     }
+
 
     private async Task SetFanSpeed()
     {
