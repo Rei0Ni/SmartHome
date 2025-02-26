@@ -1,0 +1,43 @@
+﻿@page "/"
+@layout AuthLayout
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthProvider
+@inject IHostConfigurationCheckService HostConfigService
+
+<div style="display: none;"></div>
+
+@code {
+    private bool _showLoading = true;
+    private bool _hasNavigated;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // 1. Check host configuration first
+        if (await HostConfigService.ShouldNavigateToConfigurationPageAsync())
+        {
+            _hasNavigated = true;
+            Navigation.NavigateTo("/hostconfiguration");
+            return;
+        }
+
+        // 2. Get auth state through provider
+        var authState = await AuthProvider.GetAuthenticationStateAsync();
+
+        // 3. Immediate navigation
+        _hasNavigated = true;
+        Navigation.NavigateTo(authState.User.Identity?.IsAuthenticated == true
+            ? "/overview"
+            : "/login");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_hasNavigated)
+        {
+            // Force a state update to maintain circuit
+            // _showLoading = false;
+            StateHasChanged();
+            // await Task.Delay(1); Critical for render queue
+        }
+    }
+}

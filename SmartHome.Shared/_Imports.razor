@@ -7,15 +7,18 @@
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.Logging
 @using Microsoft.JSInterop
 
 @using SmartHome.Shared.Interfaces
 @using SmartHome.Shared.Layout
 @using SmartHome.Shared.Providers
 @using SmartHome.Shared.Models
-@using SmartHome.Shared.Models.Auth
+
+@using SmartHome.Dto.User
 
 @* @inject IAuthService authService *@
 @inject JwtAuthStateProvider authStateProvider
 @inject NavigationManager navigationManager
 @inject IApiService ApiService
+@inject IHostConfigurationCheckService HostConfigurationCheckService

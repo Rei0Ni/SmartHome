@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHome.Dto.Dashboard;
@@ -13,7 +14,10 @@ namespace SmartHome.Shared.Pages
         public OverviewDto OverviewData { get; set; } = new();
         protected override async Task OnInitializedAsync()
         {
-            var response = await ApiService.GetAsync<OverviewDto>("/api/dashboard/overview");
+            var result = await ApiService.GetAsync("/api/dashboard/overview");
+
+            var response = await result.Content.ReadFromJsonAsync<OverviewDto>();
+
             OverviewData = response;
         }
     }

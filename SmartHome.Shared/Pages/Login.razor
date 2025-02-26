@@ -1,61 +1,79 @@
 @page "/login"
+@using SmartHome.Shared.Models.Auth
 @layout AuthLayout
 
-<!-- Link fontawesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+@inject ISecureStorageService secureStorageService
 
-<div class="logoSmartHome">
-    <img src="_content/SmartHome.Shared/imgs/logoTest2.png" alt="logo" />
-</div>
+<AuthorizeView>
+    <NotAuthorized>
+        <!-- Link fontawesome -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<div class="text">
-    Login
-</div>
-<form @onsubmit="HandleLogin">
-    <div class="data">
-        <input type="text" placeholder="username" @bind="LoginModel.Username">
-        @if (!string.IsNullOrEmpty(usernameErrorMessage))
-        {
-            <p class="error-message">@usernameErrorMessage</p>
-        }
-    </div>
-    @* <div class="data"> *@
-    @*     <input type="password" placeholder="password" @bind="LoginModel.Password"> *@
-    @*     @if (!string.IsNullOrEmpty(passwordErrorMessage)) *@
-    @*     { *@
-    @*         <p class="error-message">@passwordErrorMessage</p> *@
-    @*     } *@
-    @* </div> *@
+        <div class="logoSmartHome">
+            <img src="_content/SmartHome.Shared/imgs/logoTest2.png" alt="logo" />
+        </div>
 
-    <div class="data relative mt-4">
-        <input type="@(showPassword ? "text" : "password")"
-               placeholder="password"
-               @bind="LoginModel.Password"
-               class="w-full pl-3 pr-10 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+        <div class="text">
+            Login
+        </div>
+        <div class="sub-text">
+        </div>
+        <form @onsubmit="HandleLogin">
+            <div class="data">
+                <input type="text" placeholder="username" @bind="LoginModel.Username">
+                @if (!string.IsNullOrEmpty(usernameErrorMessage))
+                {
+                    <p class="error-message">@usernameErrorMessage</p>
+                }
+            </div>
 
-        <i class="absolute right-4 top-4 -translate-y-1/2 text-gray-400 cursor-pointer
+            <div class="data relative mt-4">
+                <input type="@(showPassword ? "text" : "password")"
+                       placeholder="password"
+                       @bind="LoginModel.Password"
+                       class="w-full pl-3 pr-10 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+
+                <i class="absolute right-4 top-4 -translate-y-1/2 text-gray-400 cursor-pointer
               fas @(showPassword ? "fa-eye-slash" : "fa-eye")"
-           @onclick="TogglePasswordVisibility"></i>
+                   @onclick="TogglePasswordVisibility"></i>
 
-        @if (!string.IsNullOrEmpty(passwordErrorMessage))
-        {
-            <p class="error-message">@passwordErrorMessage</p>
+                @if (!string.IsNullOrEmpty(passwordErrorMessage))
+                {
+                    <p class="error-message">@passwordErrorMessage</p>
+                }
+            </div>
+
+            <div class="forgot-pass">
+                <a href="#">Forgot Password?</a>
+            </div>
+            <div class="LoginBtn">
+                <button type="submit">Sign in</button>
+            </div>
+        </form>
+    </NotAuthorized>
+    <Authorized>
+        @{
+            navigationManager.NavigateTo("/overview", true);
         }
-    </div>
-
-    <div class="forgot-pass">
-        <a href="#">Forgot Password?</a>
-    </div>
-    <div class="LoginBtn">
-        <button type="submit">Sign in</button>
-    </div>
-</form>
+    </Authorized>
+</AuthorizeView>
 
 @code {
-    private LoginDto LoginModel = new();
+    private Dto.User.LoginDto LoginModel = new();
     private string usernameErrorMessage;
     private string passwordErrorMessage;
+
+    private string PrimaryHostname { get; set; } = "";
+    private string SecondaryHostname { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+		var Hostnames = await secureStorageService.GetHostnamesAsync();
+
+		PrimaryHostname = Hostnames.Item1 ?? "";
+		SecondaryHostname = Hostnames.Item2 ?? "";
+    }
 
     private async Task HandleLogin()
     {
@@ -82,7 +100,7 @@
         var result = await authStateProvider.Login(LoginModel);
         if (result.IsSuccessStatusCode)
         {
-            navigationManager.NavigateTo("/", true);
+            navigationManager.NavigateTo("/");
         }
         else if (result.StatusCode == HttpStatusCode.BadRequest)
         {

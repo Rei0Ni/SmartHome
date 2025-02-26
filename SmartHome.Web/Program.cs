@@ -9,6 +9,10 @@ using SmartHome.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging
+builder.Logging.SetMinimumLevel(LogLevel.Trace);
+builder.Logging.AddConsole();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -20,7 +24,11 @@ builder.Services.AddScoped<JwtAuthStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<JwtAuthStateProvider>());
 
 // Add services used by the SmartHome.Web project
-builder.Services.AddSingleton<IApiService, ApiService>();
+builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
+builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
+builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
+
 
 // Configure global JSON options
 builder.Services.Configure<JsonOptions>(options =>
@@ -32,7 +40,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddHttpClient("AuthClient", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:7019/");
+    client.BaseAddress = new Uri("https://localhost:62061/");
 });
 
 var app = builder.Build();
