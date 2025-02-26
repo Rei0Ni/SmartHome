@@ -6,35 +6,38 @@
 @inject IApiService ApiService
 
 <!-- Lamp Card -->
-<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="background-color:#FFFDEB; cursor: pointer;" @onclick="ToggleDevicePower">
+
+<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(!isPowerOn ? "background-color:#FBFBFB;" : "background-color:#FFFDEB;") cursor: pointer;" @onclick="ToggleDevicePower">
     @if (DeviceModel.State.ContainsKey("power_state"))
     {
         <div class="flex align-items-center justify-content-between w-100">
             @if (!isPowerOn)
             {
                 <div>
-                    <img src="_content/SmartHome.Shared/imgs/LampOff.png" alt="Lamp Off" class="w-12 h-12 object-contain">
+                    <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-12 h-12 object-contain">
+
                 </div>
                 <div>Turn On<i class="bi bi-power"></i></div>
             }
             else
             {
                 <div>
-                    <img src="_content/SmartHome.Shared/imgs/LampOn.png" alt="Lamp On" class="w-12 h-12 object-contain">
+                    <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-12 h-12 object-contain">
                 </div>
                 <div>Turn Off<i class="bi bi-power"></i></div>
             }
         </div>
 
         <div class="flex align-items-center justify-content-between w-100">
-            <div><h3 class="text-gray-600 font-semibold">@DeviceModel.Name</h3></div>
+            <div><h3 class="text-gray-600 font-normal">@DeviceModel.Name</h3></div>
             @if (!isPowerOn)
             {
-                <div><img src="_content/SmartHome.Shared/imgs/CircleOff.png" alt="StatusOff" /></div>
+                <div class="w-4 h-4 rounded-full " style="background-color:rgb(128,128,128)"></div> <!--circle off-->
+
             }
             else
             {
-                <div><img src="_content/SmartHome.Shared/imgs/CircleOnLamp.png" alt="StatusOn" /></div>
+                <div class="w-4 h-4 rounded-full " style="background-color:#FBB03B"></div> <!--circle on-->
             }
 
         </div>
