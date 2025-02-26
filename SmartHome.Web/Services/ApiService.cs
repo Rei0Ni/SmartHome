@@ -1,4 +1,5 @@
 ﻿using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.Json;
 using SmartHome.Shared.Interfaces;
 
@@ -8,8 +9,10 @@ namespace SmartHome.Web.Services
     {
         private readonly HttpClient _httpClient;
         private readonly JsonSerializerOptions _jsonOptions;
+        private readonly ILogger<ApiService> _logger;
+        private readonly IJwtStorageService _jwtStorageService;
 
-        public ApiService(IHttpClientFactory httpClientFactory)
+        public ApiService(IHttpClientFactory httpClientFactory, ILogger<ApiService> logger, IJwtStorageService jwtStorageService)
         {
             _httpClient = httpClientFactory.CreateClient("AuthClient") ?? throw new ArgumentNullException(nameof(_httpClient));
             _jsonOptions = new JsonSerializerOptions
@@ -17,115 +20,80 @@ namespace SmartHome.Web.Services
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
                 PropertyNameCaseInsensitive = true
             };
+            _logger = logger;
+            _jwtStorageService = jwtStorageService;
         }
 
-        /// <inheritdoc />
-        public async Task<TResponse> SendAsync<TResponse, TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default)
+        private async Task<HttpResponseMessage?> ExecuteRequestWithFallbackAsync(Func<HttpClient, Task<HttpResponseMessage?>> requestFunc)
         {
+            // Retrieve token and add to headers if available
+            var token = await _jwtStorageService.GetTokenAsync();
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
             try
             {
-                HttpResponseMessage response = null;
-
-                if (method == HttpMethod.Get)
+                HttpResponseMessage? response = await requestFunc(_httpClient) ?? await Task.FromResult<HttpResponseMessage?>(null);
+                if (response != null)
                 {
-                    response = await _httpClient.GetAsync(endpointPath);
-                }
-                else if (method == HttpMethod.Post)
-                {
-                    response = await _httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
-                }
-                else if (method == HttpMethod.Put)
-                {
-                    response = await _httpClient.PutAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
-                }
-                else if (method == HttpMethod.Patch)
-                {
-                    response = await _httpClient.PatchAsync(endpointPath, JsonContent.Create(requestPayload, options: _jsonOptions));
-                }
-                else if (method == HttpMethod.Delete)
-                {
-                    response = await _httpClient.DeleteAsync(endpointPath);
-                }
-                else
-                {
-                    throw new ArgumentException($"Unsupported HTTP method: {method}", nameof(method));
+                    response.EnsureSuccessStatusCode();
+                    return response;
                 }
 
-                response.EnsureSuccessStatusCode();
-
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                TResponse responseObject = JsonSerializer.Deserialize<TResponse>(jsonResponse, _jsonOptions);
-                return responseObject;
+                _logger.LogError("Request returned null HttpResponseMessage unexpectedly.");
+                return default;
             }
             catch (HttpRequestException ex)
             {
-                Console.WriteLine($"HTTP Request Error ({method} {endpointPath}): {ex.Message}");
-                return default;
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON Deserialization Error ({method} {endpointPath}): {ex.Message}");
-                Console.WriteLine($"Raw JSON Response (for debugging):\n{await _httpClient.GetStringAsync(endpointPath)}");
+                _logger.LogError(ex, "Request to host ({Host}) failed: {ErrorMessage}.", _httpClient.BaseAddress, ex.Message);
                 return default;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Unexpected API Error ({method} {endpointPath}): {ex.Message}");
+                _logger.LogError(ex, "Unexpected API Error for host ({Host}): {ErrorMessage}", _httpClient.BaseAddress, ex.Message);
                 return default;
             }
         }
 
         /// <inheritdoc />
-        public async Task<TResponse> GetAsync<TResponse>(string endpointPath)
+        public async Task<HttpResponseMessage> SendAsync<TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default)
         {
-            try
+            return await ExecuteRequestWithFallbackAsync(async (httpClient) =>
             {
-                return await _httpClient.GetFromJsonAsync<TResponse>(endpointPath, _jsonOptions);
-            }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"HTTP GET Request Error ({endpointPath}): {ex.Message}");
-                return default;
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON Deserialization Error (GET {endpointPath}): {ex.Message}");
-                Console.WriteLine($"Raw JSON Response (for debugging):\n{await _httpClient.GetStringAsync(endpointPath)}");
-                return default;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected API Error (GET {endpointPath}): {ex.Message}");
-                return default;
-            }
+                return method switch
+                {
+                    { } when method == HttpMethod.Get => await httpClient.GetAsync(endpointPath),
+                    { } when method == HttpMethod.Post => await httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions),
+                    { } when method == HttpMethod.Put => await httpClient.PutAsJsonAsync(endpointPath, requestPayload, _jsonOptions),
+                    { } when method == HttpMethod.Patch => await httpClient.PatchAsync(endpointPath, JsonContent.Create(requestPayload, options: _jsonOptions)),
+                    { } when method == HttpMethod.Delete => await httpClient.DeleteAsync(endpointPath),
+                    _ => throw new ArgumentException($"Unsupported HTTP method: {method}", nameof(method))
+                };
+            }) ?? throw new InvalidOperationException("Request failed.");
         }
 
         /// <inheritdoc />
-        public async Task<TResponse> PostAsync<TResponse, TRequest>(string endpointPath, TRequest requestPayload)
+        public async Task<HttpResponseMessage> GetAsync(string endpointPath)
         {
-            try
+            return await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath) ?? Task.FromResult<HttpResponseMessage?>(null)) ?? throw new InvalidOperationException("Request failed.");
+        }
+
+        /// <inheritdoc />
+        public async Task<HttpResponseMessage> PostAsync<TRequest>(string endpointPath, TRequest requestPayload)
+        {
+            return await ExecuteRequestWithFallbackAsync(async (httpClient) =>
             {
-                var response = await _httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
-                response.EnsureSuccessStatusCode();
-                string jsonResponse = await response.Content.ReadAsStringAsync();
-                TResponse responseObject = JsonSerializer.Deserialize<TResponse>(jsonResponse, _jsonOptions);
-                return responseObject;
-            }
-            catch (HttpRequestException ex)
-            {
-                Console.WriteLine($"HTTP POST Request Error ({endpointPath}): {ex.Message}");
-                return default;
-            }
-            catch (JsonException ex)
-            {
-                Console.WriteLine($"JSON Deserialization Error (POST {endpointPath}): {ex.Message}");
-                return default;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected API Error (POST {endpointPath}): {ex.Message}");
-                return default;
-            }
+                var response = await httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
+                return response;
+
+            }) ?? throw new InvalidOperationException("Request failed.");
+        }
+
+        public Task RefreshHostnamesAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

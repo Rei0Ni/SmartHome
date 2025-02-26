@@ -198,7 +198,6 @@
     }
     <!-- end Mobile Menu (popup)-->
 
-    <script src="_content/SmartHome.Shared/DeviceType.js"></script>
 </body>
 </html>
 
@@ -216,7 +215,7 @@
 
     private string GetNavItemClass(string page)
     {
-        bool isActive = NavManager.Uri.EndsWith(page);
+        bool isActive = navigationManager.Uri.EndsWith(page);
         string justifyClass = isCollapsed ? "justify-center" : "justify-start";
         // string sizeClass = isCollapsed ? "w-12 h-12 justify-center" : "w-full";
         return $"flex items-center p-2 hover:bg-gray-700 rounded-lg {justifyClass} {(isActive ? "bg-gray-800" : "")}";
@@ -238,7 +237,7 @@
     // to close other menu
     protected override void OnInitialized()
     {
-        NavManager.LocationChanged += (sender, args) =>
+        navigationManager.LocationChanged += (sender, args) =>
         {
             showUserMenu = false;
             showMobileMenu = false;

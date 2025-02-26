@@ -2,6 +2,7 @@
 @using SmartHome.Dto.Dashboard
 @using SmartHome.Shared.Interfaces
 @using SmartHome.Shared.Models
+@using System.Text.Json
 @inject IApiService ApiService
 
 <!-- Lamp Card -->
@@ -108,7 +109,9 @@
         try
         {
             // Assuming you have a CommandResponseDto defined to handle the response from the command endpoint
-            var commandResponse = await ApiService.PostAsync<CommandResponseDto, CommandRequestDto>("/api/command/send-command", commandRequest);
+            var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
+
+            var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
 
             if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
             {

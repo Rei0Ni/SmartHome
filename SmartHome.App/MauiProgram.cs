@@ -30,6 +30,10 @@ namespace SmartHome.App
             builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<JwtAuthStateProvider>());
 
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
+            builder.Services.AddSingleton<IApiService, ApiService>();
+            builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
+            builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
+            builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
 
             // Configure global JSON options
             builder.Services.Configure<JsonSerializerOptions>(options =>
@@ -43,6 +47,8 @@ namespace SmartHome.App
             {
                 client.BaseAddress = new Uri("https://localhost:7019/");
             });
+
+            builder.Services.AddAuthorizationCore();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

@@ -228,4 +228,4 @@ using (var scope = app.Services.CreateScope())
     await seedDataService.InitializeAsync();
 }
 
-app.Run();
+app.Run("https://*:62061");

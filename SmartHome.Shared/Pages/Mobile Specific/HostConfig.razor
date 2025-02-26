@@ -1,0 +1,105 @@
+﻿@page "/hostconfiguration"
+@inject ISecureStorageService SecureStorageService
+@inject NavigationManager NavigationManager
+
+<h3>Host Configuration</h3>
+
+<p>Please configure the Primary and Secondary Hostnames for API access.</p>
+
+<div class="form-group">
+    <label for="primaryHostname">Local Hostname:</label>
+    <input type="text" id="primaryHostname" class="form-control" placeholder="192.168.1.1" @bind="PrimaryHostname" />
+    @if (PrimaryHostnameError != null)
+    {
+        <div class="text-danger">@PrimaryHostnameError</div>
+    }
+</div>
+
+<div class="form-group">
+    <label for="secondaryHostname">Secondary Hostname:</label>
+    <input type="text" id="secondaryHostname" class="form-control" placeholder="remote_host.com" @bind="SecondaryHostname" />
+    @if (SecondaryHostnameError != null)
+    {
+        <div class="text-danger">@SecondaryHostnameError</div>
+    }
+</div>
+
+<div class="d-flex justify-content-center mt-2">
+    <button class="btn btn-primary" @onclick="SaveConfigurations">Save Configurations</button>
+</div>
+
+@code {
+    private string PrimaryHostname { get; set; } = "";
+    private string SecondaryHostname { get; set; } = "";
+    private string? PrimaryHostnameError { get; set; }
+    private string? SecondaryHostnameError { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var Hostnames = await SecureStorageService.GetHostnamesAsync();
+
+        PrimaryHostname = Hostnames.Item1 ?? "";
+        SecondaryHostname = Hostnames.Item2 ?? "";
+        await base.OnInitializedAsync();
+    }
+
+    private async Task SaveConfigurations()
+    {
+        if (!ValidateFields())
+        {
+            return;
+        }
+
+        var primaryHostname = PrimaryHostname;
+        var secondaryHostname = SecondaryHostname;
+
+        EnsureHttps(ref primaryHostname);
+        EnsureHttps(ref secondaryHostname);
+
+        PrimaryHostname = primaryHostname;
+        SecondaryHostname = secondaryHostname;
+
+        var result = await SecureStorageService.SetHostnamesAsync(PrimaryHostname, SecondaryHostname);
+        if (!result)
+        {
+            return;
+        }
+        NavigationManager.NavigateTo("/");
+    }
+
+    private bool ValidateFields()
+    {
+        bool isValid = true;
+        PrimaryHostnameError = null;
+        SecondaryHostnameError = null;
+
+        if (string.IsNullOrWhiteSpace(PrimaryHostname))
+        {
+            PrimaryHostnameError = "Primary Hostname is required.";
+            isValid = false;
+        }
+
+        if (string.IsNullOrWhiteSpace(SecondaryHostname))
+        {
+            SecondaryHostnameError = "Secondary Hostname is required.";
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    private void EnsureHttps(ref string hostname)
+    {
+        if (!hostname.StartsWith("https://"))
+        {
+            if (hostname.StartsWith("http://"))
+            {
+                hostname = "https://" + hostname.Substring(7);
+            }
+            else
+            {
+                hostname = "https://" + hostname;
+            }
+        }
+    }
+}

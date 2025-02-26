@@ -174,7 +174,9 @@
 
         try
         {
-            var commandResponse = await ApiService.PostAsync<CommandResponseDto, CommandRequestDto>("/api/command/send-command", commandRequest);
+            var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
+
+            var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
 
             if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
             {

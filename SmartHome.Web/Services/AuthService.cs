@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
+﻿using SmartHome.Dto.User;
+using SmartHome.Shared.Interfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using SmartHome.Shared.Interfaces;
-using SmartHome.Shared.Models.Auth;
-using SmartHome.Shared.Policies;
 
-namespace SmartHome.Shared.Services
+namespace SmartHome.Web.Services
 {
     public class AuthService : IAuthService
     {

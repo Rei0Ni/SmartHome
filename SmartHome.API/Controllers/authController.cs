@@ -29,6 +29,7 @@ namespace SmartHome.API.Controllers
         }
 
         [HttpGet("userinfo")]
+        [Authorize]
         public async Task<UserInfoDto> UserInfo()
         {
             var user = await _userService.GetUserProfileAsync(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? String.Empty) ?? new UserInfoDto();
