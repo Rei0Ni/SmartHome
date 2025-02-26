@@ -5,52 +5,8 @@
 @using System.Text.Json
 @inject IApiService ApiService
 
-<style>
-    #range1 {
-        -webkit-appearance: none;
-        appearance: none;
-
-        cursor: pointer;
-        outline: none;
-        overflow: hidden;
-        border-radius: 16px;
-    }
-
-        #range1::-webkit-slider-runnable-track {
-            height: 15px;
-            background: #ccc;
-            border-radius: 16px;
-        }
-
-        #range1::-moz-range-track {
-            height: 21px;
-            background: #ccc;
-            border-radius: 16px;
-        }
-
-        #range1::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            height: 15px;
-            width: 15px;
-            background-color: #fff;
-            border-radius: 50%;
-            border: 2px solid #059212;
-            box-shadow: -407px 0 0 400px #059212;
-        }
-
-        #range1::-moz-range-thumb {
-            height: 17px;
-            width: 17px;
-            background-color: #fff;
-            border-radius: 50%;
-            border: 2px solid #059212;
-            box-shadow: -407px 0 0 400px #059212;
-        }
-
-</style>
 <!-- Fan Card -->
-<div class="bg-[#F9FFF4] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(sliderValue > 0 ? "background-color:#F9FFF4;" : "background-color:#FFFFFF;")">
+<div class="bg-[#F9FFF4] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(sliderValue > 0 ? "background-color:#F9FFF4;" : "background-color:#FBFBFB;")">
     <div class="flex align-items-center justify-content-between w-100">
         <div>
 

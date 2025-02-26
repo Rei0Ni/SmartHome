@@ -6,7 +6,7 @@
 
 <!-- Lamp Card -->
 
-<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(!isPowerOn ? "background-color:#FFFFFF;" : "background-color:#FFFDEB;") cursor: pointer;" @onclick="ToggleDevicePower">
+<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(!isPowerOn ? "background-color:#FBFBFB;" : "background-color:#FFFDEB;") cursor: pointer;" @onclick="ToggleDevicePower">
     @if (DeviceModel.State.ContainsKey("power_state"))
     {
         <div class="flex align-items-center justify-content-between w-100">
