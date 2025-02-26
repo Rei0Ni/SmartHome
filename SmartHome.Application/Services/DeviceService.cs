@@ -10,6 +10,7 @@ using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Domain.Entities;
+using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
 using SmartHome.Dto.DeviceFunction;
 
@@ -151,6 +152,48 @@ namespace SmartHome.Application.Services
 
             _mapper.Map(updateDeviceDto, device);
             await _deviceRepository.UpdateDevice(device);
+        }
+
+        public async Task UpdateDeviceStateFromResponseAsync(DeviceResponseDto deviceResponse)
+        {
+            var device = await _deviceRepository.GetDevice(deviceResponse.DeviceId); // Get DeviceDto
+
+            if (device != null)
+            {
+                if (deviceResponse.Status == "success")
+                {
+                    // Update State Dictionary based on successful response
+
+                    if (deviceResponse.PowerState != null)
+                    {
+                        // Update "power_state" in the State dictionary with the string value
+                        device.State["power_state"] = deviceResponse.PowerState;
+                    }
+
+                    if (deviceResponse.FanSpeed.HasValue)
+                    {
+                        // Update "fan_speed" in the State dictionary with the integer value
+                        device.State["fan_speed"] = deviceResponse.FanSpeed.Value;
+                    }
+
+                    // ... Add updates for other relevant properties from deviceResponse to deviceDto.State ...
+
+                    device.LastUpdated = DateTime.UtcNow; // Update LastUpdated timestamp
+                    await _deviceRepository.UpdateDevice(device); // Save the updated DeviceDto
+                }
+                else
+                {
+                    // Log or handle command failure for this device
+                    Console.WriteLine($"Command failed for device {deviceResponse.DeviceId}: {deviceResponse.Message}");
+                    // You might want to log this error more formally, raise an event, etc.
+                }
+            }
+            else
+            {
+                // Log or handle device not found scenario
+                Console.WriteLine($"Warning: Device with ID {deviceResponse.DeviceId} not found in repository during state update.");
+                // Consider more robust error handling or logging here.
+            }
         }
     }
 }

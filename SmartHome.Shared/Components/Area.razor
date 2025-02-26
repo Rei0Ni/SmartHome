@@ -1,0 +1,42 @@
+﻿@using SmartHome.Dto.Dashboard
+@using SmartHome.Enum
+
+<!-- Start Area -->
+<div class="bg-white rounded-xl shadow-md p-2">
+    <!-- Sensor & Name Header -->
+    <div class="flex flex-col flex-row justify-between items-center mb-8 gap-2">
+        <h1 class=" sm:text-l md:text-l lg:text-xl font-bold text-gray-800">@AreaModel.Name</h1>
+        <div class="bg-blue-100 px-2 py-2 rounded-full flex items-center gap-2">
+            <i class="bi bi-thermometer-half text-blue-600"></i>
+            <span class="text-blue-600 font-normal">25°C</span>
+            <span class="text-blue-600 font-normal"> | </span>
+            <i class="bi bi-droplet-half text-blue-600"></i>
+            <span class="text-blue-600 font-normal">47%</span>
+        </div>
+    </div>
+
+    <!-- Devices Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2">
+        <!-- to control # of Devices -->
+        @foreach(var device in AreaModel.AreaDevices){
+            if(device.DeviceType.Type == DeviceTypes.Lamp){
+				<Lamp DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
+            }
+            else if (device.DeviceType.Type == DeviceTypes.FAN){
+                <Fan DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
+            }
+        }
+
+
+
+       
+
+        <!-- end Fan Card -->
+
+    </div>
+</div>
+
+@code {
+	[Parameter]
+	public OverviewAreaDto AreaModel { get; set; } = new();
+}
