@@ -67,7 +67,8 @@
                    step="10"
             @bind="sliderValue"
             @bind:event="oninput"
-                   class="green-range w-24"
+                   class="green-range sm:w-26"
+                   style="width: 90%; margin-left: 13%;"
             @onchange="SetFanSpeed">  
             @* Call SetFanSpeed on change *@
             <span class="text-gray-700 font-medium"></span> <!-- Optional: Display value here -->
@@ -84,11 +85,11 @@
         <div>
             @if (sliderValue > 0)
             {
-                <img src="_content/SmartHome.Shared/imgs/CircleOnFan.png" alt="StatusOn" class="w-4 h-4">
+                <div class="w-4 h-4 rounded-full " style="background-color:#059212"></div> <!--circle on-->
             }
             else
             {
-                <img src="_content/SmartHome.Shared/imgs/CircleOff.png" alt="StatusOff" class="w-4 h-4">
+                <div class="w-4 h-4 rounded-full " style="background-color:rgb(128,128,128)"></div> <!--circle off-->
             }
         </div>
     </div>
