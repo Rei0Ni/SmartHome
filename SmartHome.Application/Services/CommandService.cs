@@ -69,7 +69,6 @@ namespace SmartHome.Application.Services
             else
             {
                 Log.Error("No device responses found in CommandResponseDto.");
-                // ... handle missing device responses ...
             }
 
             return commandResponse;
