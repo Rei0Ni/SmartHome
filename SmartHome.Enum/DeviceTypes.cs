@@ -9,7 +9,7 @@ namespace SmartHome.Enum
     public enum DeviceTypes
     {
         Lamp,
-        DHT11_TEMP_SENSOR,
+        TEMPRATURE_SENSOR,
         FAN
     }
 }

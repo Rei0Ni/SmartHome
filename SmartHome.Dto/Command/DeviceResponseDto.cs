@@ -14,10 +14,9 @@ namespace SmartHome.Dto.Command
         public string Message { get; set; } // Message for this device command
 
         [JsonPropertyName("power_state")]
-        public string PowerState { get; set; } // e.g., "on", "off" (if applicable, for toggle)
+        public string PowerState { get; set; }
 
         [JsonPropertyName("fan_speed")]
-        public int? FanSpeed { get; set; }    // e.g., Fan speed percentage (if applicable, for setspeed)
-                                              // ... potentially other device-specific state properties ...
+        public int? FanSpeed { get; set; }
     }
 }

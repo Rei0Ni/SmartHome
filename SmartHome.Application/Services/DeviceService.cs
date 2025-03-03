@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using DnsClient.Internal;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Interfaces.DeviceFunction;
@@ -13,6 +16,7 @@ using SmartHome.Domain.Entities;
 using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
 using SmartHome.Dto.DeviceFunction;
+using SmartHome.Dto.Sensors;
 
 namespace SmartHome.Application.Services
 {
@@ -26,14 +30,12 @@ namespace SmartHome.Application.Services
         private IValidator<CreateDeviceDto> _createDeviceDtoValidator;
         private IValidator<UpdateDeviceDto> _updateDeviceDtoValidator;
         private IValidator<DeleteDeviceDto> _deleteDeviceDtoValidator;
-        private IValidator<GetDeviceDto> _getDeviceDtovalidator;
         private IMapper _mapper;
         public DeviceService(
             IDeviceRepository deviceRepository,
             IValidator<CreateDeviceDto> createDeviceDtoValidator,
             IValidator<UpdateDeviceDto> updateDeviceDtoValidator,
             IValidator<DeleteDeviceDto> deleteDeviceDtoValidator,
-            IValidator<GetDeviceDto> getDeviceDtovalidator,
             IMapper mapper,
             IDeviceTypeService deviceTypeService,
             IDeviceFunctionService deviceFunctionService,
@@ -44,7 +46,6 @@ namespace SmartHome.Application.Services
             _createDeviceDtoValidator = createDeviceDtoValidator;
             _updateDeviceDtoValidator = updateDeviceDtoValidator;
             _deleteDeviceDtoValidator = deleteDeviceDtoValidator;
-            _getDeviceDtovalidator = getDeviceDtovalidator;
             _mapper = mapper;
             _deviceTypeService = deviceTypeService;
             _deviceFunctionService = deviceFunctionService;
@@ -184,16 +185,75 @@ namespace SmartHome.Application.Services
                 else
                 {
                     // Log or handle command failure for this device
-                    Console.WriteLine($"Command failed for device {deviceResponse.DeviceId}: {deviceResponse.Message}");
+                    Log.Warning($"Command failed for device {deviceResponse.DeviceId}: {deviceResponse.Message}");
                     // You might want to log this error more formally, raise an event, etc.
                 }
             }
             else
             {
                 // Log or handle device not found scenario
-                Console.WriteLine($"Warning: Device with ID {deviceResponse.DeviceId} not found in repository during state update.");
+                Log.Warning($"Device with ID {deviceResponse.DeviceId} not found in repository during state update.");
                 // Consider more robust error handling or logging here.
             }
         }
+
+        public async Task UpdateSensorDataAsync(SensorDataDto sensorData)
+        {
+            if (sensorData == null)
+            {
+                throw new ArgumentNullException(nameof(sensorData));
+            }
+
+            if (!string.Equals(sensorData.Status, "success", StringComparison.OrdinalIgnoreCase))
+            {
+                // You may choose to log or handle error statuses differently
+                throw new Exception($"Sensor data response returned an error: {sensorData.Message}");
+            }
+
+            // Iterate through each area in the response
+            foreach (var area in sensorData.Areas)
+            {
+                // You could optionally verify the area exists in your system, e.g.:
+                // var areaEntity = await _areaRepository.GetArea(new Guid(area.AreaId));
+                // if (areaEntity == null) continue; 
+
+                // Process each sensor in the area
+                foreach (var sensor in area.Sensors)
+                {
+                    // If your device IDs are stored as Guid, attempt to parse:
+                    if (Guid.TryParse(sensor.DeviceId, out Guid deviceId))
+                    {
+                        var device = await _deviceRepository.GetDevice(deviceId);
+                        if (device != null)
+                        {
+                            // Update the device state with sensor values
+                            // Here, assuming device.State is a dictionary<string, object>
+                            device.State["temperature_celsius"] = sensor.TemperatureCelsius;
+                            device.State["humidity_percent"] = sensor.HumidityPercent;
+
+                            //// Optionally update other sensor properties
+                            //device.State["sensor_status"] = sensor.Status;
+                            //device.State["sensor_type"] = sensor.Type;
+
+                            device.LastUpdated = DateTime.UtcNow; // Update timestamp
+
+                            // Save the updated device
+                            await _deviceRepository.UpdateDevice(device);
+                        }
+                        else
+                        {
+                            // Handle case where device is not found (e.g., log a warning)
+                            Log.Warning($"Device with ID {sensor.DeviceId} not found.");
+                        }
+                    }
+                    else
+                    {
+                        // If DeviceId is not a Guid, you might have alternative lookup logic
+                        Log.Warning($"Unable to parse DeviceId '{sensor.DeviceId}' as a Guid.");
+                    }
+                }
+            }
+        }
+
     }
 }

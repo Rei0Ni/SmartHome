@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
+using SmartHome.Dto.Sensors;
 
 namespace SmartHome.Application.Interfaces.Device
 {
@@ -16,6 +17,7 @@ namespace SmartHome.Application.Interfaces.Device
         Task CreateDevice(CreateDeviceDto createDeviceDto);
         Task UpdateDevice(UpdateDeviceDto updateDeviceDto);
         Task UpdateDeviceStateFromResponseAsync(DeviceResponseDto deviceResponse);
+        Task UpdateSensorDataAsync(SensorDataDto sensorData);
         Task DeleteDevice(DeleteDeviceDto deleteDevice);
     }
 }

@@ -43,6 +43,7 @@ using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.Device;
+using SmartHome.Application.Services.Hosted;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -100,7 +101,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(config =>
     config.Password.RequireNonAlphanumeric = true;
     config.Password.RequireUppercase = true;
 
-    config.User.RequireUniqueEmail = true;
+    config.User.RequireUniqueEmail = false;
     config.SignIn.RequireConfirmedAccount = false;
 
     config.Lockout.AllowedForNewUsers = false;
@@ -183,6 +184,8 @@ builder.Services.AddTransient<ServiceResolver<IComponentHealthCheck>>(sp => key 
         _ => throw new KeyNotFoundException($"Service with key {key} not found."),
     };
 });
+
+builder.Services.AddHostedService<MqttBackgroundService>();
 
 builder.Services.AddControllers();
 
