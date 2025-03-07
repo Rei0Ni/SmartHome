@@ -9,6 +9,8 @@ namespace SmartHome.Domain.Entities
 {
     public class ApplicationUser : MongoUser<Guid>
     {
+        public string FirstName { get; set; } = "";
+        public string LastName { get; set; } = "";
         public bool IsEnabled { get; set; } = true;
 
         public virtual DateTime? LastLogin { get; set; } = null;
