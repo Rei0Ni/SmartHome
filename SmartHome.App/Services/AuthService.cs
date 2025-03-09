@@ -41,7 +41,7 @@ namespace SmartHome.App.Services
                     return new UserAuthenticationState(); // Or handle no token case as appropriate for your app
                 }
 
-                var result = await _apiService.GetAsync("/api/auth/userinfo");
+                var result = await _apiService.GetAsync("/api/auth/authentication-state");
 
                 var userInfo = await result.Content.ReadFromJsonAsync<UserAuthenticationState>();
 

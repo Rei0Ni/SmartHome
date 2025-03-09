@@ -22,6 +22,7 @@ namespace SmartHome.API.Controllers
         }
 
         [HttpGet("get/all")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> GetAllUsers()
         {
             var response = await _userService.GetAllUsersAsync();

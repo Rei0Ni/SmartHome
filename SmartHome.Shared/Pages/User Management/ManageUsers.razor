@@ -1,0 +1,67 @@
+﻿@page "/manage-users"
+@using System.Text.Json
+@layout MainLayout
+
+
+<h3>manage-users</h3>
+<table class="table table-striped" border="1">
+	<thead>
+		<tr>
+			<th>UserId</th>
+			<th>Username</th>
+			<th>Email</th>
+			<th>FirstName</th>
+			<th>LastName</th>
+			<th>Role</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody>
+	@foreach (var user in users){
+		<tr>
+			<td>@user.UserId</td>
+			<td>@user.Username</td>
+			<td>@user.Email</td>
+			<td>@user.FirstName</td>
+			<td>@user.LastName</td>
+			<td>@user.Role</td>
+			<td>
+				<button class="btn btn-primary">Edit</button>
+				<button class="btn btn-danger">Delete</button>
+			</td>
+		</tr>
+	}
+	</tbody>
+</table>
+
+@code {
+	List<UserWithRolesDto> users = new List<UserWithRolesDto>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+
+		var result = await ApiService.GetAsync("api/user/get/all");
+
+		if (result.IsSuccessStatusCode)
+		{
+			var content = await result.Content.ReadAsStringAsync();
+			var response = JsonSerializer.Deserialize<ApiResponse<object>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+			if (response.Status == "Error")
+			{
+				// Handle error
+				// show error message to user in a toast
+			}
+			else
+			{
+				users = JsonSerializer.Deserialize<List<UserWithRolesDto>>(response.Data.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+			}
+		}
+		else
+		{
+			// Handle error
+			// show error message to user in a toast
+		}
+	}
+
+}

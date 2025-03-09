@@ -28,7 +28,7 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("authenticateion-state")]
+        [HttpGet("authentication-state")]
         [Authorize]
         public async Task<UserAuthenticationState> AuthenticationState()
         {

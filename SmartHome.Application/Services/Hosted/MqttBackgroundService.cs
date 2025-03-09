@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
+using Serilog;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Dto.Sensors;
 
@@ -39,48 +40,57 @@ namespace SmartHome.Application.Services.Hosted
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _mqttClient.ConnectedAsync += (async e =>
+            try
             {
-                _logger.LogInformation("Connected to MQTT Broker.");
-
-                // Subscribe to the sensor data topic
-                await _mqttClient.SubscribeAsync("sensor_data", MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
-                _logger.LogInformation("Subscribed to topic: sensor_data");
-            });
-
-            _mqttClient.DisconnectedAsync += (async e =>
-            {
-                _logger.LogWarning("Disconnected from MQTT Broker. Reconnecting..." + e.Reason);
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
-                await _mqttClient.ConnectAsync(_mqttOptions, stoppingToken);
-            });
-
-            _mqttClient.ApplicationMessageReceivedAsync += (async e =>
-            {
-                var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                _logger.LogInformation($"Received MQTT message: {payload}");
-
-                try
+                _mqttClient.ConnectedAsync += (async e =>
                 {
-                    var sensorData = JsonSerializer.Deserialize<SensorDataDto>(payload);
-                    if (sensorData != null)
+                    _logger.LogInformation("Connected to MQTT Broker.");
+
+                    // Subscribe to the sensor data topic
+                    await _mqttClient.SubscribeAsync("sensor_data", MQTTnet.Protocol.MqttQualityOfServiceLevel.AtLeastOnce);
+                    _logger.LogInformation("Subscribed to topic: sensor_data");
+                });
+
+                _mqttClient.DisconnectedAsync += (async e =>
+                {
+                    _logger.LogWarning("Disconnected from MQTT Broker. Reconnecting..." + e.Reason);
+                    await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                    await _mqttClient.ConnectAsync(_mqttOptions, stoppingToken);
+                });
+
+                _mqttClient.ApplicationMessageReceivedAsync += (async e =>
+                {
+                    var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                    _logger.LogInformation($"Received MQTT message: {payload}");
+
+                    try
                     {
-                        // Create a new scope for each processing operation
-                        using (var scope = _serviceProvider.CreateScope())
+                        var sensorData = JsonSerializer.Deserialize<SensorDataDto>(payload);
+                        if (sensorData != null)
                         {
-                            var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
-                            await deviceService.UpdateSensorDataAsync(sensorData);
+                            // Create a new scope for each processing operation
+                            using (var scope = _serviceProvider.CreateScope())
+                            {
+                                var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
+                                await deviceService.UpdateSensorDataAsync(sensorData);
+                            }
+                            _logger.LogInformation("Sensor data updated in database.");
                         }
-                        _logger.LogInformation("Sensor data updated in database.");
                     }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error processing MQTT message: {ex.Message}");
-                }
-            });
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error processing MQTT message: {ex.Message}");
+                    }
+                });
 
-            await _mqttClient.ConnectAsync(_mqttOptions, stoppingToken);
+                await _mqttClient.ConnectAsync(_mqttOptions, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error starting MQTT background service.");
+                await StopAsync(stoppingToken);
+            }
+            
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)
