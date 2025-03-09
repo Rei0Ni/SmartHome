@@ -17,7 +17,7 @@ namespace SmartHome.Shared.Providers
     {
         private readonly IAuthService _api;
         private readonly IJwtStorageService _jwtStorageService;
-        Dto.User.UserInfoDto _currentUser = new();
+        Dto.User.UserAuthenticationState _currentUserAuthenticationState = new();
 
         public JwtAuthStateProvider(
             IAuthService api,
@@ -35,10 +35,10 @@ namespace SmartHome.Shared.Providers
             var identity = new ClaimsIdentity();
             try
             {
-                var userInfo = await GetCurrentUser();
+                var userInfo = await GetCurrentUserAuthenticationState();
                 if (userInfo.IsAuthenticated)
                 {
-                    var claims = new[] { new Claim(ClaimTypes.Name, _currentUser.UserName) }.Concat(_currentUser.Claims.Select(c => new Claim(c.Key, c.Value)));
+                    var claims = new[] { new Claim(ClaimTypes.Name, _currentUserAuthenticationState.UserName) }.Concat(_currentUserAuthenticationState.Claims.Select(c => new Claim(c.Key, c.Value)));
                     identity = new ClaimsIdentity(claims, "jwt");
                     Console.WriteLine("[JwtAuthenticationProvider] User is Authenticated");
                 }
@@ -53,7 +53,7 @@ namespace SmartHome.Shared.Providers
         public async Task<bool> Logout()
         {
             //var result = await _api.Logout();
-            _currentUser = new();
+            _currentUserAuthenticationState = new();
             await _jwtStorageService.RemoveTokenAsync();
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
             return true;
@@ -81,19 +81,23 @@ namespace SmartHome.Shared.Providers
             
         }
 
-        private async Task<Dto.User.UserInfoDto> GetCurrentUser()
+        private async Task<Dto.User.UserAuthenticationState> GetCurrentUserAuthenticationState()
         {
-            if (_currentUser.IsAuthenticated) return _currentUser;
+            if (_currentUserAuthenticationState.IsAuthenticated) return _currentUserAuthenticationState;
 
             try
             {
-                _currentUser = await _api.GetCurrentUser();
+                var userState = await _api.GetCurrentUserAuthenticationState();
+                if (userState != null)
+                {
+                    _currentUserAuthenticationState = userState;
+                }
             }
             catch (Exception)
             {
-                return _currentUser;
+                return _currentUserAuthenticationState;
             }
-            return _currentUser;
+            return _currentUserAuthenticationState;
         }
     }
 

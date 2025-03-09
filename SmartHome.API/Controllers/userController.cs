@@ -21,6 +21,17 @@ namespace SmartHome.API.Controllers
             _userService = userService;
         }
 
+        [HttpGet("get/all")]
+        public async Task<ActionResult<ApiResponse<object>>> GetAllUsers()
+        {
+            var response = await _userService.GetAllUsersAsync();
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         [HttpPost("create/admin")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> CreateAdminUser(RegisterAdminUserDto dto)
@@ -72,7 +83,7 @@ namespace SmartHome.API.Controllers
         // PUT api/<userController>/5
         [HttpPut("update")]
         [Authorize(Roles = "Admin,Normal_User")]
-        public async Task<ActionResult<ApiResponse<object>>> Update(UpdateUserDto dto)
+        public async Task<ActionResult<ApiResponse<object>>> Update(UpdateUserProfileDto dto)
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (id != dto.UserId)
@@ -81,6 +92,25 @@ namespace SmartHome.API.Controllers
             }
 
             var response = await _userService.UpdateUserProfileAsync(dto);
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        // PUT api/<userController>/5
+        [HttpPut("update/admin")]
+        [Authorize(Roles = "Admin,Normal_User")]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateAdmin(UpdateAdminUserProfileDto dto)
+        {
+            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (id != dto.UserId)
+            {
+                return BadRequest("User ID mismatch");
+            }
+
+            var response = await _userService.UpdateAdminUserProfileAsync(dto);
             if (response.Status == "Error")
             {
                 return BadRequest(response);

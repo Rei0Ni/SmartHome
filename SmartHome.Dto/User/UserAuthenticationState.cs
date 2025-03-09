@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartHome.Dto.User
 {
-    public class UserInfoDto
+    public class UserAuthenticationState
     {
         public string UserName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;

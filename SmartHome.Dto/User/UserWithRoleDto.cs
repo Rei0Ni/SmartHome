@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace SmartHome.Dto.User
 {
-    public class RegisterUserDto
+    public class UserWithRolesDto
     {
+        public string UserId { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-
-        // New property to represent allowed areas using Guids
-        public List<Guid> AllowedAreas { get; set; } = new List<Guid>();
+        public string Email { get; set; } = string.Empty;
+        public string Role { get; set; } = string.Empty; // Holds "Admin", "Normal_User", or "Guest"
     }
 }
