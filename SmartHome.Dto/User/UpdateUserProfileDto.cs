@@ -8,7 +8,7 @@ namespace SmartHome.Dto.User
 {
     public class UpdateUserProfileDto
     {
-        public string UserId { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
     }

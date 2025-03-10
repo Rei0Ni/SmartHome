@@ -155,6 +155,8 @@ namespace SmartHome.Application.Services.User
                 };
             }
 
+            await _userAreasRepository.DeleteUserAreasAsync(user.Id);
+
             // Attempt to delete the user
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
@@ -185,7 +187,7 @@ namespace SmartHome.Application.Services.User
                     return applicationUser;
                 }
             }
-            
+
             return new();
         }
 
@@ -195,7 +197,7 @@ namespace SmartHome.Application.Services.User
 
             if (!result.IsValid)
             {
-                throw new FluentValidationException(ApiResponseStatus.Error.ToString(),"Invalid Credentials", result.Errors);
+                throw new FluentValidationException(ApiResponseStatus.Error.ToString(), "Invalid Credentials", result.Errors);
             }
 
             var user = await _userManager.FindByNameAsync(dto.Username);
@@ -209,7 +211,7 @@ namespace SmartHome.Application.Services.User
 
             if (!passwordValid)
             {
-                throw new LoginFailedException(ApiResponseStatus.Error.ToString(),"Invalid Username or Password");
+                throw new LoginFailedException(ApiResponseStatus.Error.ToString(), "Invalid Username or Password");
             }
 
             var userRoles = await _userManager.GetRolesAsync(user);
@@ -234,7 +236,7 @@ namespace SmartHome.Application.Services.User
 
         public async Task<ApiResponse<object>> UpdateAdminUserProfileAsync(UpdateAdminUserProfileDto dto)
         {
-            var user = await _userManager.FindByIdAsync(dto.UserId);
+            var user = await _userManager.FindByIdAsync(dto.Id);
             if (user == null)
             {
                 throw new LoginFailedException(ApiResponseStatus.Error.ToString(), "User not found");
@@ -265,7 +267,7 @@ namespace SmartHome.Application.Services.User
 
         public async Task<ApiResponse<object>> UpdateUserProfileAsync(UpdateUserProfileDto dto)
         {
-            var user = await _userManager.FindByIdAsync(dto.UserId);
+            var user = await _userManager.FindByIdAsync(dto.Id);
             if (user == null)
             {
                 throw new LoginFailedException(ApiResponseStatus.Error.ToString(), "User not found");
@@ -306,11 +308,12 @@ namespace SmartHome.Application.Services.User
 
                 userList.Add(new UserWithRolesDto
                 {
-                    UserId = user.Id.ToString(),
+                    UserId = user.Id,
                     Username = user.UserName,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
+                    LastLogin = user.LastLogin,
                     Role = userRole
                 });
             }
@@ -321,6 +324,53 @@ namespace SmartHome.Application.Services.User
                 Message = "Users retrieved successfully",
                 Data = userList
             };
+        }
+
+        public async Task<ApiResponse<object>> GetUserData(Guid userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "User not found"
+                };
+            }
+            var roles = await _userManager.GetRolesAsync(user);
+            var userRole = roles.FirstOrDefault() ?? "Unknown"; // Default to "Unknown" if no role is assigned
+
+            if (userRole == "Admin")
+            {
+                var userDto = new AdminUserDto
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Email = user.Email,
+                };
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Success.ToString(),
+                    Message = "User data retrieved successfully",
+                    Data = userDto
+                };
+            }
+            else
+            {
+                var userDto = new UserDto
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                };
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Success.ToString(),
+                    Message = "User data retrieved successfully",
+                    Data = userDto
+                };
+            }
         }
     }
 }

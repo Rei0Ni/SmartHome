@@ -29,6 +29,7 @@ builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
 builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
 builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
 
+builder.Services.AddBlazorBootstrap();
 
 // Configure global JSON options
 builder.Services.Configure<JsonOptions>(options =>

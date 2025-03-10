@@ -8,6 +8,7 @@ namespace SmartHome.Domain.Entities
 {
     public class UserAreas
     {
+        public Guid Id { get; set; }
         public Guid UserId { get; set; }
         public List<Guid> AllowedAreaIds { get; set; } = new List<Guid>();
     }

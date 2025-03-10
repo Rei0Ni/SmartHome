@@ -61,7 +61,6 @@ namespace SmartHome.Application.Services.Hosted
                 _mqttClient.ApplicationMessageReceivedAsync += (async e =>
                 {
                     var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                    _logger.LogInformation($"Received MQTT message: {payload}");
 
                     try
                     {

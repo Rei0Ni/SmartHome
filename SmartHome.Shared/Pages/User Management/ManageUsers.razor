@@ -2,66 +2,148 @@
 @using System.Text.Json
 @layout MainLayout
 
+<AuthorizeView>
+    <Authorized>
+        @if (!context.User.IsInRole("Admin"))
+        {
+            navigationManager.NavigateTo("/overview");
+        }
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="h3">Manage Users</h3>
+            <button class="btn btn-success" @onclick="NavigateToUserCreation"><i class="bi bi-person-plus"></i></button>
+        </div>
 
-<h3>manage-users</h3>
-<table class="table table-striped" border="1">
-	<thead>
-		<tr>
-			<th>UserId</th>
-			<th>Username</th>
-			<th>Email</th>
-			<th>FirstName</th>
-			<th>LastName</th>
-			<th>Role</th>
-			<th>Actions</th>
-		</tr>
-	</thead>
-	<tbody>
-	@foreach (var user in users){
-		<tr>
-			<td>@user.UserId</td>
-			<td>@user.Username</td>
-			<td>@user.Email</td>
-			<td>@user.FirstName</td>
-			<td>@user.LastName</td>
-			<td>@user.Role</td>
-			<td>
-				<button class="btn btn-primary">Edit</button>
-				<button class="btn btn-danger">Delete</button>
-			</td>
-		</tr>
-	}
-	</tbody>
-</table>
+        <div class="p-2 mt-2 relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+            <table class="w-full text-left table-auto min-w-max" border="1">
+                <thead>
+                    <tr>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Username</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">FirstName</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">LastName</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Email</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Last Login</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Role</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in users)
+                    {
+                        <tr>
+                            <td class="p-2 border-b border-blue-gray-50">@user.Username</td>
+                            <td class="p-2 border-b border-blue-gray-50">@user.FirstName</td>
+                            <td class="p-2 border-b border-blue-gray-50">@user.LastName</td>
+                            <td class="p-2 border-b border-blue-gray-50">@user.Email</td>
+                            <td class="p-2 border-b border-blue-gray-50">@user.LastLogin</td>
+                            <td class="p-2 border-b border-blue-gray-50">@user.Role.Replace("_", " ")</td>
+                            <td class="p-2 border-b border-blue-gray-50">
+                                <button class="btn btn-primary" @onclick="@(() => navigationManager.NavigateTo($"/edit-user/{user.UserId.ToString()}"))">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => ConfirmDelete(user)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (users.Count == 0)
+        {
+            <div class="text-center mt-5">
+                <p>There are no users here yet.</p>
+                <button class="btn btn-success mt-3" @onclick="NavigateToUserCreation">Create a New User</button>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        @{
+            navigationManager.NavigateTo("/");
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@if (showDeleteModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="close" @onclick="CloseDeleteModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete @selectedUser?.Username?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @onclick="DeleteUser">Delete</button>
+                    <button class="btn btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
 
 @code {
-	List<UserWithRolesDto> users = new List<UserWithRolesDto>();
+    List<UserWithRolesDto> users = new List<UserWithRolesDto>();
+    private bool showDeleteModal = false;
+    private UserWithRolesDto? selectedUser;
 
-	protected override async Task OnInitializedAsync()
-	{
-		await base.OnInitializedAsync();
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var result = await ApiService.GetAsync("api/user/get/all");
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadAsStringAsync();
+            var response = JsonSerializer.Deserialize<ApiResponse<object>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            if (response!.Status == "Error")
+            {
+                // Show error message in toast
+            }
+            else
+            {
+                users = JsonSerializer.Deserialize<List<UserWithRolesDto>>(response.Data.ToString()!, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase })!;
+            }
+        }
+        else
+        {
+            // Show error message in toast
+        }
+    }
 
-		var result = await ApiService.GetAsync("api/user/get/all");
+    private void NavigateToUserCreation()
+    {
+        navigationManager.NavigateTo("/create-user");
+    }
 
-		if (result.IsSuccessStatusCode)
-		{
-			var content = await result.Content.ReadAsStringAsync();
-			var response = JsonSerializer.Deserialize<ApiResponse<object>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-			if (response.Status == "Error")
-			{
-				// Handle error
-				// show error message to user in a toast
-			}
-			else
-			{
-				users = JsonSerializer.Deserialize<List<UserWithRolesDto>>(response.Data.ToString(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
-			}
-		}
-		else
-		{
-			// Handle error
-			// show error message to user in a toast
-		}
-	}
+    private void ConfirmDelete(UserWithRolesDto user)
+    {
+        selectedUser = user;
+        showDeleteModal = true;
+    }
 
+    private void CloseDeleteModal()
+    {
+        showDeleteModal = false;
+        selectedUser = null;
+    }
+
+    private async Task DeleteUser()
+    {
+        if (selectedUser != null)
+        {
+
+            var result = await ApiService.SendAsync<object>(HttpMethod.Delete, $"api/user/delete/{selectedUser.UserId}");
+            if (result.IsSuccessStatusCode)
+            {
+                users.Remove(selectedUser);
+            }
+            else
+            {
+                // Show error message in toast
+            }
+            showDeleteModal = false;
+            selectedUser = null;
+        }
+    }
 }

@@ -33,6 +33,18 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
+        [HttpGet("get/{Id}")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<object>>> GetUser(Guid Id)
+        {
+            var response = await _userService.GetUserData(Id);
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         [HttpPost("create/admin")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> CreateAdminUser(RegisterAdminUserDto dto)
@@ -87,7 +99,7 @@ namespace SmartHome.API.Controllers
         public async Task<ActionResult<ApiResponse<object>>> Update(UpdateUserProfileDto dto)
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (id != dto.UserId)
+            if (id != dto.Id)
             {
                 return BadRequest("User ID mismatch");
             }
@@ -102,11 +114,11 @@ namespace SmartHome.API.Controllers
 
         // PUT api/<userController>/5
         [HttpPut("update/admin")]
-        [Authorize(Roles = "Admin,Normal_User")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> UpdateAdmin(UpdateAdminUserProfileDto dto)
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (id != dto.UserId)
+            if (id != dto.Id)
             {
                 return BadRequest("User ID mismatch");
             }
@@ -120,11 +132,11 @@ namespace SmartHome.API.Controllers
         }
 
         // DELETE api/<userController>/5
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{Id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<ApiResponse<object>>> Delete(DeleteUserDto dto)
+        public async Task<ActionResult<ApiResponse<object>>> Delete(string Id)
         {
-            var response = await _userService.DeleteUserAsync(dto.Id);
+            var response = await _userService.DeleteUserAsync(new Guid(Id));
             if (response.Status == "Error")
             {
                 return BadRequest(response);
