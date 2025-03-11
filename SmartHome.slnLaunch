@@ -11,6 +11,11 @@
         "Path": "SmartHome.API\\SmartHome.API.csproj",
         "Action": "Start",
         "DebugTarget": "https"
+      },
+      {
+        "Path": "SmartHome.App\\SmartHome.App.csproj",
+        "Action": "Start",
+        "DebugTarget": "Xiaomi M2004J19C (Android 11.0 - API 30)"
       }
     ]
   }

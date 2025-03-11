@@ -67,6 +67,7 @@ namespace SmartHome.Application.Services.Hosted
                         var sensorData = JsonSerializer.Deserialize<SensorDataDto>(payload);
                         if (sensorData != null)
                         {
+                            _logger.LogInformation($"{ payload}");
                             // Create a new scope for each processing operation
                             using (var scope = _serviceProvider.CreateScope())
                             {

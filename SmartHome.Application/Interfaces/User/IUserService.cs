@@ -13,7 +13,7 @@ namespace SmartHome.Application.Interfaces.User
     {
         Task<ApiResponse<object>> LoginAsync(LoginDto dto);
         Task<UserAuthenticationState> GetUserAuthenticationStateAsync(string userId);
-        Task<ApiResponse<object>> GetAllUsersAsync();
+        Task<ApiResponse<object>> GetAllUsersAsync(Guid currentUserId);
         Task<ApiResponse<object>> GetUserData(Guid userId);
         Task<ApiResponse<object>> CreateAdminUserAsync(RegisterAdminUserDto dto);
         Task<ApiResponse<object>> CreateNormalUserAsync(RegisterUserDto dto);

@@ -72,8 +72,8 @@ namespace SmartHome.App.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseContent);
+                    //string responseContent = await response.Content.ReadAsStringAsync();
+                    //Console.WriteLine(responseContent);
                     _logger.LogDebug("Login successful for user: {UserName}. Status code: {StatusCode}", dto.Username, response.StatusCode); // Log success
                     return response;
                 }

@@ -30,6 +30,7 @@ builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>(
 builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
 
 builder.Services.AddBlazorBootstrap();
+builder.Services.AddSingleton<RefreshService>();
 
 // Configure global JSON options
 builder.Services.Configure<JsonOptions>(options =>

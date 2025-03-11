@@ -2,11 +2,11 @@
 {
     public partial class App : Application
     {
-        public App(IHttpClientFactory httpClientFactory)
+        public App(IHttpClientFactory httpClientFactory, RefreshService refreshService)
         {
             InitializeComponent();
 
-            MainPage = new MainPage(httpClientFactory);
+            MainPage = new MainPage(httpClientFactory, refreshService);
         }
     }
 }

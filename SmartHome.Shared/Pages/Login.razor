@@ -21,7 +21,7 @@
         </div>
         <form @onsubmit="HandleLogin">
             <div class="data">
-                <input type="text" placeholder="username" @bind="LoginModel.Username">
+                <input type="text" class="text-black" placeholder="username" @bind="LoginModel.Username">
                 @if (!string.IsNullOrEmpty(usernameErrorMessage))
                 {
                     <p class="error-message">@usernameErrorMessage</p>
@@ -30,13 +30,13 @@
 
             <div class="data relative mt-4">
                 <input type="@(showPassword ? "text" : "password")"
-                       placeholder="password"
-                       @bind="LoginModel.Password"
-                       class="w-full pl-3 pr-10 py-2 border rounded-lg focus:outline-none focus:border-blue-500">
+                placeholder="password"
+                @bind="LoginModel.Password"
+                class="w-full pl-3 pr-10 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black">
 
                 <i class="absolute right-4 top-4 -translate-y-1/2 text-gray-400 cursor-pointer
               fas @(showPassword ? "fa-eye-slash" : "fa-eye")"
-                   @onclick="TogglePasswordVisibility"></i>
+                @onclick="TogglePasswordVisibility"></i>
 
                 @if (!string.IsNullOrEmpty(passwordErrorMessage))
                 {
@@ -69,10 +69,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-		var Hostnames = await secureStorageService.GetHostnamesAsync();
+        var Hostnames = await secureStorageService.GetHostnamesAsync();
 
-		PrimaryHostname = Hostnames.Item1 ?? "";
-		SecondaryHostname = Hostnames.Item2 ?? "";
+        PrimaryHostname = Hostnames.Item1 ?? "";
+        SecondaryHostname = Hostnames.Item2 ?? "";
     }
 
     private async Task HandleLogin()
@@ -106,11 +106,13 @@
         {
             var ErrorResposne = await result.Content.ReadFromJsonAsync<ApiResponse<List<LoginErrorResponse>>>();
             Console.WriteLine(ErrorResposne.Message.ToString());
+            toastService.Notify(new(ToastType.Danger, IconName.Bug, "Login Failed", ErrorResposne.Message));
         }
         else if (result.StatusCode == HttpStatusCode.Unauthorized)
         {
             var ErrorResposne = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
             Console.WriteLine(ErrorResposne.Message.ToString());
+            toastService.Notify(new(ToastType.Danger, IconName.Bug, "Login Failed", ErrorResposne.Message));
         }
     }
 

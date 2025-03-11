@@ -25,7 +25,8 @@ namespace SmartHome.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> GetAllUsers()
         {
-            var response = await _userService.GetAllUsersAsync();
+            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _userService.GetAllUsersAsync(new Guid(id!));
             if (response.Status == "Error")
             {
                 return BadRequest(response);

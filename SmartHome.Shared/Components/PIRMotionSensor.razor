@@ -1,0 +1,10 @@
+﻿@using SmartHome.Dto.Dashboard
+
+<i class="bi bi-person-walking text-red-600"></i>
+@* <span class="text-blue-600 font-normal">@DeviceModel.State["motion_detected"]</span> *@
+
+@code {
+    [Parameter]
+    public OverviewDeviceDto DeviceModel { get; set; } = new();
+
+}

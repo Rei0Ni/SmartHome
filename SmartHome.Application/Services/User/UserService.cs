@@ -295,9 +295,9 @@ namespace SmartHome.Application.Services.User
             };
         }
 
-        public async Task<ApiResponse<object>> GetAllUsersAsync()
+        public async Task<ApiResponse<object>> GetAllUsersAsync(Guid currentUserId)
         {
-            var users = _userManager.Users.ToList();
+            var users = _userManager.Users.Where(u => u.Id != currentUserId).ToList();
 
             var userList = new List<UserWithRolesDto>();
 
@@ -310,10 +310,7 @@ namespace SmartHome.Application.Services.User
                 {
                     UserId = user.Id,
                     Username = user.UserName,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
                     Email = user.Email,
-                    LastLogin = user.LastLogin,
                     Role = userRole
                 });
             }
@@ -325,6 +322,7 @@ namespace SmartHome.Application.Services.User
                 Data = userList
             };
         }
+
 
         public async Task<ApiResponse<object>> GetUserData(Guid userId)
         {

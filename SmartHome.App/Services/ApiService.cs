@@ -117,7 +117,7 @@ namespace SmartHome.App.Services
                 HttpResponseMessage? response = await _retryPolicy.ExecuteAsync(() => requestFunc(primaryHttpClient) ?? Task.FromResult<HttpResponseMessage?>(null));
                 if (response != null)
                 {
-                    response.EnsureSuccessStatusCode();
+                    //response.EnsureSuccessStatusCode();
                     //string jsonResponse = await response.Content.ReadAsStringAsync();
                     //return JsonSerializer.Deserialize<TResponse>(jsonResponse, _jsonOptions);
                     return response;
@@ -148,7 +148,7 @@ namespace SmartHome.App.Services
                         HttpResponseMessage? responseSecondary = await _retryPolicy.ExecuteAsync(() => requestFunc(secondaryHttpClient) ?? Task.FromResult<HttpResponseMessage?>(null));
                         if (responseSecondary != null)
                         {
-                            responseSecondary.EnsureSuccessStatusCode();
+                            //responseSecondary.EnsureSuccessStatusCode();
                             //string jsonResponseSecondary = await responseSecondary.Content.ReadAsStringAsync();
                             //return JsonSerializer.Deserialize<TResponse>(jsonResponseSecondary, _jsonOptions);
                             return responseSecondary;
@@ -183,7 +183,7 @@ namespace SmartHome.App.Services
 
         public async Task<HttpResponseMessage> SendAsync<TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default)
         {
-            return await ExecuteRequestWithFallbackAsync(async (httpClient) =>
+            var result = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
             {
                 return method switch
                 {
@@ -194,22 +194,26 @@ namespace SmartHome.App.Services
                     { } when method == HttpMethod.Delete => await httpClient.DeleteAsync(endpointPath),
                     _ => throw new ArgumentException($"Unsupported HTTP method: {method}", nameof(method))
                 };
-            }) ?? throw new InvalidOperationException("Request failed.");
+            });
+            return result!;
         }
 
         public async Task<HttpResponseMessage> GetAsync(string endpointPath)
         {
-            return await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath) ?? Task.FromResult<HttpResponseMessage?>(null)) ?? throw new InvalidOperationException("Request failed.");
+            var result = await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath)! ?? Task.FromResult<HttpResponseMessage>(null)!);
+            return result!;
         }
 
         public async Task<HttpResponseMessage> PostAsync<TRequest>(string endpointPath, TRequest requestPayload)
         {
-            return await ExecuteRequestWithFallbackAsync(async (httpClient) =>
+            var result = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
             {
                 var response = await httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
                 return response;
 
-            }) ?? throw new InvalidOperationException("Request failed.");
+            });
+
+            return result!;
         }
     }
 }

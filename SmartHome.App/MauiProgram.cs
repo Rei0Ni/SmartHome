@@ -35,6 +35,8 @@ namespace SmartHome.App
             builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
             builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
 
+            builder.Services.AddBlazorBootstrap();
+
             // Configure global JSON options
             builder.Services.Configure<JsonSerializerOptions>(options =>
             {
@@ -49,10 +51,21 @@ namespace SmartHome.App
             });
 
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddSingleton<RefreshService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine(e.ExceptionObject);
+            };
+
+            AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine("********** ERROR!!! FirstChanceException **********");
+                System.Diagnostics.Debug.WriteLine(e.Exception.ToString());
+            };
 #endif
 
             return builder.Build();
