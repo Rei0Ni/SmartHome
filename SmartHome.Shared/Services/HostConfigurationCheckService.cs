@@ -29,7 +29,7 @@ namespace SmartHome.Shared.Services
         public async Task<bool> ShouldNavigateToConfigurationPageAsync()
         {
             var devicePlatform = DeviceInfo.Platform;
-            bool isMobile = devicePlatform == DevicePlatform.Android || devicePlatform == DevicePlatform.iOS;
+            bool isMobile = devicePlatform == DevicePlatform.Android || devicePlatform == DevicePlatform.iOS; // (just for testinmng in windows) || devicePlatform == DevicePlatform.Unknown;
             if (isMobile)
             {
                 return !await AreHostConfigurationsPresentAsync();

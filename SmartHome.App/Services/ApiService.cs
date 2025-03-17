@@ -83,15 +83,15 @@ namespace SmartHome.App.Services
 
         private HttpClient CreateHttpClient(string hostname)
         {
-            var handler = new HttpClientHandler();
+            //var handler = new HttpClientHandler();
 
             // Trust SSL for the primary host (local server)
-            if (hostname.StartsWith("https")) // Replace with actual local host
-            {
-                handler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
-            }
+            //if (hostname.StartsWith("https")) // Replace with actual local host
+            //{
+            //    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
+            //}
 
-            return new HttpClient(handler) { BaseAddress = new Uri(hostname) };
+            return new HttpClient() { BaseAddress = new Uri(hostname) };
         }
 
         private async Task<HttpResponseMessage?> ExecuteRequestWithFallbackAsync(Func<HttpClient, Task<HttpResponseMessage?>> requestFunc)
@@ -114,6 +114,13 @@ namespace SmartHome.App.Services
 
             try
             {
+                if (string.IsNullOrEmpty(_currentHostname))
+                {
+                    _logger.LogWarning("Primary hostname not configured, or already tried.");
+
+                    throw new HttpRequestException();
+                }
+
                 HttpResponseMessage? response = await _retryPolicy.ExecuteAsync(() => requestFunc(primaryHttpClient) ?? Task.FromResult<HttpResponseMessage?>(null));
                 if (response != null)
                 {

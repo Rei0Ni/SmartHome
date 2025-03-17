@@ -5,6 +5,9 @@ using SmartHome.App.Services;
 using SmartHome.Shared.Interfaces;
 using SmartHome.Shared.Providers;
 using SmartHome.Shared.Services;
+using Serilog;
+using Serilog.Sinks.File;
+using Serilog.Extensions.Logging;
 
 namespace SmartHome.App
 {
@@ -19,6 +22,9 @@ namespace SmartHome.App
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
+
+            // Configure Serilog
+            ConfigureLogging(builder.Logging);
 
             builder.Services.AddMauiBlazorWebView();
 
@@ -56,6 +62,8 @@ namespace SmartHome.App
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
+            
+#endif
             AppDomain.CurrentDomain.UnhandledException += (s, e) =>
             {
                 System.Diagnostics.Debug.WriteLine(e.ExceptionObject);
@@ -66,9 +74,23 @@ namespace SmartHome.App
                 System.Diagnostics.Debug.WriteLine("********** ERROR!!! FirstChanceException **********");
                 System.Diagnostics.Debug.WriteLine(e.Exception.ToString());
             };
-#endif
 
             return builder.Build();
+        }
+
+        private static void ConfigureLogging(ILoggingBuilder loggingBuilder)
+        {
+            string logFilePath = Path.Combine(FileSystem.AppDataDirectory, "MyAppLogs.txt");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File(
+                    logFilePath,
+                    rollingInterval: RollingInterval.Day,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .CreateLogger();
+
+            loggingBuilder.AddSerilog(Log.Logger, dispose: true);
         }
     }
 }

@@ -9,6 +9,8 @@ using SmartHome.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var config = builder.Configuration;
+
 // Configure logging
 builder.Logging.SetMinimumLevel(LogLevel.Trace);
 builder.Logging.AddConsole();
@@ -42,7 +44,7 @@ builder.Services.Configure<JsonOptions>(options =>
 
 builder.Services.AddHttpClient("AuthClient", client =>
 {
-    client.BaseAddress = new Uri("https://localhost:62061/");
+    client.BaseAddress = new Uri($"https://{config["MainHost"]}:62061/");
 });
 
 var app = builder.Build();
@@ -64,4 +66,4 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(SmartHome.Shared._Imports).Assembly);
 
-app.Run();
+app.Run("http://*:5042");

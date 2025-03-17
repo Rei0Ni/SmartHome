@@ -75,7 +75,7 @@ namespace SmartHome.Shared.Providers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Authentication Failure"+ e.Message);
+                Console.WriteLine("Authentication Failure "+ e.Message);
                 throw;
             }
             
