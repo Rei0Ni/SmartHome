@@ -38,17 +38,11 @@ namespace SmartHome.Web.Services
                 HttpResponseMessage? response = await requestFunc(_httpClient) ?? await Task.FromResult<HttpResponseMessage?>(null);
                 if (response != null)
                 {
-                    response.EnsureSuccessStatusCode();
                     return response;
                 }
 
                 _logger.LogError("Request returned null HttpResponseMessage unexpectedly.");
-                return default;
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError(ex, "Request to host ({Host}) failed: {ErrorMessage}.", _httpClient.BaseAddress, ex.Message);
-                return default;
+                return response;
             }
             catch (Exception ex)
             {
@@ -60,7 +54,7 @@ namespace SmartHome.Web.Services
         /// <inheritdoc />
         public async Task<HttpResponseMessage> SendAsync<TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default)
         {
-            return await ExecuteRequestWithFallbackAsync(async (httpClient) =>
+            var result = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
             {
                 return method switch
                 {
@@ -71,24 +65,26 @@ namespace SmartHome.Web.Services
                     { } when method == HttpMethod.Delete => await httpClient.DeleteAsync(endpointPath),
                     _ => throw new ArgumentException($"Unsupported HTTP method: {method}", nameof(method))
                 };
-            }) ?? throw new InvalidOperationException("Request failed.");
+            });
+
+            return result;
         }
 
         /// <inheritdoc />
         public async Task<HttpResponseMessage> GetAsync(string endpointPath)
         {
-            return await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath) ?? Task.FromResult<HttpResponseMessage?>(null)) ?? throw new InvalidOperationException("Request failed.");
+            return await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath) ?? Task.FromResult<HttpResponseMessage?>(null));
         }
 
         /// <inheritdoc />
         public async Task<HttpResponseMessage> PostAsync<TRequest>(string endpointPath, TRequest requestPayload)
         {
-            return await ExecuteRequestWithFallbackAsync(async (httpClient) =>
+            var response = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
             {
-                var response = await httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
-                return response;
+                return await httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
+            });
 
-            }) ?? throw new InvalidOperationException("Request failed.");
+            return response!;
         }
 
         public Task RefreshHostnamesAsync()

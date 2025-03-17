@@ -11,6 +11,6 @@ namespace SmartHome.Shared.Interfaces
     {
         Task<HttpResponseMessage> Login(LoginDto Dto);
         Task<bool> Logout();
-        Task<UserInfoDto?> GetCurrentUser();
+        Task<UserAuthenticationState?> GetCurrentUserAuthenticationState();
     }
 }

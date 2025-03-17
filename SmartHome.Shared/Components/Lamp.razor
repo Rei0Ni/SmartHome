@@ -111,24 +111,32 @@
             // Assuming you have a CommandResponseDto defined to handle the response from the command endpoint
             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
 
-            var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
+            if(result.IsSuccessStatusCode || result.StatusCode != HttpStatusCode.InternalServerError){
+                var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
 
-            if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
-            {
-                // Command was successful. Update the UI to reflect the new state.
-
-                if (DeviceModel.State.ContainsKey("power_state"))
+                if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
                 {
-                    DeviceModel.State["power_state"] = turnOn ? "on" : "off";
+                    // Command was successful. Update the UI to reflect the new state.
+
+                    if (DeviceModel.State.ContainsKey("power_state"))
+                    {
+                        DeviceModel.State["power_state"] = turnOn ? "on" : "off";
+                    }
+                    UpdateVisualState(); // Update visual state based on the new DeviceModel.State
+                    StateHasChanged(); // Re-render the component to reflect the state change
                 }
-                UpdateVisualState(); // Update visual state based on the new DeviceModel.State
-                StateHasChanged(); // Re-render the component to reflect the state change
-            }
-            else
-            {
-                // Command failed. Handle error (e.g., display error message to user)
-                Console.WriteLine($"Command failed: {commandResponse?.Devices[0].Message ?? "Unknown error"}");
-                // Optionally, show an error message to the user.
+                else
+                {
+                    // Command failed. Handle error (e.g., display error message to user)
+                    Console.WriteLine($"Command failed: {commandResponse.Devices[0].Message ?? "Unknown error"}");
+                    // Optionally, show an error message to the user.
+                }
+            }else{
+                if (result.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    toastService.Notify(new(ToastType.Danger, IconName.Bug, "Cannot Connect to Controller", "Cannot Connect to the Controller to Execute your Command"));
+                }
+                StateHasChanged(); // Re-render to update UI
             }
         }
         catch (Exception ex)

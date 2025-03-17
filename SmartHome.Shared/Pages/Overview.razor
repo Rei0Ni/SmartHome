@@ -7,7 +7,7 @@
 <PageTitle>Overview</PageTitle>
 
 <AuthorizeView> 
-     <Authorized>
+    <Authorized>
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
@@ -19,7 +19,7 @@
                 <!-- to control # of Area in Page-->
                 @foreach (var area in OverviewData.Areas)
                 {
-					<Area AreaModel="area" />
+                    <Area AreaModel="area" />
                 }
 
                 <!-- secound Area test -->
@@ -28,10 +28,10 @@
         </div>
     </Authorized>
     <NotAuthorized> 
-         @{ 
-             navigationManager.NavigateTo("/login"); 
-         } 
-     </NotAuthorized>
+        @{ 
+            navigationManager.NavigateTo("/login"); 
+        } 
+    </NotAuthorized>
 </AuthorizeView>
 
 
@@ -40,8 +40,26 @@
     private string factor => FormFactor.GetFormFactor();
     private string platform => FormFactor.GetPlatform();
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        refreshService.OnRefreshRequested += HandleRefreshRequested;
+    }
+
+    private void HandleRefreshRequested()
+    {
+        // Reload the page using NavigationManager.
+        navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
+    }
+
     private async void logout()
     {
         await authStateProvider.Logout();
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to avoid memory leaks.
+        refreshService.OnRefreshRequested -= HandleRefreshRequested;
     }
 }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace SmartHome.Dto.User
 {
-    public class UserInfoDto
+    public class AdminUserDto
     {
-        public string UserName { get; set; } = string.Empty;
+        public Guid Id { get; set; } = new Guid();
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public bool IsAuthenticated { get; set; } = false;
-        public Dictionary<string, string> Claims { get; set; } = [];
     }
 }

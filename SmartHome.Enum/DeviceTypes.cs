@@ -10,6 +10,7 @@ namespace SmartHome.Enum
     {
         Lamp,
         TEMPRATURE_SENSOR,
-        FAN
+        FAN,
+        PIR_MOTION_SENSOR
     }
 }

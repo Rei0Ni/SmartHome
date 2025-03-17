@@ -5,6 +5,9 @@ using SmartHome.App.Services;
 using SmartHome.Shared.Interfaces;
 using SmartHome.Shared.Providers;
 using SmartHome.Shared.Services;
+using Serilog;
+using Serilog.Sinks.File;
+using Serilog.Extensions.Logging;
 
 namespace SmartHome.App
 {
@@ -19,6 +22,9 @@ namespace SmartHome.App
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
+
+            // Configure Serilog
+            ConfigureLogging(builder.Logging);
 
             builder.Services.AddMauiBlazorWebView();
 
@@ -35,6 +41,8 @@ namespace SmartHome.App
             builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
             builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
 
+            builder.Services.AddBlazorBootstrap();
+
             // Configure global JSON options
             builder.Services.Configure<JsonSerializerOptions>(options =>
             {
@@ -49,13 +57,40 @@ namespace SmartHome.App
             });
 
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddSingleton<RefreshService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
+            
 #endif
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine(e.ExceptionObject);
+            };
+
+            AppDomain.CurrentDomain.FirstChanceException += (s, e) =>
+            {
+                System.Diagnostics.Debug.WriteLine("********** ERROR!!! FirstChanceException **********");
+                System.Diagnostics.Debug.WriteLine(e.Exception.ToString());
+            };
 
             return builder.Build();
+        }
+
+        private static void ConfigureLogging(ILoggingBuilder loggingBuilder)
+        {
+            string logFilePath = Path.Combine(FileSystem.AppDataDirectory, "MyAppLogs.txt");
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.File(
+                    logFilePath,
+                    rollingInterval: RollingInterval.Day,
+                    outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .CreateLogger();
+
+            loggingBuilder.AddSerilog(Log.Logger, dispose: true);
         }
     }
 }

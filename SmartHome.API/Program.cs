@@ -44,6 +44,7 @@ using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Services.Hosted;
+using SmartHome.Application.Interfaces.UserAreas;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -149,7 +150,9 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 // registering repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
+builder.Services.AddScoped<IUserAreasRepository, UserAreasRepository>();
 builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
 builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
 builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>();
@@ -231,4 +234,4 @@ using (var scope = app.Services.CreateScope())
     await seedDataService.InitializeAsync();
 }
 
-app.Run("https://*:62061");
+app.Run("http://*:62062");

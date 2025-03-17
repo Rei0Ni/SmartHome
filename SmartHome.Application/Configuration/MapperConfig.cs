@@ -19,7 +19,7 @@ namespace SmartHome.Application.Configuration
     {
         public MapperConfig()
         {
-            CreateMap<ApplicationUser, UserInfoDto>().ReverseMap();
+            CreateMap<ApplicationUser, UserAuthenticationState>().ReverseMap();
 
             CreateMap<Area, OverviewAreaDto>().ReverseMap();
             CreateMap<Area, CreateAreaDto>().ReverseMap();

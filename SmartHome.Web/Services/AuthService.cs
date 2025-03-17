@@ -19,11 +19,11 @@ namespace SmartHome.Web.Services
             _jwtStorageService = jwtStorageService;
         }
 
-        public async Task<UserInfoDto?> GetCurrentUser()
+        public async Task<UserAuthenticationState?> GetCurrentUserAuthenticationState()
         {
             var token = await _jwtStorageService.GetTokenAsync();
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            var result = await _httpClient.GetFromJsonAsync<UserInfoDto>("/api/auth/userinfo");
+            var result = await _httpClient.GetFromJsonAsync<UserAuthenticationState>("/api/auth/authentication-state");
             return result;
         }
 

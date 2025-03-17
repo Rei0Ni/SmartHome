@@ -28,11 +28,11 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("userinfo")]
+        [HttpGet("authentication-state")]
         [Authorize]
-        public async Task<UserInfoDto> UserInfo()
+        public async Task<UserAuthenticationState> AuthenticationState()
         {
-            var user = await _userService.GetUserProfileAsync(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? String.Empty) ?? new UserInfoDto();
+            var user = await _userService.GetUserAuthenticationStateAsync(HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier) ?? String.Empty) ?? new UserAuthenticationState();
             user.IsAuthenticated = HttpContext.User.Identity!.IsAuthenticated;
             // Keys to exclude
             var excludedKeys = new HashSet<string> { "jti", "exp", "iss", "aud" };

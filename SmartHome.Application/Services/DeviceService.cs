@@ -228,12 +228,31 @@ namespace SmartHome.Application.Services
                         {
                             // Update the device state with sensor values
                             // Here, assuming device.State is a dictionary<string, object>
-                            device.State["temperature_celsius"] = sensor.TemperatureCelsius;
-                            device.State["humidity_percent"] = sensor.HumidityPercent;
+
+                            if (sensor.TemperatureCelsius != default)
+                            {
+                                device.State["temperature_celsius"] = sensor.TemperatureCelsius;
+                            }
+
+                            if (sensor.HumidityPercent != default)
+                            {
+                                device.State["humidity_percent"] = sensor.HumidityPercent;
+                            }
+
+                            if (sensor.MotionDetected != null)
+                            {
+                                device.State["motion_detected"] = sensor.MotionDetected;
+                            }
 
                             //// Optionally update other sensor properties
-                            //device.State["sensor_status"] = sensor.Status;
-                            //device.State["sensor_type"] = sensor.Type;
+                            //if (!string.IsNullOrEmpty(sensor.Status))
+                            //{
+                            //    device.State["sensor_status"] = sensor.Status;
+                            //}
+                            //if (!string.IsNullOrEmpty(sensor.Type))
+                            //{
+                            //    device.State["sensor_type"] = sensor.Type;
+                            //}
 
                             device.LastUpdated = DateTime.UtcNow; // Update timestamp
 

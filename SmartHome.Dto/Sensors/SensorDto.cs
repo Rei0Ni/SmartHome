@@ -23,5 +23,8 @@ namespace SmartHome.Dto.Sensors
 
         [JsonPropertyName("humidity_percent")]
         public int HumidityPercent { get; set; }
+
+        [JsonPropertyName("motion_detected")]
+        public bool? MotionDetected { get; set; } = null;
     }
 }

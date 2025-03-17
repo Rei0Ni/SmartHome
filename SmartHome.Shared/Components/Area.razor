@@ -1,16 +1,58 @@
 ﻿@using SmartHome.Dto.Dashboard
 @using SmartHome.Enum
+@using System.Text.Json;
+
 
 <!-- Start Area -->
 <div class="bg-white rounded-xl shadow-md p-2">
     <!-- Sensor & Name Header -->
     <div class="flex flex-col flex-row justify-between items-center mb-8 gap-2">
         <h1 class=" sm:text-l md:text-l lg:text-xl font-bold text-gray-800">@AreaModel.Name</h1>
-        @foreach(var device in AreaModel.AreaDevices){
-            @if (device.DeviceType.Type == DeviceTypes.TEMPRATURE_SENSOR)
+
+        @{
+            bool shouldRenderContainer = Sensors?.Any() == true;
+            if (shouldRenderContainer)
             {
-                <TempratureSensor DeviceModel="device"/>
+                int sensorCount = Sensors.Count;
+                // If there is only one sensor and it's a PIR sensor without motion, do not render.
+                if (sensorCount == 1)
+                {
+                    var sensor = Sensors.First();
+                    if (sensor.DeviceType.Type == DeviceTypes.PIR_MOTION_SENSOR &&
+                    !((JsonElement)sensor.State["motion_detected"]).GetBoolean())
+                    {
+                        shouldRenderContainer = false;
+                    }
+                }
             }
+        }
+
+        @if (shouldRenderContainer)
+        {
+            <div class="bg-blue-100 px-2 py-2 rounded-full flex items-center gap-2">
+                @{
+                    int sensorIndex = 0;
+                    int sensorsCount = Sensors.Count;
+                }
+                @foreach (var device in Sensors)
+                {
+                    // If it's not the first sensor, display the separator
+                    if (sensorIndex > 0)
+                    {
+                        <span class="text-blue-600 font-normal"> | </span>
+                    }
+
+                    if (device.DeviceType.Type == DeviceTypes.TEMPRATURE_SENSOR)
+                    {
+                        <TempratureSensor DeviceModel="device" />
+                    }
+                    else if (device.DeviceType.Type == DeviceTypes.PIR_MOTION_SENSOR)
+                    {
+                        <PIRMotionSensor DeviceModel="device" />
+                    }
+                    sensorIndex++;
+                }
+            </div>
         }
         
     </div>
@@ -20,7 +62,7 @@
         <!-- to control # of Devices -->
         @foreach(var device in AreaModel.AreaDevices){
             if(device.DeviceType.Type == DeviceTypes.Lamp){
-				<Lamp DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
+                <Lamp DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
             }
             else if (device.DeviceType.Type == DeviceTypes.FAN){
                 <Fan DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
@@ -30,6 +72,19 @@
 </div>
 
 @code {
-	[Parameter]
-	public OverviewAreaDto AreaModel { get; set; } = new();
+    [Parameter]
+    public OverviewAreaDto AreaModel { get; set; } = new();
+
+    private List<OverviewDeviceDto> Sensors { get; set; } = new();
+    int SensorsCount = 0;
+    int SensorIndex = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+        Sensors = AreaModel.AreaDevices.Where(device =>
+            device.DeviceType.Type == DeviceTypes.TEMPRATURE_SENSOR ||
+            device.DeviceType.Type == DeviceTypes.PIR_MOTION_SENSOR).ToList();
+        SensorsCount = Sensors.Count;
+    }
 }

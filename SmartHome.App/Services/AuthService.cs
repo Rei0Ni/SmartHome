@@ -29,7 +29,7 @@ namespace SmartHome.App.Services
             _logger = logger; // Assign the injected logger
         }
 
-        public async Task<UserInfoDto?> GetCurrentUser()
+        public async Task<UserAuthenticationState?> GetCurrentUserAuthenticationState()
         {
             try
             {
@@ -38,12 +38,12 @@ namespace SmartHome.App.Services
                 if (string.IsNullOrEmpty(token))
                 {
                     _logger.LogWarning("No JWT token found. User might not be logged in."); // Log warning
-                    return new UserInfoDto(); // Or handle no token case as appropriate for your app
+                    return new UserAuthenticationState(); // Or handle no token case as appropriate for your app
                 }
 
-                var result = await _apiService.GetAsync("/api/auth/userinfo");
+                var result = await _apiService.GetAsync("/api/auth/authentication-state");
 
-                var userInfo = await result.Content.ReadFromJsonAsync<UserInfoDto>();
+                var userInfo = await result.Content.ReadFromJsonAsync<UserAuthenticationState>();
 
                 if (userInfo != null)
                 {
@@ -72,8 +72,8 @@ namespace SmartHome.App.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    string responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseContent);
+                    //string responseContent = await response.Content.ReadAsStringAsync();
+                    //Console.WriteLine(responseContent);
                     _logger.LogDebug("Login successful for user: {UserName}. Status code: {StatusCode}", dto.Username, response.StatusCode); // Log success
                     return response;
                 }
