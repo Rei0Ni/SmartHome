@@ -220,7 +220,7 @@ namespace SmartHome.App.Services
 
             });
 
-            return result!;
+           return result!;
         }
     }
 }
