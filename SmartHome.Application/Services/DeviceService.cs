@@ -266,6 +266,11 @@ namespace SmartHome.Application.Services
                                 device.State["motion_detected"] = sensor.MotionDetected;
                             }
 
+                            if (sensor.MotionDetected != null)
+                            {
+                                device.State["motion_detected"] = sensor.MotionDetected;
+                            }
+
                             //// Optionally update other sensor properties
                             //if (!string.IsNullOrEmpty(sensor.Status))
                             //{
