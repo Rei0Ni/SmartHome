@@ -18,7 +18,7 @@ namespace SmartHome.API.Controllers
         }
 
         // GET: api/<controllerController>
-        [HttpGet("getall")]
+        [HttpGet("get/all")]
         public async Task<ActionResult<IEnumerable<ControllerDto>>> Get()
         {
             var controllers = await _controllerService.GetControllers();
@@ -26,10 +26,14 @@ namespace SmartHome.API.Controllers
         }
 
         // GET api/<controllerController>/5
-        [HttpGet("get")]
-        public async Task<ActionResult<ControllerDto>> Get(GetControllerDto getControllerDto)
+        [HttpGet("get/{Id}")]
+        public async Task<ActionResult<ControllerDto>> Get(string Id)
         {
-            var controller = await _controllerService.GetController(getControllerDto);
+            var dto = new GetControllerDto
+            {
+                Id = new Guid(Id)
+            };
+            var controller = await _controllerService.GetController(dto);
             if (controller == null)
             {
                 return NotFound();

@@ -18,7 +18,7 @@ namespace SmartHome.API.Controllers
         }
 
         // GET: api/device
-        [HttpGet("getall")]
+        [HttpGet("get/all")]
         public async Task<ActionResult<IEnumerable<DeviceDto>>> Get()
         {
             var devices = await _deviceService.GetDevices();
@@ -26,7 +26,7 @@ namespace SmartHome.API.Controllers
         }
 
         // GET api/device/{id}
-        [HttpGet("{id}/get")]
+        [HttpGet("get/{id}")]
         public async Task<ActionResult<DeviceDto>> Get(Guid id)
         {
             var device = await _deviceService.GetDevice(id);

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
 using Serilog;
+using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Dto.Sensors;
 
@@ -67,12 +68,15 @@ namespace SmartHome.Application.Services.Hosted
                         var sensorData = JsonSerializer.Deserialize<SensorDataDto>(payload);
                         if (sensorData != null)
                         {
-                            _logger.LogInformation($"{ payload}");
+                            _logger.LogInformation($"{payload}");
                             // Create a new scope for each processing operation
                             using (var scope = _serviceProvider.CreateScope())
                             {
                                 var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
                                 await deviceService.UpdateSensorDataAsync(sensorData);
+
+                                //var dashboardService = scope.ServiceProvider.GetRequiredService<IDashboardService>();
+                                //await dashboardService.SendOverviewUpdateToAll();  // Remove from here
                             }
                             _logger.LogInformation("Sensor data updated in database.");
                         }
@@ -90,7 +94,7 @@ namespace SmartHome.Application.Services.Hosted
                 Log.Error(ex, "Error starting MQTT background service.");
                 await StopAsync(stoppingToken);
             }
-            
+
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)

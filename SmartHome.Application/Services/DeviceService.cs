@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AutoMapper;
 using DnsClient.Internal;
 using FluentValidation;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using SmartHome.Application.Hubs;
+using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
+using SmartHome.Application.Interfaces.Hubs;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
@@ -27,10 +32,15 @@ namespace SmartHome.Application.Services
         private readonly IDeviceTypeRepository _deviceTypeRepository;
         private readonly IDeviceFunctionService _deviceFunctionService;
         private readonly IAreaRepository _areaRepository;
+        private readonly IHubContext<OverviewHub> _overviewHubContext;
+        private readonly IHubState _hubState;
         private IValidator<CreateDeviceDto> _createDeviceDtoValidator;
         private IValidator<UpdateDeviceDto> _updateDeviceDtoValidator;
         private IValidator<DeleteDeviceDto> _deleteDeviceDtoValidator;
         private IMapper _mapper;
+        private readonly IDashboardService _dashboardService;
+        private readonly IDeviceDataService _deviceDataService; // Inject the new service
+
         public DeviceService(
             IDeviceRepository deviceRepository,
             IValidator<CreateDeviceDto> createDeviceDtoValidator,
@@ -40,7 +50,11 @@ namespace SmartHome.Application.Services
             IDeviceTypeService deviceTypeService,
             IDeviceFunctionService deviceFunctionService,
             IDeviceTypeRepository deviceTypeRepository,
-            IAreaRepository areaRepository)
+            IAreaRepository areaRepository,
+            IHubContext<OverviewHub> overviewHubContext,
+            IHubState hubState,
+            IDashboardService dashboardService,
+            IDeviceDataService deviceDataService) // Add IDeviceDataService to the constructor
         {
             _deviceRepository = deviceRepository;
             _createDeviceDtoValidator = createDeviceDtoValidator;
@@ -51,6 +65,10 @@ namespace SmartHome.Application.Services
             _deviceFunctionService = deviceFunctionService;
             _deviceTypeRepository = deviceTypeRepository;
             _areaRepository = areaRepository;
+            _overviewHubContext = overviewHubContext;
+            _hubState = hubState;
+            _dashboardService = dashboardService;
+            _deviceDataService = deviceDataService; // Store the injected instance
         }
 
 
@@ -98,7 +116,7 @@ namespace SmartHome.Application.Services
                 throw new KeyNotFoundException("Device not found");
             }
 
-            
+
 
             var deviceType = await _deviceTypeService.GetDeviceType(device.DeviceTypeId);
             if (deviceType == null)
@@ -137,6 +155,13 @@ namespace SmartHome.Application.Services
             return _mapper.Map<List<DeviceDto>>(devices);
         }
 
+        public async Task<List<DeviceDto>> GetDevicesForAreas(List<Guid> areaIds)
+        {
+            // var devices = await _deviceRepository.GetDevicesForAreas(areaIds); //No longer use DeviceRepository
+            var devices = await _deviceDataService.GetDevicesForAreas(areaIds);
+            return _mapper.Map<List<DeviceDto>>(devices);
+        }
+
         public async Task UpdateDevice(UpdateDeviceDto updateDeviceDto)
         {
             var validationResult = await _updateDeviceDtoValidator.ValidateAsync(updateDeviceDto);
@@ -157,43 +182,40 @@ namespace SmartHome.Application.Services
 
         public async Task UpdateDeviceStateFromResponseAsync(DeviceResponseDto deviceResponse)
         {
-            var device = await _deviceRepository.GetDevice(deviceResponse.DeviceId); // Get DeviceDto
+            var device = await _deviceRepository.GetDevice(deviceResponse.DeviceId); // Get Device 
 
             if (device != null)
             {
                 if (deviceResponse.Status == "success")
                 {
                     // Update State Dictionary based on successful response
-
                     if (deviceResponse.PowerState != null)
                     {
-                        // Update "power_state" in the State dictionary with the string value
                         device.State["power_state"] = deviceResponse.PowerState;
                     }
 
                     if (deviceResponse.FanSpeed.HasValue)
                     {
-                        // Update "fan_speed" in the State dictionary with the integer value
                         device.State["fan_speed"] = deviceResponse.FanSpeed.Value;
                     }
 
-                    // ... Add updates for other relevant properties from deviceResponse to deviceDto.State ...
-
                     device.LastUpdated = DateTime.UtcNow; // Update LastUpdated timestamp
-                    await _deviceRepository.UpdateDevice(device); // Save the updated DeviceDto
+                    await _deviceRepository.UpdateDevice(device); // Save 
+
+                    // Notify connected users of the change
+                    await SendOverviewUpdateToAllConnectedUsers(); // Call the new method
+
                 }
                 else
                 {
-                    // Log or handle command failure for this device
+                    // Log 
                     Log.Warning($"Command failed for device {deviceResponse.DeviceId}: {deviceResponse.Message}");
-                    // You might want to log this error more formally, raise an event, etc.
                 }
             }
             else
             {
-                // Log or handle device not found scenario
+                // Log
                 Log.Warning($"Device with ID {deviceResponse.DeviceId} not found in repository during state update.");
-                // Consider more robust error handling or logging here.
             }
         }
 
@@ -206,17 +228,12 @@ namespace SmartHome.Application.Services
 
             if (!string.Equals(sensorData.Status, "success", StringComparison.OrdinalIgnoreCase))
             {
-                // You may choose to log or handle error statuses differently
                 throw new Exception($"Sensor data response returned an error: {sensorData.Message}");
             }
 
             // Iterate through each area in the response
             foreach (var area in sensorData.Areas)
             {
-                // You could optionally verify the area exists in your system, e.g.:
-                // var areaEntity = await _areaRepository.GetArea(new Guid(area.AreaId));
-                // if (areaEntity == null) continue; 
-
                 // Process each sensor in the area
                 foreach (var sensor in area.Sensors)
                 {
@@ -244,6 +261,16 @@ namespace SmartHome.Application.Services
                                 device.State["motion_detected"] = sensor.MotionDetected;
                             }
 
+                            if (sensor.MotionDetected != null)
+                            {
+                                device.State["motion_detected"] = sensor.MotionDetected;
+                            }
+
+                            if (sensor.MotionDetected != null)
+                            {
+                                device.State["motion_detected"] = sensor.MotionDetected;
+                            }
+
                             //// Optionally update other sensor properties
                             //if (!string.IsNullOrEmpty(sensor.Status))
                             //{
@@ -255,9 +282,12 @@ namespace SmartHome.Application.Services
                             //}
 
                             device.LastUpdated = DateTime.UtcNow; // Update timestamp
-
                             // Save the updated device
                             await _deviceRepository.UpdateDevice(device);
+
+                            // Notify connected users of the change
+                            await SendOverviewUpdateToAllConnectedUsers(); // Call the new method
+
                         }
                         else
                         {
@@ -274,5 +304,22 @@ namespace SmartHome.Application.Services
             }
         }
 
+        private async Task SendOverviewUpdateToAllConnectedUsers()
+        {
+            var connectedUsers = _hubState.GetConnectedUsers();
+            foreach (var userId in connectedUsers)
+            {
+                try
+                {
+                    // Use the injected DashboardService to get the overview data
+                    var overviewData = await _dashboardService.GetDashboardOverview(userId);
+                    await _overviewHubContext.Clients.Group(userId).SendAsync("ReceiveOverviewData", overviewData);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error($"Failed to send overview update to user {userId}: {ex.Message}");
+                }
+            }
+        }
     }
 }

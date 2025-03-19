@@ -10,6 +10,7 @@ namespace SmartHome.Application.Interfaces.Device
     public interface IDeviceRepository
     {
         Task<List<Domain.Entities.Device>> GetDevices();
+        Task<List<Domain.Entities.Device>> GetDevicesForAreas(List<Guid> areaIds);
         Task<List<Domain.Entities.Device>> GetDevicesByArea(Guid Id);
         Task<Domain.Entities.Device> GetDevice(Guid id);
         Task CreateDevice(Domain.Entities.Device createDeviceDto);

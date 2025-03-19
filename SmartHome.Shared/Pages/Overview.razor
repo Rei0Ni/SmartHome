@@ -1,5 +1,6 @@
 ﻿@page "/overview"
 @layout MainLayout
+@using SmartHome.Dto.Dashboard
 @using SmartHome.Shared.Components
 @using SmartHome.Shared.Interfaces
 @inject IFormFactor FormFactor
@@ -39,27 +40,4 @@
 @code {
     private string factor => FormFactor.GetFormFactor();
     private string platform => FormFactor.GetPlatform();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        refreshService.OnRefreshRequested += HandleRefreshRequested;
-    }
-
-    private void HandleRefreshRequested()
-    {
-        // Reload the page using NavigationManager.
-        navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
-    }
-
-    private async void logout()
-    {
-        await authStateProvider.Logout();
-    }
-
-    public void Dispose()
-    {
-        // Unsubscribe to avoid memory leaks.
-        refreshService.OnRefreshRequested -= HandleRefreshRequested;
-    }
 }

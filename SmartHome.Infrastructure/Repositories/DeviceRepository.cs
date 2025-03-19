@@ -44,6 +44,13 @@ namespace SmartHome.Infrastructure.Repositories
             return await _context.Devices.Find(x => x.AreaId == Id).ToListAsync();
         }
 
+        public async Task<List<Device>> GetDevicesForAreas(List<Guid> areaIds)
+        {
+            return await _context.Devices
+                            .Find(d => areaIds.Contains(d.AreaId))
+                            .ToListAsync();
+        }
+
         public async Task UpdateDevice(Device updateDeviceDto)
         {
             await _context.Devices.ReplaceOneAsync(d => d.Id == updateDeviceDto.Id, updateDeviceDto);

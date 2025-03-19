@@ -9,6 +9,7 @@ namespace SmartHome.Application.Interfaces
 {
     public interface IDashboardService
     {
-        Task<OverviewDto> GetDashboardOverview();
+        Task<OverviewDto> GetDashboardOverview(string UserId);
+        Task SendOverviewUpdateToAll();
     }
 }
