@@ -11,6 +11,8 @@ using SmartHome.Application.Exceptions;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Dto.Area;
 using SmartHome.Application.Interfaces.Controller;
+using SmartHome.Application.Interfaces.UserAreas;
+using SmartHome.Domain.Entities;
 
 namespace SmartHome.Application.Services
 {
@@ -22,6 +24,7 @@ namespace SmartHome.Application.Services
         private readonly IValidator<DeleteAreaDto> _deleteAreaDtoValidator;
         private readonly IAreaRepository _areaRepository;
         private readonly IControllerRepository _controllerRepository;
+        private readonly IUserAreasRepository _userAreasRepository;
         private IMapper _mapper { get; set; }
 
         public AreaService(
@@ -31,7 +34,8 @@ namespace SmartHome.Application.Services
             IValidator<UpdateAreaDto> updateAreaDtoValidator,
             IValidator<CreateAreaDto> createAreaDtoValidator,
             IValidator<DeleteAreaDto> deleteAreaDtoValidator,
-            IControllerRepository controllerRepository)
+            IControllerRepository controllerRepository,
+            IUserAreasRepository userAreasRepository)
         {
             _areaRepository = areaRepository;
             _mapper = mapper;
@@ -40,6 +44,7 @@ namespace SmartHome.Application.Services
             _createAreaDtoValidator = createAreaDtoValidator;
             _deleteAreaDtoValidator = deleteAreaDtoValidator;
             _controllerRepository = controllerRepository;
+            _userAreasRepository = userAreasRepository;
         }
 
         public async Task CreateArea(CreateAreaDto createAreaDto)
@@ -119,9 +124,9 @@ namespace SmartHome.Application.Services
             return getAreaDto;
         }
 
-        public async Task<List<AreaDto>> GetAreas()
+        public async Task<List<AreaDto>> GetAllAreas()
         {
-            var areas = await _areaRepository.GetAreas();
+            var areas = await _areaRepository.GetAllAreas();
             var getAreaDtos = _mapper.Map<List<AreaDto>>(areas);
             return getAreaDtos;
         }
@@ -150,6 +155,21 @@ namespace SmartHome.Application.Services
 
             await _areaRepository.UpdateArea(area);
             Log.Information("Area updated successfully with ID: {Id}", updateAreaDto.Id);
+        }
+
+        public async Task<List<AreaDto>> GettAllowedAreas(Guid userId)
+        {
+            var userAreas = await _userAreasRepository.GetUserAreasByIdAsync(userId);
+            List<Area> areas = new();
+
+            foreach (var allowedAreaId in userAreas.AllowedAreaIds)
+            {
+                var area = await _areaRepository.GetArea(allowedAreaId);
+                areas.Add(area);
+            }
+
+            var allowedAreas = _mapper.Map<List<AreaDto>>(areas);
+            return allowedAreas;
         }
     }
 }

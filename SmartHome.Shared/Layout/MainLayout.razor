@@ -126,12 +126,18 @@
                                     <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
                                 }
                             </div>
-                            <div class="flex items-center space-x-2">
-                                <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                     class="w-6 h-6 rounded-full cursor-pointer"
-                                     alt="User Avatar"
-                                     @onclick="ToggleUserMenu">
-                            </div>
+                            <AuthorizeView>
+                                <Authorized>
+                                    <div class="flex items-center space-x-2">
+                                        <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+                                             class="w-6 h-6 rounded-full cursor-pointer"
+                                             alt="User Avatar"
+                                             @onclick="ToggleUserMenu">
+                                        <span>@context.User.Identity.Name</span>
+                                    </div>
+                                </Authorized>
+                            </AuthorizeView>
+                            
                             <!-- w-8 h-8 deafult for user prof -->
                             <!-- User Menu Popup -->
                             @if (showUserMenu)

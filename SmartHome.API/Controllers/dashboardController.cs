@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Application.Interfaces;
 
@@ -17,7 +18,8 @@ namespace SmartHome.API.Controllers
         [HttpGet("overview")]
         public async Task<IActionResult> GetDashboard()
         {
-            var result = await _dashboardService.GetDashboardOverview();
+            var UserId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var result = await _dashboardService.GetDashboardOverview(UserId);
             return Ok(result);
         }
     }

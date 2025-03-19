@@ -9,7 +9,7 @@ namespace SmartHome.Application.Interfaces.Area
 {
     public interface IAreaRepository
     {
-        Task<List<Domain.Entities.Area>> GetAreas();
+        Task<List<Domain.Entities.Area>> GetAllAreas();
         Task<Domain.Entities.Area> GetArea(Guid id);
         Task CreateArea(Domain.Entities.Area createAreaDto);
         Task UpdateArea(Domain.Entities.Area updateAreaDto);
