@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MQTTnet;
+using Serilog;
+using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Dto.Sensors;
 
@@ -60,27 +62,38 @@ namespace SmartHome.Application.Services.Hosted
                 var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
                 _logger.LogInformation($"Received MQTT message: {payload}");
 
-                try
-                {
-                    var sensorData = JsonSerializer.Deserialize<SensorDataDto>(payload);
-                    if (sensorData != null)
+                    try
                     {
-                        // Create a new scope for each processing operation
-                        using (var scope = _serviceProvider.CreateScope())
+                        var sensorData = JsonSerializer.Deserialize<SensorDataDto>(payload);
+                        if (sensorData != null)
                         {
-                            var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
-                            await deviceService.UpdateSensorDataAsync(sensorData);
-                        }
-                        _logger.LogInformation("Sensor data updated in database.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error processing MQTT message: {ex.Message}");
-                }
-            });
+                            _logger.LogInformation($"{payload}");
+                            // Create a new scope for each processing operation
+                            using (var scope = _serviceProvider.CreateScope())
+                            {
+                                var deviceService = scope.ServiceProvider.GetRequiredService<IDeviceService>();
+                                await deviceService.UpdateSensorDataAsync(sensorData);
 
-            await _mqttClient.ConnectAsync(_mqttOptions, stoppingToken);
+                                //var dashboardService = scope.ServiceProvider.GetRequiredService<IDashboardService>();
+                                //await dashboardService.SendOverviewUpdateToAll();  // Remove from here
+                            }
+                            _logger.LogInformation("Sensor data updated in database.");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error processing MQTT message: {ex.Message}");
+                    }
+                });
+
+                await _mqttClient.ConnectAsync(_mqttOptions, stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Error starting MQTT background service.");
+                await StopAsync(stoppingToken);
+            }
+
         }
 
         public override async Task StopAsync(CancellationToken cancellationToken)

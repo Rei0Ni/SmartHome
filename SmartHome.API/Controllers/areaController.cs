@@ -18,15 +18,15 @@ namespace SmartHome.API.Controllers
         }
 
         // GET: api/<areaController>
-        [HttpGet("getall")]
+        [HttpGet("get/all")]
         public async Task<ActionResult<List<AreaDto>>> Get()
         {
-            var areas = await _areaService.GetAreas();
+            var areas = await _areaService.GetAllAreas();
             return Ok(areas);
         }
 
         // GET api/<areaController>/5
-        [HttpGet("{Id}/get")]
+        [HttpGet("get/{Id}")]
         public async Task<ActionResult<AreaDto>> Get(string Id)
         {
             var getArea = new GetAreaDto

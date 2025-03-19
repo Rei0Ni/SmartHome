@@ -25,6 +25,7 @@ builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredServic
 
 // Add services used by the SmartHome.Web project
 builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<IHubService, HubService>();
 builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
 builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
 builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();

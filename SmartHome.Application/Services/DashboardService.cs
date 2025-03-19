@@ -4,13 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using SmartHome.Application.Hubs;
 using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
+using SmartHome.Application.Interfaces.Hubs;
+using SmartHome.Domain.Entities;
+using SmartHome.Dto.Area;
 using SmartHome.Dto.Dashboard;
 using SmartHome.Dto.DeviceFunction;
 
@@ -19,62 +26,110 @@ namespace SmartHome.Application.Services
     public class DashboardService : IDashboardService
     {
         private readonly IAreaService _areaService;
-        private readonly IDeviceService _deviceService;
-        private readonly IDeviceTypeService _deviceTypeService; // Add this line
-        private readonly IDeviceFunctionService _deviceFunctionService; // Add this line
+        private readonly IDeviceDataService _deviceDataService; // Use the new service
+        private readonly IDeviceTypeService _deviceTypeService;
+        private readonly IDeviceFunctionService _deviceFunctionService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IHubState _hubState;
+        private readonly IHubContext<OverviewHub> _overviewHubContext;
         private IMapper _mapper;
 
-        public DashboardService(IAreaService areaService, IDeviceService deviceService, IDeviceTypeService deviceTypeService, IDeviceFunctionService deviceFunctionService, IMapper mapper) // Modify this line
+        public DashboardService(IAreaService areaService, IDeviceDataService deviceDataService, IDeviceTypeService deviceTypeService, IDeviceFunctionService deviceFunctionService, IMapper mapper, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IHubState hubState, IHubContext<OverviewHub> overviewHubContext)
         {
             _areaService = areaService;
-            _deviceService = deviceService;
-            _deviceTypeService = deviceTypeService; // Add this line
-            _deviceFunctionService = deviceFunctionService; // Add this line
+            _deviceDataService = deviceDataService; // Inject DeviceDataService
+            _deviceTypeService = deviceTypeService;
+            _deviceFunctionService = deviceFunctionService;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+            _userManager = userManager;
+            _hubState = hubState;
+            _overviewHubContext = overviewHubContext;
         }
 
-        public async Task<OverviewDto> GetDashboardOverview()
+        public async Task<OverviewDto> GetDashboardOverview(string UserId)
         {
-            var areas = await _areaService.GetAreas();
+            var currentUser = await _userManager.FindByIdAsync(UserId);
+            if (currentUser == null) throw new UnauthorizedAccessException("User not found");
+
+            // Get filtered areas based on role
+            List<AreaDto> areas;
+            if (await _userManager.IsInRoleAsync(currentUser, "Admin"))
+            {
+                areas = await _areaService.GetAllAreas();
+            }
+            else
+            {
+                areas = await _areaService.GettAllowedAreas(currentUser.Id);
+            }
 
             var Overview = new OverviewDto();
 
+            // Optimize device loading
+            var areaIds = areas.Select(a => a.Id).ToList();
+            //var allDevices = await _deviceService.GetDevicesForAreas(areaIds); // No longer use DeviceService directly
+            var allDevices = await _deviceDataService.GetDevicesForAreas(areaIds); //Use DeviceDataService
+            var deviceTypeIds = allDevices.Select(d => d.DeviceTypeId).Distinct().ToList();
+
+            // Bulk load device types and functions
+            var deviceTypes = await _deviceTypeService.GetDeviceTypes();
+            var allFunctionIds = deviceTypes.SelectMany(dt => dt.Functions).Distinct().ToList();
+            var allDeviceFunctions = await _deviceFunctionService.GetDeviceFunctions();
+
             foreach (var area in areas)
             {
-                var devices = await _deviceService.GetDevicesByArea(area.Id);
-                var OverviewArea = _mapper.Map<OverviewAreaDto>(area);
-                foreach (var device in devices) // Modify this line
+                var overviewArea = _mapper.Map<OverviewAreaDto>(area);
+                var areaDevices = allDevices.Where(d => d.AreaId == area.Id);
+
+                foreach (var device in areaDevices)
                 {
-                    var OverviewDevice = _mapper.Map<OverviewDeviceDto>(device);
-                    var deviceType = await _deviceTypeService.GetDeviceType(device.DeviceTypeId); // Modify this line
+                    var overviewDevice = _mapper.Map<OverviewDeviceDto>(device);
+                    var deviceType = deviceTypes.FirstOrDefault(dt => dt.Id == device.DeviceTypeId);
+
                     if (deviceType == null)
                     {
-                        throw new KeyNotFoundException("Device Type Not Found found");
+                        Log.Error($"Missing device type {device.DeviceTypeId} for device {device.Id}");
+                        continue; // or handle differently
                     }
 
-                    var deviceFunctions = new List<DeviceFunctionDto>();
+                    overviewDevice.DeviceType = deviceType;
+                    overviewDevice.DeviceFunctions = allDeviceFunctions
+                        .Where(df => deviceType.Functions.Contains(df.Id))
+                        .ToList();
 
-                    foreach (var deviceFunctionId in deviceType.Functions)
-                    {
-                        var deviceFunction = await _deviceFunctionService.GetDeviceFunction(deviceFunctionId);
-                        if (deviceFunction == null)
-                        {
-                            throw new Exception("one or more Device Functions not found");
-                        }
-                        deviceFunctions.Add(deviceFunction);
-                    }
-                    OverviewDevice.DeviceType = deviceType;
-                    OverviewDevice.DeviceFunctions = deviceFunctions;
-                    OverviewArea.AreaDevices.Add(OverviewDevice);
+                    overviewArea.AreaDevices.Add(overviewDevice);
                 }
-                //if (!OverviewArea.AreaDevices.IsNullOrEmpty())
-                //{
-                //    Overview.Areas.Add(OverviewArea);
-                //}
-                Overview.Areas.Add(OverviewArea);
+
+                Overview.Areas.Add(overviewArea);
             }
 
             return Overview;
+        }
+
+
+        public async Task SendOverviewUpdateToUser(string userId)
+        {
+            try
+            {
+                var overviewData = await GetDashboardOverview(userId);
+                await _overviewHubContext.Clients.Group(userId).SendAsync("ReceiveOverviewData", overviewData);
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"Error sending overview update to user {userId}: {ex.Message}");
+            }
+        }
+
+        // Method to send overview update to all connected users
+        public async Task SendOverviewUpdateToAll()
+        {
+            List<string> currentConnectedUserIds = _hubState.GetConnectedUsers();
+
+            foreach (var userId in currentConnectedUserIds)
+            {
+                await SendOverviewUpdateToUser(userId);
+            }
         }
     }
 }

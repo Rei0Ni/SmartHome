@@ -9,7 +9,8 @@ namespace SmartHome.Application.Interfaces.Area
 {
     public interface IAreaService
     {
-        Task<List<AreaDto>> GetAreas();
+        Task<List<AreaDto>> GetAllAreas();
+        Task<List<AreaDto>> GettAllowedAreas(Guid userId);
         Task<AreaDto> GetArea(GetAreaDto getArea);
         Task CreateArea(CreateAreaDto createAreaDto);
         Task UpdateArea(UpdateAreaDto updateAreaDto);

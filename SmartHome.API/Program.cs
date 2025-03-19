@@ -44,6 +44,10 @@ using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Services.Hosted;
+using SmartHome.Application.Interfaces.UserAreas;
+using SmartHome.Application.Hubs;
+using Microsoft.AspNetCore.Builder;
+using SmartHome.Application.Interfaces.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -148,6 +152,10 @@ builder.Services.Configure<JsonOptions>(options =>
     options.SerializerOptions.WriteIndented = true;
 });
 
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddSignalR();
+
 // registering repositories
 builder.Services.AddScoped<IAreaRepository, AreaRepository>();
 builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
@@ -165,7 +173,10 @@ builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
 builder.Services.AddScoped<IDeviceFunctionService, DeviceFunctionService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IDeviceDataService, DeviceDataService>();
 builder.Services.AddScoped<ICommandService, CommandService>();
+
+builder.Services.AddSingleton<IHubState, HubState>();
 
 builder.Services.AddHttpClient("ControllerClient");
 
@@ -188,14 +199,6 @@ builder.Services.AddTransient<ServiceResolver<IComponentHealthCheck>>(sp => key 
 builder.Services.AddHostedService<MqttBackgroundService>();
 
 builder.Services.AddControllers();
-
-// Configure global JSON options
-builder.Services.Configure<JsonOptions>(options =>
-{
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-    //options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull; // Ignore null values
-    options.SerializerOptions.WriteIndented = true;
-});
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -224,6 +227,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<OverviewHub>("/wss/overview");
 
 using (var scope = app.Services.CreateScope())
 {

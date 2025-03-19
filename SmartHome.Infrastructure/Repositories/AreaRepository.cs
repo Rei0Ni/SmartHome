@@ -36,7 +36,7 @@ namespace SmartHome.Infrastructure.Repositories
             return Area;
         }
 
-        public async Task<List<Area>> GetAreas()
+        public async Task<List<Area>> GetAllAreas()
         {
             var Areas = await _context.Areas.Find(x => true).ToListAsync();
             return Areas;
