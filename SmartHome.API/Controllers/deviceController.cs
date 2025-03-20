@@ -46,23 +46,18 @@ namespace SmartHome.API.Controllers
         }
 
         // PUT api/device/{id}
-        [HttpPut("{id}/update")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] UpdateDeviceDto updateDeviceDto)
+        [HttpPut("update")]
+        public async Task<ActionResult> Put(UpdateDeviceDto updateDeviceDto)
         {
-            if (id != updateDeviceDto.Id)
-            {
-                return BadRequest();
-            }
-
             await _deviceService.UpdateDevice(updateDeviceDto);
             return NoContent();
         }
 
         // DELETE api/device/{id}
-        [HttpDelete("{id}/delete")]
-        public async Task<ActionResult> Delete(Guid id)
+        [HttpDelete("delete/{Id}")]
+        public async Task<ActionResult> Delete(Guid Id)
         {
-            var deleteDeviceDto = new DeleteDeviceDto { Id = id };
+            var deleteDeviceDto = new DeleteDeviceDto { Id = Id };
             await _deviceService.DeleteDevice(deleteDeviceDto);
             return NoContent();
         }

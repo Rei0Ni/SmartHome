@@ -12,6 +12,7 @@ namespace SmartHome.Application.Validations.Device
     {
         public UpdateDeviceDtoValidator()
         {
+            RuleFor(x => x.Id).NotEmpty().WithMessage("Id is required.");
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Name is required.")
                 .MaximumLength(50).WithMessage("Name must not exceed 50 characters.");

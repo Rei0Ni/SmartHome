@@ -47,14 +47,14 @@ namespace SmartHome.API.Controllers
 
         // PUT api/<devicefunctionsController>/5
         [HttpPut("{id}/update")]
-        public async Task<ActionResult> Put(Guid id, UpdateDeviceFunctionDto updateDeviceFunctionDto)
+        public async Task<ActionResult> Put(UpdateDeviceFunctionDto dto)
         {
-            var deviceFunction = await _deviceFunctionService.GetDeviceFunction(id);
+            var deviceFunction = await _deviceFunctionService.GetDeviceFunction(dto.Id);
             if (deviceFunction == null)
             {
                 return NotFound();
             }
-            await _deviceFunctionService.UpdateDeviceFunction(updateDeviceFunctionDto);
+            await _deviceFunctionService.UpdateDeviceFunction(dto);
             return NoContent();
         }
 

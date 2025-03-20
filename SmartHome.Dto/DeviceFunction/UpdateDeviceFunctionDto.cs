@@ -8,6 +8,7 @@ namespace SmartHome.Dto.DeviceFunction
 {
     public class UpdateDeviceFunctionDto
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public ICollection<DeviceFunctionParameter> Parameters { get; set; } = new List<DeviceFunctionParameter>();
     }

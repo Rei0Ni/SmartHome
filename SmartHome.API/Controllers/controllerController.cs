@@ -58,10 +58,11 @@ namespace SmartHome.API.Controllers
         }
 
         // DELETE api/<controllerController>/5
-        [HttpDelete("delete")]
-        public async Task<ActionResult> Delete(DeleteControllerDto deleteControllerDto)
+        [HttpDelete("delete/{Id}")]
+        public async Task<ActionResult> Delete(Guid Id)
         {
-            await _controllerService.DeleteController(deleteControllerDto);
+            var dto = new DeleteControllerDto { Id = Id };
+            await _controllerService.DeleteController(dto);
             return NoContent();
         }
     }

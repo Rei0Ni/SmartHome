@@ -45,23 +45,24 @@ namespace SmartHome.API.Controllers
         }
 
         // PUT api/<devicetypesController>/5
-        [HttpPut("{id}/update")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] UpdateDeviceTypeDto updateDeviceTypeDto)
+        [HttpPut("update")]
+        public async Task<ActionResult> Put(UpdateDeviceTypeDto dto)
         {
-            if (id != updateDeviceTypeDto.Id)
+            var deviceType = _deviceTypeService.GetDeviceType(dto.Id);
+            if (deviceType == null)
             {
                 return BadRequest();
             }
 
-            await _deviceTypeService.UpdateDeviceType(updateDeviceTypeDto);
+            await _deviceTypeService.UpdateDeviceType(dto);
             return NoContent();
         }
 
         // DELETE api/<devicetypesController>/5
-        [HttpDelete("{id}/delete")]
-        public async Task<ActionResult> Delete(Guid id)
+        [HttpDelete("delete/{Id}")]
+        public async Task<ActionResult> Delete(Guid Id)
         {
-            var deleteDeviceTypeDto = new DeleteDeviceTypeDto { Id = id };
+            var deleteDeviceTypeDto = new DeleteDeviceTypeDto { Id = Id };
             await _deviceTypeService.DeleteDeviceType(deleteDeviceTypeDto);
             return NoContent();
         }
