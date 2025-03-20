@@ -18,6 +18,7 @@ using System.Data;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SmartHome.Application.Interfaces.UserAreas;
+using SmartHome.Application.Interfaces;
 
 namespace SmartHome.Application.Services.User
 {
@@ -27,6 +28,7 @@ namespace SmartHome.Application.Services.User
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserRepository _userRepository;
         private readonly IJwtTokenService _jwtTokenService;
+        private readonly ITotpService _totpService;
         private readonly IMapper _mapper;
         private readonly IUserAreasRepository _userAreasRepository;
 
@@ -36,7 +38,8 @@ namespace SmartHome.Application.Services.User
             IJwtTokenService jwtTokenService,
             IMapper mapper,
             IUserAreasRepository userAreasRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            ITotpService totpService)
         {
             _loginValidator = loginValidator;
             _userManager = userManager;
@@ -44,6 +47,7 @@ namespace SmartHome.Application.Services.User
             _mapper = mapper;
             _userAreasRepository = userAreasRepository;
             _userRepository = userRepository;
+            _totpService = totpService;
         }
 
         public async Task<ApiResponse<object>> CreateAdminUserAsync(RegisterAdminUserDto dto)
@@ -70,11 +74,19 @@ namespace SmartHome.Application.Services.User
 
             await _userManager.AddToRoleAsync(user, System.Enum.GetName(typeof(Role), Role.Admin)!);
 
+            // Generate and store the secret
+            string secretKey = _totpService.GenerateSecretKey();
+            user.TOTPSecret = secretKey;
+            await _userManager.UpdateAsync(user);
+
+
+            var TotpQRUri = _totpService.GenerateQrCodeUrl(user.UserName, user.TOTPSecret);
+
             return new ApiResponse<object>
             {
                 Status = ApiResponseStatus.Success.ToString(),
                 Message = "User created successfully",
-                Data = new { UserId = user.Id }
+                Data = new { UserId = user.Id, TotpQRUri, SecretKey = secretKey}
             };
         }
 
@@ -134,11 +146,19 @@ namespace SmartHome.Application.Services.User
 
             }
 
+            // Generate and store the secret
+            string secretKey = _totpService.GenerateSecretKey();
+            user.TOTPSecret = secretKey;
+            await _userManager.UpdateAsync(user);
+
+
+            var TotpQRUri = _totpService.GenerateQrCodeUrl(user.UserName, user.TOTPSecret);
+
             return new ApiResponse<object>
             {
                 Status = ApiResponseStatus.Success.ToString(),
                 Message = "User created successfully",
-                Data = new { UserId = user.Id }
+                Data = new { UserId = user.Id, TotpQRUri, SecretKey = secretKey }
             };
         }
 
@@ -288,6 +308,10 @@ namespace SmartHome.Application.Services.User
                 };
             }
 
+            var userAreas = await _userAreasRepository.GetUserAreasByIdAsync(user.Id);
+            userAreas.AllowedAreaIds = dto.AllowedAreas;
+            await _userAreasRepository.UpdateUserAreasAsync(userAreas);
+
             return new ApiResponse<object>
             {
                 Status = ApiResponseStatus.Success.ToString(),
@@ -310,7 +334,10 @@ namespace SmartHome.Application.Services.User
                 {
                     UserId = user.Id,
                     Username = user.UserName,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     Email = user.Email,
+                    LastLogin = user.LastLogin,
                     Role = userRole
                 });
             }
@@ -356,11 +383,13 @@ namespace SmartHome.Application.Services.User
             }
             else
             {
+                var allowedAreas = await _userAreasRepository.GetUserAreasByIdAsync(user.Id);
                 var userDto = new UserDto
                 {
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    AllowedAreas = allowedAreas.AllowedAreaIds
                 };
                 return new ApiResponse<object>
                 {

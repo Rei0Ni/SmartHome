@@ -167,6 +167,9 @@ builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>(
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 
 // registering services
+builder.Services.Configure<TotpSettings>(builder.Configuration.GetSection("TotpSettings"));
+builder.Services.AddScoped<ITotpService, TotpService>();
+
 builder.Services.AddScoped<IHealthCheck, SystemHealthCheck>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -182,8 +185,6 @@ builder.Services.AddScoped<ICommandService, CommandService>();
 builder.Services.AddSingleton<IHubState, HubState>();
 
 builder.Services.AddHttpClient("ControllerClient");
-
-builder.Services.AddApplicationCore();
 
 builder.Services.AddTransient<MongodbHealthCheck>();
 builder.Services.AddTransient<JwtTokenServiceHealthCheck>();

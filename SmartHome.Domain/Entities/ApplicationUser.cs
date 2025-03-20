@@ -13,6 +13,8 @@ namespace SmartHome.Domain.Entities
         public string LastName { get; set; } = "";
         public bool IsEnabled { get; set; } = true;
 
+        public string? TOTPSecret { get; set; }
+
         public virtual DateTime? LastLogin { get; set; } = null;
         public virtual DateTime? CreationDate { get; set; } = DateTime.Now;
     }

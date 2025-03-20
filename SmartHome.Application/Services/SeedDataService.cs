@@ -15,17 +15,20 @@ namespace SmartHome.Application.Services
     {
         private readonly RoleManager<ApplicationRole> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ITotpService _totpService;
         private readonly IConfiguration _configuration;
 
         public SeedDataService(
             RoleManager<ApplicationRole> roleManager,
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration
-            )
+,
+            ITotpService totpService)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _configuration = configuration;
+            _totpService = totpService;
         }
 
         public async Task InitializeAsync(CancellationToken cancellationToken = default)
@@ -54,6 +57,10 @@ namespace SmartHome.Application.Services
                 await _userManager.CreateAsync(default_administrator, password);
                 await _userManager.AddToRoleAsync(default_administrator,
                             System.Enum.GetName(typeof(Role), Role.Admin)!);
+                // Generate and store the secret
+                string secretKey = _totpService.GenerateSecretKey();
+                default_administrator.TOTPSecret = secretKey;
+                await _userManager.UpdateAsync(default_administrator);
             }
         }
     }

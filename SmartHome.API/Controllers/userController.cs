@@ -99,11 +99,11 @@ namespace SmartHome.API.Controllers
         [Authorize(Roles = "Admin,Normal_User")]
         public async Task<ActionResult<ApiResponse<object>>> Update(UpdateUserProfileDto dto)
         {
-            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (id != dto.Id)
-            {
-                return BadRequest("User ID mismatch");
-            }
+            //var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //if (id != dto.Id)
+            //{
+            //    return BadRequest("User ID mismatch");
+            //}
 
             var response = await _userService.UpdateUserProfileAsync(dto);
             if (response.Status == "Error")
@@ -118,11 +118,11 @@ namespace SmartHome.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> UpdateAdmin(UpdateAdminUserProfileDto dto)
         {
-            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (id != dto.Id)
-            {
-                return BadRequest("User ID mismatch");
-            }
+            //var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //if (id != dto.Id)
+            //{
+            //    return BadRequest("User ID mismatch");
+            //}
 
             var response = await _userService.UpdateAdminUserProfileAsync(dto);
             if (response.Status == "Error")
