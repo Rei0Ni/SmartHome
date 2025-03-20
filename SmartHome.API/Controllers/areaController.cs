@@ -58,10 +58,11 @@ namespace SmartHome.API.Controllers
         }
 
         // DELETE api/<areaController>/5
-        [HttpDelete("remove")]
-        public async Task<ActionResult> Delete(DeleteAreaDto deleteAreaDto)
+        [HttpDelete("delete/{Id}")]
+        public async Task<ActionResult> Delete(Guid Id)
         {
-            await _areaService.DeleteArea(deleteAreaDto);
+            var dto = new DeleteAreaDto(){ Id = Id };
+            await _areaService.DeleteArea(dto);
             return NoContent();
         }
     }
