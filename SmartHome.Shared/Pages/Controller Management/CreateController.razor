@@ -1,0 +1,92 @@
+﻿@page "/create-controller"
+@using SmartHome.Dto.Area
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+@using SmartHome.Dto.Controller
+@layout MainLayout
+
+<AuthorizeView>
+    <Authorized>
+        @{
+            IsAdmin = context.User.IsInRole("Admin");
+        }
+
+        <h3 class="h3">Create Controller</h3>
+
+        <EditForm Context="controllerCreationContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm">
+            <DataAnnotationsValidator />
+            @* <ValidationSummary /> *@
+
+            <div class="form-group">
+                <label>Name:</label>
+                <InputText @bind-Value="NewController.Name" class="form-control" />
+                <ValidationMessage For="@(() => NewController.Name)" />
+            </div>
+            <div class="form-group">
+                <label>MAC Address:</label>
+                <InputText @bind-Value="NewController.MACAddress" type="text" class="form-control" />
+                <ValidationMessage For="@(() => NewController.MACAddress)" />
+            </div>
+            <div class="form-group">
+                <label>IP Address:</label>
+                <InputText @bind-Value="NewController.IPAddress" type="text" class="form-control" />
+                <ValidationMessage For="@(() => NewController.IPAddress)" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger">@ErrorMessage</div>
+            }
+
+            <button type="submit" class="btn btn-primary">Create Controller</button>
+
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to create Controller.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private CreateControllerDto NewController = new();
+    private bool IsAdmin;
+    private string ErrorMessage = string.Empty;
+
+    private async Task SubmitCreateControllerForm()
+    {
+        try
+        {
+            HttpResponseMessage result = await ApiService.PostAsync<CreateControllerDto>("/api/controller/create", NewController);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
+                if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+                {
+                    var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
+                    foreach (var error in errors)
+                    {
+                        toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
+                    }
+                }
+                else
+                {
+                    ErrorMessage = "Controller creation failed: " + response?.Data;
+                }
+            }
+            else
+            {
+                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Controller Created Successfully", "The Controller was Created Successfully"));
+
+                // Reset form and navigate
+                NewController = new CreateControllerDto();
+                StateHasChanged();
+                navigationManager.NavigateTo("/manage-controllers", false, false);
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred: " + ex.Message;
+        }
+    }
+}

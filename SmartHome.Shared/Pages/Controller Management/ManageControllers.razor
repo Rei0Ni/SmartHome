@@ -1,0 +1,146 @@
+﻿@page "/manage-controllers"
+@using System.Text.Json
+@using SmartHome.Dto.Controller
+@layout MainLayout
+
+<AuthorizeView>
+    <Authorized>
+        @if (!context.User.IsInRole("Admin"))
+        {
+            @* navigationManager.NavigateTo("/overview"); *@
+            toastService.Notify(new(ToastType.Warning, IconName.ExclamationTriangle, "Not Authorized", "You are NOT Authorized to be Here"));
+        }
+        <div class="d-flex justify-content-between align-items-center">
+            <h3 class="h3">Manage Controllers</h3>
+            <button class="btn btn-success" @onclick="NavigateToControllerCreation"><i class="bi bi-person-plus"></i></button>
+        </div>
+
+        <div class="p-2 mt-2 relative flex flex-col w-full h-full overflow-scroll text-gray-700 bg-white shadow-md rounded-xl bg-clip-border">
+            <table class="w-full text-left table-auto min-w-max" border="1">
+                <thead>
+                    <tr>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Name</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">Mac Address</th>
+                        <th class="p-2 border-b border-blue-gray-100 bg-blue-gray-50">IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var controller in controllers)
+                    {
+                        <tr>
+                            <td class="p-2 border-b border-blue-gray-50">@controller.Name</td>
+                            <td class="p-2 border-b border-blue-gray-50">@controller.MACAddress</td>
+                            <td class="p-2 border-b border-blue-gray-50">@controller.IPAddress</td>
+                            <td class="p-2 border-b border-blue-gray-50">
+                                <button class="btn btn-primary" @onclick="@(() => navigationManager.NavigateTo($"/edit-controller/{controller.Id.ToString()}"))">Edit</button>
+                                <button class="btn btn-danger" @onclick="() => ConfirmDelete(controller)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @if (controllers.Count == 0)
+        {
+            <div class="text-center mt-5">
+                <p>There are no Controllers here yet.</p>
+                <button class="btn btn-success mt-3" @onclick="NavigateToControllerCreation">Create a New Controller</button>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        @{
+            navigationManager.NavigateTo("/");
+            toastService.Notify(new(ToastType.Warning, IconName.ExclamationTriangle, "Not Authorized", "You are NOT Authorized to be Here"));
+        }
+    </NotAuthorized>
+</AuthorizeView>
+
+@if (showDeleteModal)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="close" @onclick="CloseDeleteModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete @selectedController?.Name?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" @onclick="DeleteController">Delete</button>
+                    <button class="btn btn-secondary" @onclick="CloseDeleteModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    List<ControllerDto> controllers = new List<ControllerDto>();
+    private bool showDeleteModal = false;
+    private ControllerDto? selectedController;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var result = await ApiService.GetAsync("api/controller/get/all");
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadFromJsonAsync<List<ControllerDto>>();
+            // var response = JsonSerializer.Deserialize<List<ControllerDto>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
+            // if (response!.Status == "Error")
+            // {
+            //     Show error message in toast
+            // }
+            // else
+            // {
+            //     controllers = JsonSerializer.Deserialize<List<ControllerDto>>(response.Data.ToString()!, new JsonSerializerOptions { PropertyNameCaseInsensitive = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase })!;
+            // }
+            controllers = content;
+        }
+        else
+        {
+            // Show error message in toast
+        }
+    }
+
+    private void NavigateToControllerCreation()
+    {
+        navigationManager.NavigateTo("/create-controller");
+    }
+
+    private void ConfirmDelete(ControllerDto controller)
+    {
+        selectedController = controller;
+        showDeleteModal = true;
+    }
+
+    private void CloseDeleteModal()
+    {
+        showDeleteModal = false;
+        selectedController = null;
+    }
+
+    private async Task DeleteController()
+    {
+        if (selectedController != null)
+        {
+
+            var result = await ApiService.SendAsync<object>(HttpMethod.Delete, $"api/controller/delete/{selectedController.Id}");
+            if (result.IsSuccessStatusCode)
+            {
+                controllers.Remove(selectedController);
+            }
+            else
+            {
+                // Show error message in toast
+            }
+            showDeleteModal = false;
+            selectedController = null;
+        }
+    }
+}

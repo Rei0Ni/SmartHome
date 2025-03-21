@@ -1,0 +1,123 @@
+﻿@page "/edit-controller/{Id}"
+@using SmartHome.Dto.Area
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+@using SmartHome.Dto.Controller
+@layout MainLayout
+
+<AuthorizeView>
+    <Authorized>
+        @{
+            IsAdmin = context.User.IsInRole("Admin");
+        }
+
+        <h3 class="h3">Edit Controller</h3>
+
+        <EditForm Context="controllerEditContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm">
+            <DataAnnotationsValidator />
+            @* <ValidationSummary /> *@
+
+            <div class="form-group">
+                <label>Name:</label>
+                <InputText @bind-Value="NewController.Name" class="form-control" />
+                <ValidationMessage For="@(() => NewController.Name)" />
+            </div>
+            <div class="form-group">
+                <label>MAC Address:</label>
+                <InputText @bind-Value="NewController.MACAddress" type="text" class="form-control" />
+                <ValidationMessage For="@(() => NewController.MACAddress)" />
+            </div>
+            <div class="form-group">
+                <label>IP Address:</label>
+                <InputText @bind-Value="NewController.IPAddress" type="text" class="form-control" />
+                <ValidationMessage For="@(() => NewController.IPAddress)" />
+            </div>
+
+            @if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                <div class="alert alert-danger">@ErrorMessage</div>
+            }
+
+            <button type="submit" class="btn btn-primary">Edit Controller</button>
+
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p>You are not authorized to Edit Controllers.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    private UpdateControllerDto NewController = new();
+    private bool IsAdmin;
+    private string ErrorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var result = await ApiService.GetAsync($"/api/controller/get/{Id}");
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadFromJsonAsync<ControllerDto>();
+            if (content != null)
+            {
+
+                NewController.Name = content.Name;
+                NewController.MACAddress = content.MACAddress;
+                NewController.IPAddress = content.IPAddress;
+            }
+            else
+            {
+                toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Failed to load Controller data.", "Couldn't load the Controller Data"));
+            }
+        }
+        else
+        {
+            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Failed to load Controller data.", "Couldn't load the Controller Data"));
+        }
+    }
+
+    private async Task SubmitCreateControllerForm()
+    {
+        try
+        {
+			NewController.Id = Guid.Parse(Id);
+            HttpResponseMessage result = await ApiService.SendAsync<UpdateControllerDto>(HttpMethod.Put, "/api/controller/update", NewController);
+
+            // if (!result.IsSuccessStatusCode)
+            // {
+            //     var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
+            //     if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+            //     {
+            //         var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
+            //         foreach (var error in errors)
+            //         {
+            //             toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
+            //         }
+            //     }
+            //     else
+            //     {
+            //         ErrorMessage = "Controller Edit failed: " + response?.Data;
+            //     }
+            // }
+            // else
+            // {
+            if(result.StatusCode == HttpStatusCode.NoContent){
+                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Controller Updated Successfully", "The Controller was Updated Successfully"));
+
+                // Reset form and navigate
+                NewController = new UpdateControllerDto();
+                StateHasChanged();
+                navigationManager.NavigateTo("/manage-controllers", false, false);
+            }
+            // }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred: " + ex.Message;
+        }
+    }
+}
