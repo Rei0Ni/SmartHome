@@ -399,5 +399,38 @@ namespace SmartHome.Application.Services.User
                 };
             }
         }
+
+        public async Task<ApiResponse<object>> UpdateUserPasswordAsync(UpdatePasswordDto dto)
+        {
+            var user = await _userManager.FindByNameAsync(dto.Username);
+            if (user == null)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "Password Reset Failed"
+                };
+            }
+
+            var TotpValid = _totpService.ValidateTotpCode(user.TOTPSecret, dto.Totp);
+
+            if (!TotpValid)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "Invalid TOTP"
+                };
+            }
+
+            var roken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, roken, dto.NewPassword);
+
+            return new ApiResponse<object>
+            {
+                Status = result.Succeeded ? ApiResponseStatus.Success.ToString() : ApiResponseStatus.Error.ToString(),
+                Message = result.Succeeded ? "Password Reset Successful" : "Password Reset Failed"
+            };
+        }
     }
 }
