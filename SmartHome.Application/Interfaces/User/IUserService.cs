@@ -21,6 +21,7 @@ namespace SmartHome.Application.Interfaces.User
         Task<ApiResponse<object>> CreateUserAsync(RegisterUserDto dto, Role role);
         Task<ApiResponse<object>> UpdateAdminUserProfileAsync(UpdateAdminUserProfileDto dto);
         Task<ApiResponse<object>> UpdateUserProfileAsync(UpdateUserProfileDto dto);
+        Task<ApiResponse<object>> UpdateUserPasswordAsync(UpdatePasswordDto dto);
         Task<ApiResponse<object>> DeleteUserAsync(Guid userId);
     }
 }

@@ -1,7 +1,10 @@
 ﻿@page "/create-user"
 @using SmartHome.Dto.Area
 @using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
 @layout MainLayout
+@using QRCoder
+@using System.IO
 
 <AuthorizeView>
     <Authorized>
@@ -106,6 +109,16 @@
             }
 
             <button type="submit" class="btn btn-primary">Create User</button>
+
+            @if (!string.IsNullOrEmpty(TotpQRUri))
+            {
+                <div class="mt-4">
+                    <img id="qrcodeImage" src="@TotpQRUri" alt="TOTP QR Code" />
+                    <p>Scan this QR code with your authenticator app (e.g., Google Authenticator, Authy).</p>
+                    <p>Secret Key: @SecretKey (For manual entry if needed)</p>
+                </div>
+            }
+
         </EditForm>
     </Authorized>
     <NotAuthorized>
@@ -148,11 +161,14 @@
     private bool IsModalVisible = false;
     private string ErrorMessage = string.Empty;
 
+    private string TotpQRUri = string.Empty;
+    private string SecretKey = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
         SelectedRole = IsAdmin ? "Admin" : "User";
-        var result = await ApiService.GetAsync("/api/area/getall");
+        var result = await ApiService.GetAsync("/api/area/get/all");
         if (result.IsSuccessStatusCode)
         {
             areas = await result.Content.ReadFromJsonAsync<List<AreaDto>>()!;
@@ -192,31 +208,78 @@
 
             if (!result.IsSuccessStatusCode)
             {
-                var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();  
-                if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)  
-                {  
-                    var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());  
-                    foreach (var error in errors)  
-                    {  
-                        // toastService.ShowError(error); 
-						toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
-                    }  
-                }  
-                else  
-                {  
-                    ErrorMessage = "User creation failed: " + response?.Data;  
+                var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
+                if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+                {
+                    var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
+                    foreach (var error in errors)
+                    {
+                        toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
+                    }
+                }
+                else
+                {
+                    ErrorMessage = "User creation failed: " + response?.Data;
                 }
             }
             else
             {
-                // toastService.ShowSuccess("User created successfully.");
-                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "User Created Successfully", "the User Created Successfullt"));
-                navigationManager.NavigateTo("/manage-users", true, false);
+                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "User Created Successfully", "The User was Created Successfully"));
+                var response = await result.Content.ReadFromJsonAsync<ApiResponse<Dictionary<string, string>>>();//Changed to Dictionary
+                if (response != null && response.Data != null)
+                {
+                    TotpQRUri = response.Data["totpQRUri"];//access by key
+                    SecretKey = response.Data["secretKey"];
+                    GenerateQRCode(TotpQRUri); // Generate QR Code
+                }
+                else
+                {
+                    ErrorMessage = "Failed to retrieve TOTP information.";
+                }
+
+                // Reset form and navigate
+                if (SelectedRole == "Admin")
+                {
+                    NewAdmin = new RegisterAdminUserDto();
+                }
+                else
+                {
+                    NewUser = new RegisterUserDto();
+                }
+                StateHasChanged();
+                // navigationManager.NavigateTo("/manage-users", true, false); // Removed: Navigate only after successful QR Code display
             }
         }
         catch (Exception ex)
         {
             ErrorMessage = "An unexpected error occurred: " + ex.Message;
+        }
+    }
+
+    private void GenerateQRCode(string qrCodeData)
+    {
+        using (QRCodeGenerator qrGenerator = new QRCodeGenerator())
+        {
+            QRCodeData qrCodeDataModel = qrGenerator.CreateQrCode(qrCodeData, QRCoder.QRCodeGenerator.ECCLevel.Q);
+            using (PngByteQRCode qrCode = new PngByteQRCode(qrCodeDataModel))
+            {
+                byte[] qrCodeImage = qrCode.GetGraphic(20);
+                TotpQRUri = "data:image/png;base64," + Convert.ToBase64String(qrCodeImage);
+                StateHasChanged(); // Update the UI
+            }
+            // using (QRCode qrCode = new QRCode(qrCodeDataModel))
+            // {
+            //     using (System.Drawing.Bitmap qrCodeBitmap = qrCode.GetGraphic(20)) Adjust size as needed
+            //     {
+            //         using (MemoryStream ms = new MemoryStream())
+            //         {
+            //             qrCodeBitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png); Or Jpeg
+            //             byte[] byteImage = ms.ToArray();
+            //             TotpQRUri = "data:image/png;base64," + Convert.ToBase64String(byteImage);
+            //             StateHasChanged(); Update the UI
+            //         }
+            //     }
+            // }
         }
     }
 }
