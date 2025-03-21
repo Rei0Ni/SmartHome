@@ -61,16 +61,21 @@
     }
 }
 
+@media (max-width: 640px) {
+    .min-h-screen {
+        min-height: 100dvh !important;
+    }
+}
 
 /* contianer */
 
-.container {
+/*.container {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);*/
     /*border:1px solid #000;*/
-    background-color: #FFF;
+    /*background-color: #FFF;
     border-radius: 28.46px;
     margin-top:0;
 }
@@ -81,9 +86,9 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        /*border:1px solid #000;*/
-        background-color: #FFFFFF;
+        transform: translate(-50%, -50%);*/
+    /*border:1px solid #000;*/
+    /*background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -95,9 +100,9 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        /*border:1px solid #000;*/
-        background-color: #FFFFFF;
+        transform: translate(-50%, -50%);*/
+    /*border:1px solid #000;*/
+    /*background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -109,9 +114,9 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        /*border:1px solid #000;*/
-        background-color: #FFFFFF;
+        transform: translate(-50%, -50%);*/
+    /*border:1px solid #000;*/
+    /*background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -123,9 +128,9 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        /*border:1px solid #000;*/
-        background-color: #FFFFFF;
+        transform: translate(-50%, -50%);*/
+    /*border:1px solid #000;*/
+    /*background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -137,9 +142,9 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        /*border:1px solid #000;*/
-        background-color: #FFFFFF;
+        transform: translate(-50%, -50%);*/
+    /*border:1px solid #000;*/
+    /*background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
@@ -151,12 +156,15 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
-        /*border:1px solid #000;*/
-        background-color: #FFFFFF;
+        transform: translate(-50%, -50%);*/
+    /*border:1px solid #000;*/
+    /*background-color: #FFFFFF;
         border-radius: 28.46px;
         margin-top: 0;
     }
-}
+}*/
+
+
+
 
 

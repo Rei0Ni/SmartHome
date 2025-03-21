@@ -15,7 +15,7 @@
       {
         "Path": "SmartHome.App\\SmartHome.App.csproj",
         "Action": "Start",
-        "DebugTarget": "Xiaomi M2004J19C (Android 11.0 - API 30)"
+        "DebugTarget": "OPPO CPH2631 (Android 15.0 - API 35)"
       }
     ]
   }
