@@ -51,7 +51,7 @@
 
 		<AndroidLinkMode>None</AndroidLinkMode>
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<AotAssemblies>False</AotAssemblies>
+		<RunAOTCompilation>False</RunAOTCompilation>
 		<PublishReadyToRun>false</PublishReadyToRun>
 	</PropertyGroup>
 

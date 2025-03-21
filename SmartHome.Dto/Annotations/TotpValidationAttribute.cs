@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace SmartHome.Application.Validations.Annotations
+namespace SmartHome.Dto.Annotations
 {
     public class TotpValidationAttribute : ValidationAttribute
     {

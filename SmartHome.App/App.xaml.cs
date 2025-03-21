@@ -1,4 +1,6 @@
-﻿using Serilog;
+﻿using Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;
+using Serilog;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace SmartHome.App
 {
@@ -9,6 +11,8 @@ namespace SmartHome.App
             InitializeComponent();
 
             MainPage = new MainPage(httpClientFactory, refreshService);
+
+            Current.On<Microsoft.Maui.Controls.PlatformConfiguration.Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
             TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;

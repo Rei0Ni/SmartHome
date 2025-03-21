@@ -1,22 +1,22 @@
-﻿.container .logoSmartHome {
+﻿.logoSmartHome {
     display:flex;
     text-align: center;
     justify-content: center;
 }
 
-.container .text {
+.text {
     font-size: 20px;
     font-weight: 900;
     text-align: center;
     color: #2E0163;
 }
 
-.container form  {
+form  {
     margin-top: -20px;
     color: #fff;
 }
 
-.container form .data  {
+form .data  {
     height: 45px;
     width: 100%;
     margin: 40px 0;
@@ -86,11 +86,11 @@ form .LoginBtn  {
 }
 
 @media (min-width: 300px) {
-    .container form  {
+     form  {
         color: #000;
     }
 
-    .container .text {
+     .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
@@ -99,11 +99,11 @@ form .LoginBtn  {
 }
 
 @media (min-width: 576px) {
-    .container form  {
+     form  {
         color: #000;
     }
 
-    .container .text {
+     .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
@@ -112,11 +112,11 @@ form .LoginBtn  {
 }
 
 @media (min-width: 768px) {
-    .container form  {
+     form  {
         color: #000;
     }
 
-    .container .text {
+     .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
@@ -125,11 +125,11 @@ form .LoginBtn  {
 }
 
 @media (min-width: 992px) {
-    .container form  {
+     form  {
         color: #fff;
     }
 
-    .container .text {
+     .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
@@ -138,11 +138,11 @@ form .LoginBtn  {
 }
 
 @media (min-width: 1200px) {
-    .container form  {
+     form  {
         color: #fff;
     }
 
-    .container .text {
+     .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
@@ -151,11 +151,11 @@ form .LoginBtn  {
 }
 
 @media (min-width: 1400px) {
-    .container form  {
+     form  {
         color: #fff;
     }
 
-    .container .text {
+     .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
