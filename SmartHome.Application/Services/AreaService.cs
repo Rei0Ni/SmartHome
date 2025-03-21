@@ -162,6 +162,10 @@ namespace SmartHome.Application.Services
             var userAreas = await _userAreasRepository.GetUserAreasByIdAsync(userId);
             List<Area> areas = new();
 
+            if (userAreas == null)
+            {
+                return new List<AreaDto>();
+            }
             foreach (var allowedAreaId in userAreas.AllowedAreaIds)
             {
                 var area = await _areaRepository.GetArea(allowedAreaId);

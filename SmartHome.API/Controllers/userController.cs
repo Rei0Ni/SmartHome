@@ -132,6 +132,17 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
+        [HttpPut("update/password")]
+        public async Task<ActionResult<ApiResponse<object>>> UpdatePassword(UpdatePasswordDto dto)
+        {
+            var response = await _userService.UpdateUserPasswordAsync(dto);
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         // DELETE api/<userController>/5
         [HttpDelete("delete/{Id}")]
         [Authorize(Roles = "Admin")]
