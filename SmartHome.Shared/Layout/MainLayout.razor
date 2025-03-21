@@ -1,28 +1,24 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavManager
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Home</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> *@
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
-    <style>
-        i {
-            color: white;
+
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"> *@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+<link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+<style>
+    i {
+        color: white;
             
-        }
-        a {
-            text-decoration: none;
-        }
-    </style>
-</head>
-<body>
+    }
+    a {
+        text-decoration: none;
+    }
+</style>
+<AuthorizeView>
+    <Authorized>
     <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 
     <!-- Vertical Sidebar -->
@@ -126,17 +122,14 @@
                                     <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
                                 }
                             </div>
-                            <AuthorizeView>
-                                <Authorized>
+                            
                                     <div class="flex items-center space-x-2">
                                         <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                             class="w-6 h-6 rounded-full cursor-pointer"
+                                             class="w-8 h-8 rounded-full cursor-pointer"
                                              alt="User Avatar"
                                              @onclick="ToggleUserMenu">
-                                        <span>@context.User.Identity.Name</span>
                                     </div>
-                                </Authorized>
-                            </AuthorizeView>
+                               
                             
                             <!-- w-8 h-8 deafult for user prof -->
                             <!-- User Menu Popup -->
@@ -144,14 +137,36 @@
                             {
                                 <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
                                 <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
-                                        <span><i class="fa-solid fa-circle-user text-black"></i> Profile</span>
+                                    <!-- User Info Section -->
+                                    <div class="flex flex-col items-center px-4 py-3 border-b">
+                                        <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+                                             class="w-12 h-12 rounded-full mx-auto mb-2"
+                                             alt="User Avatar">
+                                        <span class="text-sm font-semibold text-gray-800">Hey, @context.User.Identity.Name</span>
                                     </div>
-                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
-                                        <span><i class="fa-solid fa-gear text-black"></i> Settings</span>
-                                    </div>
-                                    <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
-                                        <span @onclick="logout"><i class="fa-solid fa-arrow-right-from-bracket text-black"></i> Logout</span>
+
+                                    <!-- Menu Items -->
+                                    <div class="px-2 py-2">
+                                        <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-circle-user text-black text-sm"></i>
+                                                <span class="text-gray-700 text-sm">Profile</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                            <div class="flex items-center space-x-3">
+                                                <i class="fa-solid fa-gear text-black text-sm"></i>
+                                                <span class="text-gray-700 text-sm">Settings</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                            <div class="flex items-center space-x-3" @onclick="logout">
+                                                <i class="fa-solid fa-arrow-right-from-bracket text-black text-sm"></i>
+                                                <span class="text-gray-700 text-sm">Logout</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             }
@@ -222,9 +237,8 @@
     <!-- Add sortable.js reference if SortableList component is used in your application. -->
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
-
-</body>
-</html>
+    </Authorized>
+</AuthorizeView>
 
 @code {
     private bool isCollapsed = true;
