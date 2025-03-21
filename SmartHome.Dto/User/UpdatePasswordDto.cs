@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHome.Application.Validations.Annotations;
+using SmartHome.Dto.Annotations;
 
 namespace SmartHome.Dto.User
 {
