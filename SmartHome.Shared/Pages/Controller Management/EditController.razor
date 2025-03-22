@@ -114,7 +114,7 @@
     {
         try
         {
-			NewController.Id = Guid.Parse(Id);
+            NewController.Id = Guid.Parse(Id);
             HttpResponseMessage result = await ApiService.SendAsync<UpdateControllerDto>(HttpMethod.Put, "/api/controller/update", NewController);
 
             // if (!result.IsSuccessStatusCode)
@@ -135,7 +135,8 @@
             // }
             // else
             // {
-            if(result.StatusCode == HttpStatusCode.NoContent){
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
                 toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Controller Updated Successfully", "The Controller was Updated Successfully"));
 
                 // Reset form and navigate
