@@ -1,0 +1,305 @@
+﻿@page "/profile"
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms;
+@using System.IO;
+
+@layout MainLayout
+
+
+<div class="p-4">
+	<AuthorizeView>
+		<Authorized>
+			@{
+				IsAdmin = context.User.IsInRole("Admin");
+			}
+			@if (IsAdmin)
+			{
+				<div class="row mb-4">
+					<div class="col-8">
+						<div class="row">
+							<div class="col-4 text-center">
+								<label class="position-relative cursor-pointer">
+									<!-- Clickable image/label -->
+									@if (!string.IsNullOrEmpty(adminUser.ProfilePictureUrl))
+									{
+										<img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + adminUser.ProfilePictureUrl)"
+										class="w-20 h-20 rounded-full cursor-pointer"
+										alt="User Avatar">
+									}
+									else
+									{
+										<div class="w-20 h-20 rounded-full bg-secondary"></div>
+									}
+
+									<!-- Hidden file input -->
+									<InputFile class="d-none"
+									OnChange="HandleFileUpload"
+									accept="image/*" />
+								</label>
+
+							</div>
+							<div class="col-8 flex items-center">
+								<p>@adminUser.FirstName @adminUser.LastName</p>
+								<p>@adminUser.Email</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-4 text-end grid items-center justify-items-end">
+						<button class="btn" style="background-color: #2E0163; color: #FEFEFE;" @onclick="ToggleEdit">Edit</button>
+					</div>
+				</div>
+				<EditForm Context="adminUserEditContext" Model="newAdminProfile" OnValidSubmit="SaveChanges">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label for="firstName" class="form-label">First Name</label>
+							<InputText id="firstName" class="form-control" @bind-Value="newAdminProfile.FirstName" disabled="@(isEditing ? false : true)" />
+						</div>
+						<div class="col-md-6">
+							<label for="lastName" class="form-label">Last Name</label>
+							<InputText id="lastName" class="form-control" @bind-Value="newAdminProfile.LastName" disabled="@(isEditing ? false : true)" />
+						</div>
+					</div>
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label for="email" class="form-label">Email</label>
+							<InputText id="email" class="form-control" @bind-Value="newAdminProfile.Email" disabled="@(isEditing ? false : true)" />
+						</div>
+					</div>
+					@if (isEditing)
+					{
+						<button type="submit" class="btn btn-primary">Save</button>
+						<button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+					}
+				</EditForm>
+			}
+			else
+			{
+				<div class="row mb-4">
+					<div class="col-8">
+						<div class="row">
+							<div class="col-2 text-center">
+								<label class="position-relative cursor-pointer">
+									<!-- Clickable image/label -->
+									@if (!string.IsNullOrEmpty(user.ProfilePictureUrl))
+									{
+										<img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + user.ProfilePictureUrl)"
+										class="w-20 h-20 rounded-full cursor-pointer"
+										alt="User Avatar">
+									}
+									else
+									{
+										<div class="w-20 h-20 rounded-full bg-secondary"></div>
+									}
+
+									<!-- Hidden file input -->
+									<InputFile class="d-none"
+									OnChange="HandleFileUpload"
+									accept="image/*" />
+								</label>
+							</div>
+							<div class="col-10 flex items-center">
+								<p>@user.FirstName @user.LastName</p>
+							</div>
+						</div>
+					</div>
+					<div class="col-4 text-end grid items-center justify-items-end">
+						<button class="btn" style="background-color: #2E0163; color: #FEFEFE;" @onclick="ToggleEdit">Edit</button>
+					</div>
+				</div>
+				<EditForm Context="userEditContext" Model="newUserProfile" OnValidSubmit="SaveChanges">
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<label for="firstName" class="form-label">First Name</label>
+							<InputText id="firstName" class="form-control" @bind-Value="newUserProfile.FirstName" disabled="@(isEditing ? false : true)" />
+						</div>
+						<div class="col-md-6">
+							<label for="lastName" class="form-label">Last Name</label>
+							<InputText id="lastName" class="form-control" @bind-Value="newUserProfile.LastName" disabled="@(isEditing ? false : true)" />
+						</div>
+					</div>
+					@if (isEditing)
+					{
+						<button type="submit" class="btn btn-primary">Save</button>
+						<button type="button" class="btn btn-secondary" @onclick="CancelEdit">Cancel</button>
+					}
+				</EditForm>
+			}
+		</Authorized>
+		<NotAuthorized>
+			<p>You are not authorized to view this page.</p>
+		</NotAuthorized>
+	</AuthorizeView>
+</div>
+
+@code{
+
+	private AdminUserDto adminUser = new AdminUserDto();
+	private UserDto user = new UserDto();
+	private UpdateAdminUserProfileDto newAdminProfile = new UpdateAdminUserProfileDto();
+	private UpdateUserProfileDto newUserProfile = new UpdateUserProfileDto();
+	private InputFile profilePictureInput;
+	private IBrowserFile selectedFile;
+	private bool IsAdmin = false;
+	private bool isEditing = false;
+	private bool isUploading = false;
+
+
+	protected override async Task OnInitializedAsync()
+	{
+		await base.OnInitializedAsync();
+		// Load user data based on the role
+		HttpResponseMessage result = await ApiService.GetAsync("/api/user/get");
+		if (!result.IsSuccessStatusCode)
+		{
+			// Handle error
+		}
+		else  
+		{  
+			var content = await result.Content.ReadFromJsonAsync<ApiResponse<JsonElement>>();
+			if (content != null)  
+			{  
+				var root = content.Data;
+				// Determine which DTO to use based on the presence of the 'email' property.
+				if (root.TryGetProperty("email", out _))
+				{
+					adminUser = JsonSerializer.Deserialize<AdminUserDto>(
+						root.GetRawText(),
+						new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+					)!;
+					newAdminProfile.Id = adminUser.Id.ToString();
+					newAdminProfile.FirstName = adminUser.FirstName;
+					newAdminProfile.LastName = adminUser.LastName;
+					newAdminProfile.Email = adminUser.Email;
+				}
+				else
+				{
+					user = JsonSerializer.Deserialize<UserDto>(
+						root.GetRawText(),
+						new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+					)!;
+					newUserProfile.Id = user.Id.ToString();
+					newUserProfile.FirstName = user.FirstName;
+					newUserProfile.LastName = user.LastName;
+				}
+			}  
+		}
+
+	}
+
+	private void ToggleEdit()
+	{
+		isEditing = !isEditing;
+	}
+
+	private void CancelEdit()
+	{
+		isEditing = false;
+	}
+
+	private async Task SaveChanges()
+	{
+		// Implement the logic to save changes
+		isEditing = false;
+		HttpResponseMessage response;
+		if (IsAdmin)
+		{
+			response = await ApiService.SendAsync(HttpMethod.Put, "/api/user/update/admin", newAdminProfile);
+		}
+		else
+		{
+			response = await ApiService.SendAsync(HttpMethod.Put, "/api/user/update/", newUserProfile);
+		}
+
+		if (response.IsSuccessStatusCode)
+		{
+			toastService.Notify(new(ToastType.Success, IconName.HandThumbsUp, "Profile updated successfully.", "User profile has been updated successfully"));
+			// navigationManager.NavigateTo("/manage-users");
+			navigationManager.NavigateTo(navigationManager.Uri, true, false);
+		}
+		else
+		{
+			var responseContent = response.Content.ReadAsStringAsync();
+			toastService.Notify(new(ToastType.Danger, IconName.Bug, "Failed to update user profile.", "Couldn't update user profile"));
+		}
+	}
+
+	// private async Task TriggerFileInput()
+	// {
+	// 	await jsRuntime.InvokeVoidAsync("triggerFileInput", profilePictureInput.Element);
+	// }
+
+	private string GetProfilePictureUrl(string originalUrl)
+	{
+		// Add cache busting parameter
+		return $"{originalUrl}?v={DateTime.Now.Ticks}";
+	}
+
+	private void UpdateProfilePictureUrl(string newUrl)
+	{
+		if (IsAdmin)
+		{
+			adminUser.ProfilePictureUrl = newUrl;
+		}
+		else
+		{
+			user.ProfilePictureUrl = newUrl;
+		}
+		StateHasChanged();
+	}
+
+	private async Task HandleFileUpload(InputFileChangeEventArgs e)
+	{
+		var file = e.File;
+		if (file == null) return;
+
+		// Validate file
+		if (!file.ContentType.Contains("image/"))
+		{
+			toastService.Notify(new(ToastType.Warning, "Invalid file type", "Please select an image file"));
+			return;
+		}
+
+		// Limit file size to 2MB
+		const int maxFileSize = 2 * 1024 * 1024;
+		if (file.Size > maxFileSize)
+		{
+			toastService.Notify(new(ToastType.Warning, "File too large", "Maximum file size is 2MB"));
+			return;
+		}
+
+		isUploading = true;
+		try
+		{
+			var memoryStream = new MemoryStream();
+			await file.OpenReadStream(file.Size).CopyToAsync(memoryStream);
+			memoryStream.Position = 0;
+
+			var fileContent = memoryStream.ToArray();
+
+			var content = new MultipartFormDataContent();
+			content.Add(new ByteArrayContent(fileContent), "ProfilePicture", file.Name);
+
+			var response = await ApiService.SendAsync(
+				HttpMethod.Put,
+				"api/user/update/profile-picture",
+				content
+			);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var result = await response.Content.ReadFromJsonAsync<ApiResponse<string>>();
+				UpdateProfilePictureUrl(result.Data);
+				toastService.Notify(new(ToastType.Success, "Profile picture updated"));
+			}
+			else
+			{
+				var error = await response.Content.ReadAsStringAsync();
+				toastService.Notify(new(ToastType.Danger, "Update failed", error));
+			}
+		}
+		finally
+		{
+			isUploading = false;
+		}
+	}
+}

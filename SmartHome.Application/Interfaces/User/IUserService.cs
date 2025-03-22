@@ -22,6 +22,8 @@ namespace SmartHome.Application.Interfaces.User
         Task<ApiResponse<object>> UpdateAdminUserProfileAsync(UpdateAdminUserProfileDto dto);
         Task<ApiResponse<object>> UpdateUserProfileAsync(UpdateUserProfileDto dto);
         Task<ApiResponse<object>> UpdateUserPasswordAsync(UpdatePasswordDto dto);
+        Task<ApiResponse<object>> GetProfilePictureAsync(string userId);
+        Task<ApiResponse<object>> UpdateProfilePictureAsync(UpdateProfilePictureDto dto, string userId);
         Task<ApiResponse<object>> DeleteUserAsync(Guid userId);
     }
 }

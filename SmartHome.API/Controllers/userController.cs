@@ -46,6 +46,19 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
+        [HttpGet("get")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<object>>> GetUserProfile()
+        {
+            var Id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _userService.GetUserData(new Guid(Id));
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
         [HttpPost("create/admin")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ApiResponse<object>>> CreateAdminUser(RegisterAdminUserDto dto)
@@ -136,6 +149,32 @@ namespace SmartHome.API.Controllers
         public async Task<ActionResult<ApiResponse<object>>> UpdatePassword(UpdatePasswordDto dto)
         {
             var response = await _userService.UpdateUserPasswordAsync(dto);
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpPut("update/profile-picture")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateProfilePicture([FromForm] UpdateProfilePictureDto dto)
+        {
+            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _userService.UpdateProfilePictureAsync(dto, id);
+            if (response.Status == "Error")
+            {
+                return BadRequest(response);
+            }
+            return Ok(response);
+        }
+
+        [HttpGet("get/profile-picture")]
+        [Authorize]
+        public async Task<ActionResult<ApiResponse<object>>> GetProfilePicture([FromForm] UpdateProfilePictureDto dto)
+        {
+            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var response = await _userService.GetProfilePictureAsync(id);
             if (response.Status == "Error")
             {
                 return BadRequest(response);
