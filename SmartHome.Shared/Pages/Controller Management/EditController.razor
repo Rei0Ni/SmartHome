@@ -11,41 +11,71 @@
             IsAdmin = context.User.IsInRole("Admin");
         }
 
-        <h3 class="h3">Edit Controller</h3>
+        <!-- Header Section -->
+        <div class="mb-8 px-4">
+            <h3 class="text-2xl font-semibold text-gray-800">Edit Controller</h3>
+        </div>
 
         <EditForm Context="controllerEditContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm">
             <DataAnnotationsValidator />
-            @* <ValidationSummary /> *@
 
-            <div class="form-group">
-                <label>Name:</label>
-                <InputText @bind-Value="NewController.Name" class="form-control" />
-                <ValidationMessage For="@(() => NewController.Name)" />
+            <!-- Form Grid -->
+            <div class="max-w-2xl mx-auto space-y-6 px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Name Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <InputText @bind-Value="NewController.Name"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Enter Controller Name" />
+                        <ValidationMessage For="@(() => NewController.Name)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <!-- MAC Address Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">MAC Address</label>
+                        <InputText @bind-Value="NewController.MACAddress"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="XX:XX:XX:XX:XX:XX" />
+                        <ValidationMessage For="@(() => NewController.MACAddress)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <!-- IP Address Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">IP Address</label>
+                        <InputText @bind-Value="NewController.IPAddress"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="192.168.1.1" />
+                        <ValidationMessage For="@(() => NewController.IPAddress)" class="text-red-500 text-sm" />
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="p-4 bg-red-50 text-red-700 rounded-md">
+                        @ErrorMessage
+                    </div>
+                }
+
+                <!-- Submit Button -->
+                <div class="pt-6">
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        <i class="bi bi-pencil-square"></i>
+                        Update Controller
+                    </button>
+                </div>
             </div>
-            <div class="form-group">
-                <label>MAC Address:</label>
-                <InputText @bind-Value="NewController.MACAddress" type="text" class="form-control" />
-                <ValidationMessage For="@(() => NewController.MACAddress)" />
-            </div>
-            <div class="form-group">
-                <label>IP Address:</label>
-                <InputText @bind-Value="NewController.IPAddress" type="text" class="form-control" />
-                <ValidationMessage For="@(() => NewController.IPAddress)" />
-            </div>
-
-            @if (!string.IsNullOrEmpty(ErrorMessage))
-            {
-                <div class="alert alert-danger">@ErrorMessage</div>
-            }
-
-            <button type="submit" class="btn btn-primary">Edit Controller</button>
-
         </EditForm>
     </Authorized>
     <NotAuthorized>
-        <p>You are not authorized to Edit Controllers.</p>
+        <div class="p-4 bg-red-100 text-red-700 rounded-md mx-4 my-6">
+            You are not authorized to edit controllers.
+        </div>
     </NotAuthorized>
 </AuthorizeView>
+
 
 @code {
     [Parameter]
