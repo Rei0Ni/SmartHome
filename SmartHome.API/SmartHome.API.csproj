@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\ProfilePictures\fa22d8b9-23e1-4a54-b6e1-4eaf27aa658a.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
     <PackageReference Include="AspNetCore.Identity.Mongo" Version="9.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
@@ -23,6 +27,10 @@
   <ItemGroup>
     <Folder Include="Attributes\" />
     <Folder Include="Shared\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\ProfilePictures\fa22d8b9-23e1-4a54-b6e1-4eaf27aa658a.jpg" />
   </ItemGroup>
 
   <ItemGroup>

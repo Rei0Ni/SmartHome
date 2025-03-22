@@ -21,7 +21,7 @@ namespace SmartHome.Application.Services
             _configuration = configuration;
         }
 
-        public string GenerateJwtToken(string userId, string username, string email, IList<string> userRoles)
+        public string GenerateJwtToken(string userId, string username, string email, string profilepictureurl, IList<string> userRoles)
         {
             try
             {
@@ -30,6 +30,7 @@ namespace SmartHome.Application.Services
                     new Claim(JwtRegisteredClaimNames.Sub, userId),
                     new Claim(JwtRegisteredClaimNames.Email, email),
                     new Claim(JwtRegisteredClaimNames.Name, username),
+                    new Claim("profilepicture", profilepictureurl),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 
