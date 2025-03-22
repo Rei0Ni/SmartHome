@@ -30,7 +30,7 @@ namespace SmartHome.Application.Services
                     new Claim(JwtRegisteredClaimNames.Sub, userId),
                     new Claim(JwtRegisteredClaimNames.Email, email),
                     new Claim(JwtRegisteredClaimNames.Name, username),
-                    new Claim("profilepicture", profilepictureurl),
+                    new Claim("profilepicture", profilepictureurl ?? ""),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                 };
 

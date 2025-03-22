@@ -10,131 +10,140 @@
 <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
 <style>
     i {
-        color: white;
-            
+    color: white;
+
     }
     a {
-        text-decoration: none;
+    text-decoration: none;
     }
 </style>
 <AuthorizeView>
     <Authorized>
-    <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+        <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
 
-    <!-- Vertical Sidebar -->
-    <div class="flex min-h-screen ">
-        <aside class="@sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col " style="background-color: #120126;">
-            <div class="flex-1">
-                <div>
-                    <!-- Collapse Toggle -->
-                    <div class="flex justify-start p-4">
-                        <button @onclick="ToggleSidebar" class="text-white">
-                            <i class="fas fa-@(isCollapsed ? "bars" : "chevron-left")"></i>
-                        </button>
-                        <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white" id="navbar-title">Smart Home</span>
-                    </div>
-
-                    <!-- Menu Items -->
-                    <nav class="space-y-4 px-2">
-
-                        <NavLink href="/overview" class="@GetNavItemClass("/overview")" style="height: 44px;">
-                            <i class="bi bi-columns-gap text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
-                            <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Overview</span>
-                        </NavLink>
-
-                        <NavLink href="/Counter" class="@GetNavItemClass("/Counter")" style="height: 44px;">
-                            <i class="fas fa-list text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
-                            <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Logs</span>
-                        </NavLink>
-
-                        <NavLink href="/manage-users" class="@GetNavItemClass("/manage-users")" style="height: 44px;">
-                            <i class="bi bi-people text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
-                            <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Users</span>
-                        </NavLink>
-
-                            <NavLink href="/manage-controllers" class="@GetNavItemClass("/manage-controllers")" style="height: 44px;">
-                                <i class="bi bi-motherboard text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
-                               
-                                <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Controllers</span>
-                        </NavLink>
-                    </nav>
-                </div>
-            </div>
-
-            <!-- Settings at Bottom -->
-            <div class="absolute p-3 bottom-0 left-0 right-0  border-t border-gray-700 hover:bg-gray-700 ">
-                <NavLink href="/Settings" class="@GetNavItemClass("/Settings")">
-                    <i class="fas fa-cog text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
-                    <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Settings</span>
-                </NavLink>
-            </div>
-        </aside>
-        <!-- Main Content -->
-        <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
-            <!-- Horizontal Navbar -->
-            <nav class="" style="background-color: #F9F9F9;">
-                <div class="mx-auto px-4">
-                    <div class="flex justify-between items-center h-16">
-                        <!-- Left Section (Weather on Desktop) -->
-                        <div class="hidden md:flex items-center space-x-2 " >
-                            <i class="fas fa-cloud-sun text-xl" style="color:#FBB03B;"></i>
-                            <span class="text-black">28°C</span>
+        <!-- Vertical Sidebar -->
+        <div class="flex min-h-screen ">
+            <aside class="@sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col " style="background-color: #120126;">
+                <div class="flex-1">
+                    <div>
+                        <!-- Collapse Toggle -->
+                        <div class="flex justify-start p-4">
+                            <button @onclick="ToggleSidebar" class="text-white">
+                                <i class="fas fa-@(isCollapsed ? "bars" : "chevron-left")"></i>
+                            </button>
+                            <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white" id="navbar-title">Smart Home</span>
                         </div>
 
-                        <!-- Mobile Menu Button -->
-                        <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
-                            <i class="fas fa-bars text-xl text-black"></i>
-                        </button>
+                        <!-- Menu Items -->
+                        <nav class="space-y-4 px-2">
 
-                        <!-- Center Logo -->
-                        @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
+                            <NavLink href="/overview" class="@GetNavItemClass("/overview")" style="height: 44px;">
+                                <i class="bi bi-columns-gap text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Overview</span>
+                            </NavLink>
 
-                        <!-- Right Section (User & Notifications) -->
+                            <NavLink href="/Counter" class="@GetNavItemClass("/Counter")" style="height: 44px;">
+                                <i class="fas fa-list text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Logs</span>
+                            </NavLink>
 
-                        <div class="flex items-center space-x-4 relative">
-                            <!-- زر الإشعارات -->
-                            <div class="relative">
-                                <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
-                                    <i class="fas fa-bell text-xl" style="color:#ffd26a"></i>
-                                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                                </button>
+                            <NavLink href = "/manage-users" class="@GetNavItemClass("/manage-users")" style="height: 44px;">
+                                <i class="bi bi-people text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Users</span>
+                            </NavLink>
 
-                                <!-- Notifications list -->
-                                @if (showNotifications)
-                                {
-                                    <!-- start Notification pop -->
-                                    <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                                        <div class="p-4 border-b">
-                                            <h6 class="font-semibold text-gray-800">Notification</h6>
-                                        </div>
-                                        <div class="max-h-64 overflow-y-auto">
-                                            <!--  Notification pop menu -->
-                                            <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
-                                                <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
-                                                <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
-                                            </div>
-                                            <div class="p-3 hover:bg-gray-50 cursor-pointer">
-                                                <div class="text-sm text-gray-800">The temperature is high</div>
-                                                <div class="text-xs text-gray-500 mt-1">An hour ago</div>
-                                            </div>
-                                        </div>
+                            <NavLink href = "/manage-controllers" class="@GetNavItemClass("/manage-controllers")" style="height: 44px;">
+                                <i class="bi bi-motherboard text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Controllers</span>
+                            </NavLink>
 
-                                        <div class="p-2 border-t text-center">
-                                            <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
-                                        </div>
-                                    </div>
-                                    <!-- end notification pop-->
-                                    <!-- close menu when you clicked out of Area -->
-                                    <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
-                                }
+
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Settings at Bottom -->
+                <div class="absolute p-3 bottom-0 left-0 right-0  border-t border-gray-700 hover:bg-gray-700 ">
+                    <NavLink href="/Settings" class="@GetNavItemClass("/Settings")">
+                        <i class="fas fa-cog text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
+                        <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Settings</span>
+                    </NavLink>
+                </div>
+            </aside>
+            <!-- Main Content -->
+            <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
+                <!-- Horizontal Navbar -->
+                <nav class="" style="background-color: #F9F9F9;">
+                    <div class="mx-auto px-4">
+                        <div class="flex justify-between items-center h-16">
+                            <!-- Left Section (Weather on Desktop) -->
+                            <div class="hidden md:flex items-center space-x-2 " >
+                                <i class="fas fa-cloud-sun text-xl" style="color:#FBB03B;"></i>
+                                <span class="text-black">28°C</span>
                             </div>
-                            
-                                    <div class="flex items-center space-x-2">
+
+                            <!-- Mobile Menu Button -->
+                            <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
+                                <i class="fas fa-bars text-xl text-black"></i>
+                            </button>
+
+                            <!-- Center Logo -->
+                            @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
+
+                            <!-- Right Section (User & Notifications) -->
+
+                            <div class="flex items-center space-x-4 relative">
+                                <!-- زر الإشعارات -->
+                                <div class="relative">
+                                    <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
+                                        <i class="fas fa-bell text-xl" style="color:#ffd26a"></i>
+                                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                                    </button>
+
+                                    <!-- Notifications list -->
+                                    @if (showNotifications)
+                                    {
+                                        <!-- start Notification pop -->
+                                        <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                            <div class="p-4 border-b">
+                                                <h6 class="font-semibold text-gray-800">Notification</h6>
+                                            </div>
+                                            <div class="max-h-64 overflow-y-auto">
+                                                <!--  Notification pop menu -->
+                                                <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
+                                                    <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
+                                                    <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
+                                                </div>
+                                                <div class="p-3 hover:bg-gray-50 cursor-pointer">
+                                                    <div class="text-sm text-gray-800">The temperature is high</div>
+                                                    <div class="text-xs text-gray-500 mt-1">An hour ago</div>
+                                                </div>
+                                            </div>
+
+                                            <div class="p-2 border-t text-center">
+                                                <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
+                                            </div>
+                                        </div>
+                                        <!-- end notification pop-->
+                                        <!-- close menu when you clicked out of Area -->
+                                        <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
+                                    }
+                                </div>
+
+                                <div class="flex items-center space-x-2">
+                                    @if (context.User.Claims.Any(x => x.Type == "profilepicture")){
+                                        var profilepicture = context.User.FindFirst("profilepicture").Value;
+                                        <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
+                                             class="w-8 h-8 rounded-full cursor-pointer"
+                                             alt="User Avatar"
+                                             @onclick="ToggleUserMenu">
+                                    }else{
                                         <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
                                              class="w-8 h-8 rounded-full cursor-pointer"
                                              alt="User Avatar"
                                              @onclick="ToggleUserMenu">
-                                    </div>
+                                    }
+                                </div>
                                
                             
                             <!-- w-8 h-8 deafult for user prof -->
@@ -145,16 +154,28 @@
                                 <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                                     <!-- User Info Section -->
                                     <div class="flex flex-col items-center px-4 py-3 border-b">
-                                        <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                             class="w-12 h-12 rounded-full mx-auto mb-2"
-                                             alt="User Avatar">
+                                        @if (context.User.Claims.Any(x => x.Type == "profilepicture"))
+                                        {
+                                            var profilepicture = context.User.FindFirst("profilepicture").Value;
+                                            <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
+                                                    class="w-12 h-12 rounded-full cursor-pointer"
+                                                    alt="User Avatar"
+                                                    @onclick="ToggleUserMenu">
+                                        }
+                                        else
+                                        {
+                                            <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+                                                    class="w-12 h-12 rounded-full cursor-pointer"
+                                                    alt="User Avatar"
+                                                    @onclick="ToggleUserMenu">
+                                        }
                                         <span class="text-sm font-semibold text-gray-800">Hey, @context.User.Identity.Name</span>
                                     </div>
 
                                     <!-- Menu Items -->
                                     <div class="px-2 py-2">
                                         <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                            <div class="flex items-center space-x-3">
+                                            <div class="flex items-center space-x-3" @onclick="@(x => navigationManager.NavigateTo("/profile"))">
                                                 <i class="fa-solid fa-circle-user text-black text-sm"></i>
                                                 <span class="text-gray-700 text-sm">Profile</span>
                                             </div>
