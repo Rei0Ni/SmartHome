@@ -234,6 +234,8 @@ app.MapControllers();
 
 app.MapHub<OverviewHub>("/wss/overview");
 
+app.UseStaticFiles();
+
 using (var scope = app.Services.CreateScope())
 {
     var seedDataService = scope.ServiceProvider.GetRequiredService<ISeedDataService>();

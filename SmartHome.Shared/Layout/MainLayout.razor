@@ -129,10 +129,22 @@
                             <AuthorizeView>
                                 <Authorized>
                                     <div class="flex items-center space-x-2">
-                                        <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                             class="w-6 h-6 rounded-full cursor-pointer"
-                                             alt="User Avatar"
-                                             @onclick="ToggleUserMenu">
+                                        @if (context.User.Claims.Any(c => c.Type == "profilepicture"))
+                                        {
+                                            var profilePictureUrl = context.User.FindFirst("profilepicture")?.Value;
+                                            <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilePictureUrl)"
+                                                 class="w-6 h-6 rounded-full cursor-pointer"
+                                                 alt="User Avatar"
+                                                 @onclick="ToggleUserMenu">
+                                        }
+                                        else
+                                        {
+                                            <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+                                                 class="w-6 h-6 rounded-full cursor-pointer"
+                                                 alt="User Avatar"
+                                                 @onclick="ToggleUserMenu">
+                                        }
+                                        
                                         <span>@context.User.Identity.Name</span>
                                     </div>
                                 </Authorized>
@@ -145,7 +157,7 @@
                                 <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
                                 <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                                     <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
-                                        <span><i class="fa-solid fa-circle-user text-black"></i> Profile</span>
+                                        <span @onclick="@(x => navigationManager.NavigateTo("/profile"))"><i class="fa-solid fa-circle-user text-black"></i> Profile</span>
                                     </div>
                                     <div class="px-4 py-2 hover:bg-gray-100 cursor-pointer" @onclick:stopPropagation>
                                         <span><i class="fa-solid fa-gear text-black"></i> Settings</span>

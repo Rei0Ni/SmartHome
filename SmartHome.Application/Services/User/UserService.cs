@@ -19,6 +19,9 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using SmartHome.Application.Interfaces.UserAreas;
 using SmartHome.Application.Interfaces;
+using Microsoft.AspNetCore.Http;
+using Serilog;
+using Microsoft.AspNetCore.Hosting;
 
 namespace SmartHome.Application.Services.User
 {
@@ -31,6 +34,8 @@ namespace SmartHome.Application.Services.User
         private readonly ITotpService _totpService;
         private readonly IMapper _mapper;
         private readonly IUserAreasRepository _userAreasRepository;
+        private readonly string ProfilePicturesPath = String.Empty;
+        private readonly IWebHostEnvironment _env;
 
         public UserService(
             IValidator<LoginDto> loginValidator,
@@ -39,7 +44,8 @@ namespace SmartHome.Application.Services.User
             IMapper mapper,
             IUserAreasRepository userAreasRepository,
             IUserRepository userRepository,
-            ITotpService totpService)
+            ITotpService totpService,
+            IWebHostEnvironment env)
         {
             _loginValidator = loginValidator;
             _userManager = userManager;
@@ -48,6 +54,9 @@ namespace SmartHome.Application.Services.User
             _userAreasRepository = userAreasRepository;
             _userRepository = userRepository;
             _totpService = totpService;
+            _env = env;
+            ProfilePicturesPath = $"{_env.WebRootPath}/ProfilePictures/";
+            
         }
 
         public async Task<ApiResponse<object>> CreateAdminUserAsync(RegisterAdminUserDto dto)
@@ -236,7 +245,7 @@ namespace SmartHome.Application.Services.User
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var token = _jwtTokenService.GenerateJwtToken(user.Id.ToString(), user.UserName!, user.Email!, userRoles);
+            var token = _jwtTokenService.GenerateJwtToken(user.Id.ToString(), user.UserName!, user.Email!, user.ProfilePictureUrl!, userRoles);
 
             user.LastLogin = DateTime.UtcNow;
 
@@ -373,6 +382,7 @@ namespace SmartHome.Application.Services.User
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
+                    ProfilePictureUrl = user.ProfilePictureUrl
                 };
                 return new ApiResponse<object>
                 {
@@ -389,7 +399,8 @@ namespace SmartHome.Application.Services.User
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    AllowedAreas = allowedAreas.AllowedAreaIds
+                    AllowedAreas = allowedAreas.AllowedAreaIds,
+                    ProfilePictureUrl = user.ProfilePictureUrl
                 };
                 return new ApiResponse<object>
                 {
@@ -431,6 +442,146 @@ namespace SmartHome.Application.Services.User
                 Status = result.Succeeded ? ApiResponseStatus.Success.ToString() : ApiResponseStatus.Error.ToString(),
                 Message = result.Succeeded ? "Password Reset Successful" : "Password Reset Failed"
             };
+        }
+
+        public async Task<ApiResponse<object>> GetProfilePictureAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "User not found"
+                };
+            }
+
+            if (string.IsNullOrEmpty(user.ProfilePictureUrl))
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "Profile picture not found"
+                };
+            }
+
+            return new ApiResponse<object>
+            {
+                Status = ApiResponseStatus.Success.ToString(),
+                Message = "Profile picture URL retrieved successfully",
+                Data = new { ProfilePictureUrl = user.ProfilePictureUrl } // return the relative url.
+            };
+        }
+
+        public async Task<ApiResponse<object>> UpdateProfilePictureAsync(UpdateProfilePictureDto dto, string UserId)
+        {
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user == null)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "User not found"
+                };
+            }
+
+            if (dto.ProfilePicture == null || dto.ProfilePicture.Length == 0)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "Invalid profile picture"
+                };
+            }
+
+            // Remove existing profile picture
+            RemoveProfilePicture(UserId);
+
+            // Save new profile picture and get the relative URL
+            string relativeUrl = SaveProfilePicture(dto.ProfilePicture, UserId);
+
+            if (string.IsNullOrEmpty(relativeUrl))
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "Failed to save profile picture"
+                };
+            }
+
+            // Update user's profile picture URL
+            user.ProfilePictureUrl = relativeUrl; // store the relative URL
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return new ApiResponse<object>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "Failed to update user profile"
+                };
+            }
+
+            return new ApiResponse<object>
+            {
+                Status = ApiResponseStatus.Success.ToString(),
+                Message = "Profile picture updated successfully",
+                Data = new { ProfilePictureUrl = relativeUrl } // Return the URL in the response
+            };
+        }
+
+        private string SaveProfilePicture(IFormFile profilePicture, string userId)
+        {
+            try
+            {
+                if (profilePicture.Length > 0)
+                {
+                    if (!Directory.Exists(ProfilePicturesPath))
+                    {
+                        Directory.CreateDirectory(ProfilePicturesPath);
+                    }
+
+                    string fileExtension = Path.GetExtension(profilePicture.FileName);
+                    string fileName = userId + fileExtension;
+                    string filePath = Path.Combine(ProfilePicturesPath, fileName);
+
+                    using (FileStream fileStream = File.Create(filePath))
+                    {
+                        profilePicture.CopyTo(fileStream);
+                        fileStream.Flush();
+                    }
+
+                    // Return the relative URL (important for web access)
+                    return $"/ProfilePictures/{fileName}";
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Log.Error($"An error occurred while saving profile picture for user {userId}: {ex}");
+                return null;
+            }
+        }
+
+        private bool RemoveProfilePicture(String UserId)
+        {
+            try
+            {
+                var files = Directory.EnumerateFiles(ProfilePicturesPath, UserId + ".*");
+                var filePath = files.FirstOrDefault();
+
+                if (filePath != null && File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Log.Error($"an error happened while Deleting invoice for transaction with id of \"{UserId}\"\n{ex}");
+                return false;
+            }
         }
     }
 }

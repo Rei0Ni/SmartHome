@@ -51,16 +51,19 @@
 
 		<AndroidLinkMode>None</AndroidLinkMode>
 		<AndroidPackageFormat>apk</AndroidPackageFormat>
-		<AotAssemblies>False</AotAssemblies>
+		<RunAOTCompilation>false</RunAOTCompilation>
 		<PublishReadyToRun>false</PublishReadyToRun>
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 	</PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0-android|AnyCPU'">
       <AndroidKeyStore>False</AndroidKeyStore>
+      <AndroidSigningStorePass>Rei0Ni@306306</AndroidSigningStorePass>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0-android|AnyCPU'">
       <AndroidKeyStore>False</AndroidKeyStore>
+      <AndroidSigningStorePass>Rei0Ni@306306</AndroidSigningStorePass>
     </PropertyGroup>
 
     <ItemGroup>

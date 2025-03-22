@@ -12,5 +12,6 @@ namespace SmartHome.Dto.User
         public string Email { get; set; } = string.Empty;
         public bool IsAuthenticated { get; set; } = false;
         public Dictionary<string, string> Claims { get; set; } = [];
+        public string? ProfilePictureUrl { get; set; }
     }
 }
