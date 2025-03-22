@@ -51,6 +51,12 @@
                             <i class="bi bi-people text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
                             <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Users</span>
                         </NavLink>
+
+                            <NavLink href="/manage-controllers" class="@GetNavItemClass("/manage-controllers")" style="height: 44px;">
+                                <i class="bi bi-motherboard text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                               
+                                <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Controllers</span>
+                        </NavLink>
                     </nav>
                 </div>
             </div>
@@ -202,22 +208,27 @@
 
                 <!-- Menu Items -->
                 <nav class="space-y-4">
-                    <NavLink href="/overview" class="block p-2 hover:bg-gray-100 border-b border-gray-100">
+                        <NavLink href="/overview" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
                         <i class="bi bi-columns-gap text-xl text-black pe-2"></i>
                         OverView
                     </NavLink>
 
-                    <NavLink href="/Counter" class="block p-2 hover:bg-gray-100 border-b border-gray-100">
+                        <NavLink href="/Counter" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
                         <i class="fas fa-list text-xl text-black pe-2"></i>
                         Logs
                     </NavLink>
 
-                    <NavLink href="/manage-users" class="block p-2 hover:bg-gray-100 border-b border-gray-100">
+                        <NavLink href="/manage-users" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
                         <i class="bi bi-people text-xl text-black pe-2"></i>
                         Manage Users
                     </NavLink>
 
-                    <NavLink href="/Settings" class="position-absolute bottom-0 block p-2 hover:bg-gray-100 border-b border-gray-100" style="width: 85%;">
+                        <NavLink href="/manage-controllers" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
+                            <i class="bi bi-motherboard text-xl text-black pe-2"></i>
+                        Manage Controllers
+                    </NavLink>
+
+                        <NavLink href="/Settings" class="position-absolute bottom-0 block p-2 hover:bg-gray-100 border-b border-gray-100" style="width: 85%;     color: #000;">
                         <i class="fas fa-cog text-xl w-8 text-black pe-2"></i>
                         Settings
                     </NavLink>

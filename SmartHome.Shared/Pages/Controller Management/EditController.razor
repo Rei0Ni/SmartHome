@@ -1,0 +1,154 @@
+﻿@page "/edit-controller/{Id}"
+@using SmartHome.Dto.Area
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+@using SmartHome.Dto.Controller
+@layout MainLayout
+
+<AuthorizeView>
+    <Authorized>
+        @{
+            IsAdmin = context.User.IsInRole("Admin");
+        }
+
+        <!-- Header Section -->
+        <div class="mb-8 px-4">
+            <h3 class="text-2xl font-semibold text-gray-800">Edit Controller</h3>
+        </div>
+
+        <EditForm Context="controllerEditContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm">
+            <DataAnnotationsValidator />
+
+            <!-- Form Grid -->
+            <div class="max-w-2xl mx-auto space-y-6 px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Name Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <InputText @bind-Value="NewController.Name"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="Enter Controller Name" />
+                        <ValidationMessage For="@(() => NewController.Name)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <!-- MAC Address Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">MAC Address</label>
+                        <InputText @bind-Value="NewController.MACAddress"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="XX:XX:XX:XX:XX:XX" />
+                        <ValidationMessage For="@(() => NewController.MACAddress)" class="text-red-500 text-sm" />
+                    </div>
+
+                    <!-- IP Address Field -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-medium text-gray-700">IP Address</label>
+                        <InputText @bind-Value="NewController.IPAddress"
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="192.168.1.1" />
+                        <ValidationMessage For="@(() => NewController.IPAddress)" class="text-red-500 text-sm" />
+                    </div>
+                </div>
+
+                <!-- Error Message -->
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="p-4 bg-red-50 text-red-700 rounded-md">
+                        @ErrorMessage
+                    </div>
+                }
+
+                <!-- Submit Button -->
+                <div class="pt-6">
+                    <button type="submit"
+                            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2">
+                        <i class="bi bi-pencil-square"></i>
+                        Update Controller
+                    </button>
+                </div>
+            </div>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <div class="p-4 bg-red-100 text-red-700 rounded-md mx-4 my-6">
+            You are not authorized to edit controllers.
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; } = string.Empty;
+
+    private UpdateControllerDto NewController = new();
+    private bool IsAdmin;
+    private string ErrorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        var result = await ApiService.GetAsync($"/api/controller/get/{Id}");
+        if (result.IsSuccessStatusCode)
+        {
+            var content = await result.Content.ReadFromJsonAsync<ControllerDto>();
+            if (content != null)
+            {
+
+                NewController.Name = content.Name;
+                NewController.MACAddress = content.MACAddress;
+                NewController.IPAddress = content.IPAddress;
+            }
+            else
+            {
+                toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Failed to load Controller data.", "Couldn't load the Controller Data"));
+            }
+        }
+        else
+        {
+            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Failed to load Controller data.", "Couldn't load the Controller Data"));
+        }
+    }
+
+    private async Task SubmitCreateControllerForm()
+    {
+        try
+        {
+            NewController.Id = Guid.Parse(Id);
+            HttpResponseMessage result = await ApiService.SendAsync<UpdateControllerDto>(HttpMethod.Put, "/api/controller/update", NewController);
+
+            // if (!result.IsSuccessStatusCode)
+            // {
+            //     var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
+            //     if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+            //     {
+            //         var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
+            //         foreach (var error in errors)
+            //         {
+            //             toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
+            //         }
+            //     }
+            //     else
+            //     {
+            //         ErrorMessage = "Controller Edit failed: " + response?.Data;
+            //     }
+            // }
+            // else
+            // {
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Controller Updated Successfully", "The Controller was Updated Successfully"));
+
+                // Reset form and navigate
+                NewController = new UpdateControllerDto();
+                StateHasChanged();
+                navigationManager.NavigateTo("/manage-controllers", false, false);
+            }
+            // }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = "An unexpected error occurred: " + ex.Message;
+        }
+    }
+}
