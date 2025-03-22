@@ -17,7 +17,7 @@
 				<div class="row mb-4">
 					<div class="col-8">
 						<div class="row">
-							<div class="col-4 text-center">
+							<div class="col-2 text-center">
 								<label class="position-relative cursor-pointer">
 									<!-- Clickable image/label -->
 									@if (!string.IsNullOrEmpty(adminUser.ProfilePictureUrl))
@@ -28,7 +28,9 @@
 									}
 									else
 									{
-										<div class="w-20 h-20 rounded-full bg-secondary"></div>
+										<img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+											 class="w-20 h-20 rounded-full cursor-pointer"
+											 alt="User Avatar">
 									}
 
 									<!-- Hidden file input -->
@@ -38,10 +40,10 @@
 								</label>
 
 							</div>
-							<div class="col-8 flex items-center">
-								<p>@adminUser.FirstName @adminUser.LastName</p>
-								<p>@adminUser.Email</p>
+							<div class="col-10 flex items-center">
+								<div>@adminUser.FirstName @adminUser.LastName<br />@adminUser.Email</div>
 							</div>
+							
 						</div>
 					</div>
 					<div class="col-4 text-end grid items-center justify-items-end">
@@ -88,7 +90,9 @@
 									}
 									else
 									{
-										<div class="w-20 h-20 rounded-full bg-secondary"></div>
+										<img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+											 class="w-20 h-20 rounded-full cursor-pointer"
+											 alt="User Avatar">
 									}
 
 									<!-- Hidden file input -->
