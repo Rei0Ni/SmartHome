@@ -23,7 +23,7 @@
 
         <!-- Vertical Sidebar -->
         <div class="flex min-h-screen ">
-            <aside class="@sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col " style="background-color: #120126;">
+            <aside class="navbar-vertical @sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col " style="" id="">
                 <div class="flex-1">
                     <div>
                         <!-- Collapse Toggle -->
@@ -76,18 +76,18 @@
             <!-- Main Content -->
             <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
                 <!-- Horizontal Navbar -->
-                <nav class="" style="background-color: #F9F9F9;">
+                <nav class="navbar-horizontal" style="">
                     <div class="mx-auto px-4">
                         <div class="flex justify-between items-center h-16">
                             <!-- Left Section (Weather on Desktop) -->
                             <div class="hidden md:flex items-center space-x-2 " >
-                                <i class="fas fa-cloud-sun text-xl" style="color:#FBB03B;"></i>
-                                <span class="text-black">28°C</span>
+                                <i class="temperature-icon fas fa-cloud-sun text-xl" style=""></i>
+                                <span class="">28°C</span>
                             </div>
 
                             <!-- Mobile Menu Button -->
                             <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
-                                <i class="fas fa-bars text-xl text-black"></i>
+                                <i class="fas fa-bars text-xl "></i>
                             </button>
 
                             <!-- Center Logo -->
@@ -99,7 +99,7 @@
                                 <!-- زر الإشعارات -->
                                 <div class="relative">
                                     <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
-                                        <i class="fas fa-bell text-xl" style="color:#ffd26a"></i>
+                                        <i class="notification-icon fas fa-bell text-xl" style=""></i>
                                         <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
                                     </button>
 
