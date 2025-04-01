@@ -4,9 +4,20 @@
 @using SmartHome.Shared.Models
 @using System.Text.Json
 @inject IApiService ApiService
+<!-- for effect buttons -->
+<style>
+    .press-effect {
+        transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+    }
 
+        .press-effect:active {
+            transform: scale(0.95);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+</style>
 <!-- Lamp Card  -->
-<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm"
+<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center"
      style="@(!isPowerOn ? "background-color:#FBFBFB;" : "background-color:#FFFDEB;") cursor-pointer;"
      @onclick="() => showModal = true">
     @if (DeviceModel.State.ContainsKey("power_state"))
@@ -14,23 +25,31 @@
         <div class="flex items-center justify-between w-full">
             @if (!isPowerOn)
             {
+                <!-- icon lamp off -->
                 <div>
-                    <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-12 h-12 object-contain">
+                    <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-10 h-10 object-contain">
                 </div>
-                <div>Turn On<i class="bi bi-power text-black"></i></div>
+                <!-- icon power off -->
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon">
+                </div>
             }
             else
             {
+                <!-- icon lamp on -->
                 <div>
-                    <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-12 h-12 object-contain">
+                    <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-10 h-10 object-contain">
                 </div>
-                <div>Turn Off<i class="bi bi-power"></i></div>
+                <!-- icon power on -->
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_lamp.svg" alt="PowerIcon">
+                </div>
             }
         </div>
 
-        <div class="flex items-center justify-between w-full">
+        <div class="flex items-center justify-between w-full ">
             <div>
-                <h3 class="text-gray-600 font-normal">@DeviceModel.Name</h3>
+                <h3 class="text-gray-600 text-sm font-normal">@DeviceModel.Name</h3>
             </div>
             @if (!isPowerOn)
             {
@@ -56,7 +75,7 @@
         <div class="absolute inset-0 bg-black bg-opacity-50" @onclick="() => showModal = false"></div>
 
         <!-- content modal -->
-        <div class="relative bg-white rounded-lg shadow-lg w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
+        <div class="relative bg-white rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
             <!-- button close on top right -->
             <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" @onclick="() => showModal = false">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
@@ -69,12 +88,14 @@
             <h2 class="text-xl font-semibold text-gray-700 text-center">Edit Brightness</h2>
 
             <!-- show state of lamp and button toggle on / off -->
-            <div class="flex items-center justify-between p-2 rounded-md bg-gray-50">
+
+            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center" @onclick="ToggleDevicePower">
+
                 <div class="flex items-center gap-2">
                     @if (isPowerOn)
                     {
                         <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-8 h-8 object-contain">
-                        <span class="text-sm text-yellow-600 font-medium">Lamp ON</span>
+                        <span class="text-sm text-yellow-600 font-medium">Lamp On</span>
                     }
                     else
                     {
@@ -82,20 +103,17 @@
                         <span class="text-sm text-gray-600 font-medium">Lamp Off</span>
                     }
                 </div>
-                <button class="inline-flex items-center px-3 py-1 text-sm rounded-md
-                               @(!isPowerOn ? "bg-green-500 text-white" : "bg-red-500 text-white")
-                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white
-                               @(!isPowerOn ? "focus:ring-green-400" : "focus:ring-red-400")
-                               hover:opacity-90 transition" @onclick="ToggleDevicePower">
-                    @if (isPowerOn)
-                    {
-                        <span>turn off</span>
-                    }
-                    else
-                    {
-                        <span>turn on</span>
-                    }
-                </button>
+
+                @if(isPowerOn){
+                    <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
+                            <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_lamp.svg" alt="PowerIcon_on">
+                        </div>
+                }else{
+                    <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
+                            <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon_off">
+                        </div>
+                }
+          
             </div>
 
             <!-- Range Slider -->
