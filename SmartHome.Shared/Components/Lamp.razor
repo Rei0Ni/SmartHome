@@ -4,21 +4,12 @@
 @using SmartHome.Shared.Models
 @using System.Text.Json
 @inject IApiService ApiService
-<!-- for effect buttons -->
-<style>
-    .press-effect {
-        transition: transform 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
-    }
 
-        .press-effect:active {
-            transform: scale(0.95);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
 
-</style>
+
 <!-- Lamp Card  -->
-<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center"
-     style="@(!isPowerOn ? "background-color:#FBFBFB;" : "background-color:#FFFDEB;") cursor-pointer;"
+<div class="rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center cursor-pointer"
+     style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background-color: var(--lamp-card-bg-on);")"
      @onclick="() => showModal = true">
     @if (DeviceModel.State.ContainsKey("power_state"))
     {
@@ -47,17 +38,17 @@
             }
         </div>
 
-        <div class="flex items-center justify-between w-full ">
+        <div class="flex items-center justify-between w-full">
             <div>
                 <h3 class="text-gray-600 text-sm font-normal">@DeviceModel.Name</h3>
             </div>
             @if (!isPowerOn)
             {
-                <div class="w-4 h-4 rounded-full" style="background-color:rgb(128,128,128)"></div>
+                <div class="w-4 h-4 rounded-full" style="background-color: var(--lamp-indicator-off);"></div>
             }
             else
             {
-                <div class="w-4 h-4 rounded-full" style="background-color:#FBB03B"></div>
+                <div class="w-4 h-4 rounded-full" style="background-color: var(--lamp-indicator-on);"></div>
             }
         </div>
     }
@@ -88,9 +79,7 @@
             <h2 class="text-xl font-semibold text-gray-700 text-center">Edit Brightness</h2>
 
             <!-- show state of lamp and button toggle on / off -->
-
             <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center" @onclick="ToggleDevicePower">
-
                 <div class="flex items-center gap-2">
                     @if (isPowerOn)
                     {
@@ -104,22 +93,24 @@
                     }
                 </div>
 
-                @if(isPowerOn){
+                @if (isPowerOn)
+                {
                     <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
-                            <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_lamp.svg" alt="PowerIcon_on">
-                        </div>
-                }else{
-                    <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
-                            <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon_off">
-                        </div>
+                        <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_lamp.svg" alt="PowerIcon_on">
+                    </div>
                 }
-          
+                else
+                {
+                    <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
+                        <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon_off">
+                    </div>
+                }
             </div>
 
             <!-- Range Slider -->
             @if (isPowerOn)
             {
-            <div class="flex flex-col items-center gap-4">
+                <div class="flex flex-col items-center gap-4">
                     <div class="form-element">
                         <div id="rangeValue">@brightnessValue%</div>
                         <input type="range" id="brightnessRange" min="5" max="100" @bind="brightnessValue" @oninput="SaveBrightnessAsync">
@@ -155,7 +146,7 @@
                                 cursor: pointer;
                             }
                     </style>
-            </div>
+                </div>
             }
             else
             {
@@ -184,8 +175,8 @@
                             outline: none;
                             overflow: hidden;
                             /* to make input not selected */
-                            user-select:none;
-                            pointer-events:none;
+                            user-select: none;
+                            pointer-events: none;
                         }
 
                             .form-element input[type="range"]::-webkit-slider-thumb {
@@ -198,10 +189,8 @@
                                 cursor: pointer;
                             }
                     </style>
-
                 </div>
             }
-
         </div>
     </div>
 }
@@ -214,9 +203,9 @@
     [Parameter]
     public Guid ControllerId { get; set; }
 
-    private bool isPowerOn = false; // deafult state
-    private bool showModal = false;  
-    private int brightnessValue = 50; // intial value for brightness
+    private bool isPowerOn = false; // default state
+    private bool showModal = false;
+    private int brightnessValue = 50; // initial value for brightness
 
     protected override void OnParametersSet()
     {
@@ -307,9 +296,7 @@
 
     private async Task SaveBrightnessAsync()
     {
-        
         Console.WriteLine($"Saving brightness value: {brightnessValue}");
-        
         await Task.CompletedTask;
     }
 }

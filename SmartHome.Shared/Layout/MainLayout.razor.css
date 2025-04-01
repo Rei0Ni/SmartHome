@@ -15,17 +15,22 @@
     --error: #B3261E;
     --on-error: #FFFFFF;
     --body-light: #F3F2FD;
+
     /* Fan-specific Colors */
     --fan-card-bg-on: #F9FFF4; /* Card background when fan is on */
     --fan-card-bg-off: #fbfbfb; /* Card background when fan is off */
     --fan-on-stroke: #808080; /* Fan stroke color when on */
     --fan-off-stroke: var(--fan-indicator-on); /* Fan stroke color when off */
-    --fan-slider-thumb-color: var(--fan-indicator-on);/* Slider thumb color */
+    --fan-slider-thumb-color: var(--fan-indicator-on); /* Slider thumb color */
     --fan-indicator-on: #059212; /* Indicator circle color when on */
     --fan-indicator-off: rgb(128,128,128); /* Indicator circle color when off */
+
+    /* Lamp-specific Colors */
+    --lamp-card-bg-on: #FFFDEB; /* Card background when lamp is on */
+    --lamp-card-bg-off: #FBFBFB; /* Card background when lamp is off */
+    --lamp-indicator-on: #FBB03B; /* Indicator circle color when lamp is on */
+    --lamp-indicator-off: rgb(128,128,128); /* Indicator circle color when lamp is off */
 }
-
-
 html, body {
     background-color: var(--body-light) !important;
 }
