@@ -5,8 +5,6 @@
 @using System.Text.Json
 @inject IApiService ApiService
 
-
-
 <!-- Lamp Card  -->
 <div class="rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center cursor-pointer"
      style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background-color: var(--lamp-card-bg-on);")"
@@ -58,16 +56,16 @@
     }
 </div>
 
-<!-- if you clicked show modal -->
+<!-- Modal clicked -->
 @if (showModal)
 {
     <div class="fixed inset-0 flex items-center justify-center z-50">
         <!-- transparent background -->
         <div class="absolute inset-0 bg-black bg-opacity-50" @onclick="() => showModal = false"></div>
 
-        <!-- content modal -->
+        <!--  start Modal -->
         <div class="relative bg-white rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
-            <!-- button close on top right -->
+            <!-- close button -->
             <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" @onclick="() => showModal = false">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                      viewBox="0 0 24 24" stroke="currentColor">
@@ -76,10 +74,10 @@
                 </svg>
             </button>
 
-            <h2 class="text-xl font-semibold text-gray-700 text-center">Edit Brightness</h2>
+            <h2 class="text-xl font-semibold text-gray-700 text-center">@DeviceModel.Name</h2>
 
-            <!-- show state of lamp and button toggle on / off -->
-            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center" @onclick="ToggleDevicePower">
+            <!-- state lamp toggle on / off -->
+            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center">
                 <div class="flex items-center gap-2">
                     @if (isPowerOn)
                     {
@@ -95,15 +93,101 @@
 
                 @if (isPowerOn)
                 {
-                    <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
-                        <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_lamp.svg" alt="PowerIcon_on">
-                    </div>
+                    <!-- Toggle switch enabled -->
+                    <input id="checkboxInput" type="checkbox" @bind="isToggled" @bind:after="SaveBrightnessAsync" />
+                    <label class="toggleSwitch" for="checkboxInput">
+                        <svg class="slider"
+                             viewBox="0 0 512 512"
+                             height="1em"
+                             xmlns="http://www.w3.org/2000/svg"
+                             style="fill: @(isToggled ? "rgb(255,129,129)" : "rgb(94,255,1)");">
+                            <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V256c0 17.7 14.3 32 32 32s32-14.3 32-32V32zM143.5 120.6c13.6-11.3 15.4-31.5 4.1-45.1s-31.5-15.4-45.1-4.1C49.7 115.4 16 181.8 16 256c0 132.5 107.5 240 240 240s240-107.5 240-240c0-74.2-33.8-140.6-86.6-184.6c-13.6-11.3-33.8-9.4-45.1 4.1s-9.4 33.8 4.1 45.1c38.9 32.3 63.5 81 63.5 135.4c0 97.2-78.8 176-176 176s-176-78.8-176-176c0-54.4 24.7-103.1 63.5-135.4z"></path>
+                        </svg>
+                    </label>
+
+                    <style>
+                        /* hide ـ checkbox */
+                        #checkboxInput {
+                            display: none;
+                        }
+
+                        .toggleSwitch {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            position: relative;
+                            width: 50px;
+                            height: 30px;
+                            background-color: rgb(170, 170, 170);
+                            border-radius: 20px;
+                            cursor: pointer;
+                            transition-duration: 0.2s;
+                        }
+
+                        .slider {
+                            height: 20px;
+                            position: absolute;
+                            left: 5px;
+                            border-radius: 50%;
+                            transition-duration: 0.2s;
+                            border: 3px solid rgb(71, 71, 71);
+                            background-color: rgb(71, 71, 71);
+                        }
+
+                        #checkboxInput:checked + .toggleSwitch .slider {
+                            transform: translateX(100%);
+                            transition-duration: 0.2s;
+                        }
+                    </style>
                 }
                 else
                 {
-                    <div class="inline-flex items-center px-3 py-1 text-sm rounded-md" @onclick="ToggleDevicePower">
-                        <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon_off">
-                    </div>
+                    <!-- Toggle switch disabled -->
+                    <input id="checkboxInput" type="checkbox" disabled />
+                    <label class="toggleSwitch" for="checkboxInput">
+                        <svg class="slider"
+                             viewBox="0 0 512 512"
+                             height="1em"
+                             xmlns="http://www.w3.org/2000/svg"
+                             style="fill: rgb(255,129,129);">
+                            <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V256c0 17.7 14.3 32 32 32s32-14.3 32-32V32zM143.5 120.6c13.6-11.3 15.4-31.5 4.1-45.1s-31.5-15.4-45.1-4.1C49.7 115.4 16 181.8 16 256c0 132.5 107.5 240 240 240s240-107.5 240-240c0-74.2-33.8-140.6-86.6-184.6c-13.6-11.3-33.8-9.4-45.1 4.1s-9.4 33.8 4.1 45.1c38.9 32.3 63.5 81 63.5 135.4c0 97.2-78.8 176-176 176s-176-78.8-176-176c0-54.4 24.7-103.1 63.5-135.4z"></path>
+                        </svg>
+                    </label>
+
+                    <style>
+                        /* hide ـ checkbox */
+                        #checkboxInput {
+                            display: none;
+                        }
+
+                        .toggleSwitch {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            position: relative;
+                            width: 50px;
+                            height: 30px;
+                            background-color: rgb(170, 170, 170);
+                            border-radius: 20px;
+                            cursor: pointer;
+                            transition-duration: 0.2s;
+                        }
+
+                        .slider {
+                            height: 20px;
+                            position: absolute;
+                            left: 5px;
+                            border-radius: 50%;
+                            transition-duration: 0.2s;
+                            border: 3px solid rgb(71, 71, 71);
+                            background-color: rgb(71, 71, 71);
+                        }
+
+                        #checkboxInput:checked + .toggleSwitch .slider {
+                            transform: translateX(100%);
+                            transition-duration: 0.2s;
+                        }
+                    </style>
                 }
             </div>
 
@@ -116,7 +200,6 @@
                         <input type="range" id="brightnessRange" min="5" max="100" @bind="brightnessValue" @oninput="SaveBrightnessAsync">
                     </div>
 
-                    <!-- CSS Range Slider -->
                     <style>
                         .form-element #rangeValue {
                             margin-bottom: 20px;
@@ -156,7 +239,6 @@
                         <input type="range" id="brightnessRange" min="0" max="0" @bind="brightnessValue" @oninput="SaveBrightnessAsync">
                     </div>
 
-                    <!-- CSS Range Slider -->
                     <style>
                         .form-element #rangeValue {
                             margin-bottom: 20px;
@@ -174,7 +256,6 @@
                             background: #aaa;
                             outline: none;
                             overflow: hidden;
-                            /* to make input not selected */
                             user-select: none;
                             pointer-events: none;
                         }
@@ -195,7 +276,6 @@
     </div>
 }
 
-
 @code {
     [Parameter]
     public OverviewDeviceDto DeviceModel { get; set; } = new();
@@ -203,9 +283,10 @@
     [Parameter]
     public Guid ControllerId { get; set; }
 
-    private bool isPowerOn = false; // default state
+    private bool isPowerOn = false; // deafult state of lamp
     private bool showModal = false;
-    private int brightnessValue = 50; // initial value for brightness
+    private int brightnessValue = 50; // intial value of brightness
+    private bool isToggled = false; // state toggle switch
 
     protected override void OnParametersSet()
     {
@@ -279,10 +360,7 @@
             }
             else
             {
-                if (result.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    toastService.Notify(new(ToastType.Danger, IconName.Bug, "Cannot Connect to Controller", "Cannot Connect to the Controller to Execute your Command"));
-                }
+                Console.WriteLine("Internal Server Error");
                 StateHasChanged();
             }
         }
@@ -292,11 +370,11 @@
         }
     }
 
-    // need to handle
-
     private async Task SaveBrightnessAsync()
     {
         Console.WriteLine($"Saving brightness value: {brightnessValue}");
+        Console.WriteLine($"Toggle state changed: {isToggled}");
+
         await Task.CompletedTask;
     }
 }
