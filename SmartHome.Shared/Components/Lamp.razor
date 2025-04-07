@@ -256,7 +256,7 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
         {
             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
 
-            if (result.IsSuccessStatusCode || result.StatusCode != HttpStatusCode.InternalServerError)
+            if (result.IsSuccessStatusCode)
             {
                 var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
 
@@ -267,13 +267,22 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
                     {
                         DeviceModel.State["power_state"] = desiredState ? "on" : "off";
                     }
-                    // UpdateVisualState();
                     StateHasChanged();
                 }
                 else
                 {
                     Console.WriteLine($"Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
                 }
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
             }
             else
             {
@@ -334,6 +343,16 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
                     Console.WriteLine($"Brightness update failed: {commandResponse?.Devices?[0]?.Message}");
                     // Optionally revert to previous value
                 }
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
             }
             else
             {

@@ -405,7 +405,7 @@ style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-
         {
             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
 
-            if (result.IsSuccessStatusCode || result.StatusCode != HttpStatusCode.InternalServerError)
+            if (result.IsSuccessStatusCode)
             {
                 var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
 
@@ -416,13 +416,24 @@ style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-
                     {
                         DeviceModel.State["power_state"] = desiredState ? "on" : "off";
                     }
-                    // UpdateVisualState();
                     StateHasChanged();
                 }
                 else
                 {
                     Console.WriteLine($"Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
                 }
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+                StateHasChanged();
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+                StateHasChanged();
             }
             else
             {
@@ -480,7 +491,7 @@ style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-
             isPowerOn = false;
             sliderValue = 0;
         }
-        lastKnownSpeed = sliderValue;
+        // lastKnownSpeed = sliderValue;
     }
 
     private async Task SetFanSpeed()
@@ -511,7 +522,7 @@ style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-
         try
         {
             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
-            if (result.IsSuccessStatusCode || result.StatusCode != HttpStatusCode.InternalServerError)
+            if (result.IsSuccessStatusCode)
             {
                 var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
                 if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
@@ -524,15 +535,25 @@ style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-
                     {
                         DeviceModel.State.Add("fan_speed", sliderValue);
                     }
-                    lastKnownSpeed = sliderValue;
+                    // lastKnownSpeed = sliderValue;
                     StateHasChanged();
                 }
                 else
                 {
                     Console.WriteLine($"Fan Speed Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
-                    sliderValue = lastKnownSpeed;
+                    // sliderValue = lastKnownSpeed;
                     StateHasChanged();
                 }
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
             }
             else
             {
@@ -540,14 +561,14 @@ style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-
                 {
                     // You can call your notification service here (e.g., toastService) if available
                 }
-                sliderValue = lastKnownSpeed;
+                // sliderValue = lastKnownSpeed;
                 StateHasChanged();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception setting fan speed: {ex.Message}");
-            sliderValue = lastKnownSpeed;
+            // sliderValue = lastKnownSpeed;
             StateHasChanged();
         }
     }
