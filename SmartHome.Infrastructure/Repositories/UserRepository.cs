@@ -8,6 +8,7 @@ using Serilog;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Domain.Contexts;
 using SmartHome.Domain.Entities;
+using Log = Serilog.Log;
 
 namespace SmartHome.Infrastructure.Repositories
 {

@@ -22,6 +22,7 @@ using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
 using SmartHome.Dto.DeviceFunction;
 using SmartHome.Dto.Sensors;
+using Log = Serilog.Log;
 
 namespace SmartHome.Application.Services
 {
