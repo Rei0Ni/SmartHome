@@ -3,12 +3,12 @@
     "Name": "fullStack",
     "Projects": [
       {
-        "Path": "SmartHome.Web\\SmartHome.Web.csproj",
+        "Path": "SmartHome.API\\SmartHome.API.csproj",
         "Action": "Start",
         "DebugTarget": "http"
       },
       {
-        "Path": "SmartHome.API\\SmartHome.API.csproj",
+        "Path": "SmartHome.Web\\SmartHome.Web.csproj",
         "Action": "Start",
         "DebugTarget": "http"
       }

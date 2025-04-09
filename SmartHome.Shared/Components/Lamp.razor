@@ -5,41 +5,49 @@
 @using System.Text.Json
 @inject IApiService ApiService
 
-<!-- Lamp Card -->
-
-<div class="bg-[#FFFDEB] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(!isPowerOn ? "background-color:#FBFBFB;" : "background-color:#FFFDEB;") cursor: pointer;" @onclick="ToggleDevicePower">
+<!-- Lamp Card  -->
+<div class="rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center cursor-pointer"
+style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background-color: var(--lamp-card-bg-on);")"
+@onclick="() => showModal = true">
     @if (DeviceModel.State.ContainsKey("power_state"))
     {
-        <div class="flex align-items-center justify-content-between w-100">
+        <div class="flex items-center justify-between w-full">
             @if (!isPowerOn)
             {
+                <!-- icon lamp off -->
                 <div>
-                    <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-12 h-12 object-contain">
-
+                    <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-10 h-10 object-contain">
                 </div>
-                <div>Turn On<i class="bi bi-power"></i></div>
+                <!-- icon power off -->
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon">
+                </div>
             }
             else
             {
+                <!-- icon lamp on -->
                 <div>
-                    <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-12 h-12 object-contain">
+                    <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-10 h-10 object-contain">
                 </div>
-                <div>Turn Off<i class="bi bi-power"></i></div>
+                <!-- icon power on -->
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_lamp.svg" alt="PowerIcon">
+                </div>
             }
         </div>
 
-        <div class="flex align-items-center justify-content-between w-100">
-            <div><h3 class="text-gray-600 font-normal">@DeviceModel.Name</h3></div>
+        <div class="flex items-center justify-between w-full">
+            <div>
+                <h3 class="text-gray-600 text-sm font-normal">@DeviceModel.Name</h3>
+            </div>
             @if (!isPowerOn)
             {
-                <div class="w-4 h-4 rounded-full " style="background-color:rgb(128,128,128)"></div> <!--circle off-->
-
+                <div class="w-4 h-4 rounded-full" style="background-color: var(--lamp-indicator-off);"></div>
             }
             else
             {
-                <div class="w-4 h-4 rounded-full " style="background-color:#FBB03B"></div> <!--circle on-->
+                <div class="w-4 h-4 rounded-full" style="background-color: var(--lamp-indicator-on);"></div>
             }
-
         </div>
     }
     else
@@ -48,6 +56,139 @@
     }
 </div>
 
+<!-- Modal clicked -->
+@if (showModal)
+{
+    <div class="fixed inset-0 flex items-center justify-center z-50">
+        <!-- transparent background -->
+        <div class="absolute inset-0 bg-black bg-opacity-50" @onclick="() => showModal = false"></div>
+
+        <!--  start Modal -->
+        <div class="relative bg-white rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
+            <!-- close button -->
+            <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" @onclick="() => showModal = false">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h2 class="text-xl font-semibold text-gray-700 text-center">@DeviceModel.Name</h2>
+
+            <!-- state lamp toggle on / off -->
+            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center">
+                <div class="flex items-center gap-2">
+                    @if (isPowerOn)
+                    {
+                        <img src="_content/SmartHome.Shared/imgs/Lamp_On.svg" alt="Lamp on" class="w-8 h-8 object-contain">
+                        <span class="text-sm text-yellow-600 font-medium">Lamp On</span>
+                    }
+                    else
+                    {
+                        <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-8 h-8 object-contain">
+                        <span class="text-sm text-gray-600 font-medium">Lamp Off</span>
+                    }
+                </div>
+
+                @* @if (isPowerOn) *@
+                @* { *@
+                <!-- Toggle switch enabled -->
+                <input id="checkboxInput" type="checkbox" checked="@isPowerOn" @onchange="ToggleDevicePower" />
+                <label class="toggleSwitch" for="checkboxInput">
+                    <svg class="slider"
+                    viewBox="0 0 512 512"
+                    height="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="fill: @(isPowerOn ? "rgb(94,255,1)" : "rgb(255,129,129)");">
+                        <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V256c0 17.7 14.3 32 32 32s32-14.3 32-32V32zM143.5 120.6c13.6-11.3 15.4-31.5 4.1-45.1s-31.5-15.4-45.1-4.1C49.7 115.4 16 181.8 16 256c0 132.5 107.5 240 240 240s240-107.5 240-240c0-74.2-33.8-140.6-86.6-184.6c-13.6-11.3-33.8-9.4-45.1 4.1s-9.4 33.8 4.1 45.1c38.9 32.3 63.5 81 63.5 135.4c0 97.2-78.8 176-176 176s-176-78.8-176-176c0-54.4 24.7-103.1 63.5-135.4z"></path>
+                    </svg>
+                </label>
+
+                <style>
+                    /* hide ـ checkbox */
+                    #checkboxInput {
+                    display: none;
+                    }
+
+                    .toggleSwitch {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 50px;
+                    height: 30px;
+                    background-color: rgb(170, 170, 170);
+                    border-radius: 20px;
+                    cursor: pointer;
+                    transition-duration: 0.2s;
+                    }
+
+                    .slider {
+                    height: 20px;
+                    position: absolute;
+                    left: 5px;
+                    border-radius: 50%;
+                    transition-duration: 0.2s;
+                    border: 3px solid rgb(71, 71, 71);
+                    background-color: rgb(71, 71, 71);
+                    }
+
+                    #checkboxInput:checked + .toggleSwitch .slider {
+                    transform: translateX(100%);
+                    transition-duration: 0.2s;
+                    }
+                </style>
+
+            </div>
+
+            <!-- Range Slider -->
+            <div class="flex flex-col items-center gap-4">
+                <div class="form-element">
+                    <div id="rangeValue">@brightnessValue%</div>
+                    <input type="range"
+                    id="brightnessRange"
+                    min="5"
+                    max="100"
+                    @bind="brightnessValue"
+                    @bind:event="oninput"
+                    @onchange="SetBrightnessAsync" />
+                </div>
+
+                <style>
+                    .form-element #rangeValue {
+                    margin-bottom: 20px;
+                    font-size: 20px;
+                    font-family: "Raleway";
+                    text-align: center;
+                    color: #ddd;
+                    }
+
+                    .form-element input[type="range"] {
+                    -webkit-appearance: none;
+                    width: 300px;
+                    height: 40px;
+                    border-radius: 15px;
+                    background: #aaa;
+                    outline: none;
+                    overflow: hidden;
+                    }
+
+                    .form-element input[type="range"]::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    width: 40px;
+                    height: 40px;
+                    background: #fbb03b;
+                    border-radius: 10px;
+                    box-shadow: -350px 0px 0px 340px #fbb03b;
+                    cursor: pointer;
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+}
+
 @code {
     [Parameter]
     public OverviewDeviceDto DeviceModel { get; set; } = new();
@@ -55,13 +196,14 @@
     [Parameter]
     public Guid ControllerId { get; set; }
 
-    private bool isPowerOn = false; // Default state is off
+    private bool isPowerOn = false; // deafult state of lamp
+    private bool showModal = false;
+    private int brightnessValue = 0; // intial value of brightness
 
-    protected override void OnParametersSet() // Use OnParametersSet to react to parameter changes
+    protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        Console.WriteLine($"LampCard: OnParametersSet called for Device: {DeviceModel.Name}, DeviceId: {DeviceModel.Id}"); // Debug print
-        UpdateVisualState(); // Call UpdateVisualState when parameters are set or updated
+        UpdateVisualState();
     }
 
     private void UpdateVisualState()
@@ -70,23 +212,27 @@
         {
             isPowerOn = powerStateValue?.ToString()?.ToLower() == "on";
         }
+        if (DeviceModel.State.TryGetValue("brightness", out var newBrightnessValue))
+        {
+            brightnessValue = int.Parse(newBrightnessValue.ToString()!);
+        }
         else
         {
             isPowerOn = false;
+            brightnessValue = 0;
         }
-        StateHasChanged(); // Ensure UI updates after state change
+        StateHasChanged();
     }
-
 
     private async Task ToggleDevicePower()
     {
         if (!DeviceModel.State.ContainsKey("power_state"))
         {
             Console.WriteLine("Device state does not contain 'power_state'. Cannot toggle.");
-            return; // Or handle error appropriately
+            return;
         }
 
-        bool turnOn = !isPowerOn; // Toggle to the opposite of the *current visual state*
+        bool desiredState = !isPowerOn;
 
         var commandRequest = new CommandRequestDto()
             {
@@ -100,7 +246,7 @@
                     Function = "toggle",
                     Parameters = new Dictionary<string, object>()
                     {
-                        { "state", turnOn }
+                        { "state", desiredState }
                     }
                 }
             }
@@ -108,42 +254,114 @@
 
         try
         {
-            // Assuming you have a CommandResponseDto defined to handle the response from the command endpoint
             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
 
-            if(result.IsSuccessStatusCode || result.StatusCode != HttpStatusCode.InternalServerError){
+            if (result.IsSuccessStatusCode)
+            {
                 var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
 
                 if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
                 {
-                    // Command was successful. Update the UI to reflect the new state.
-
+                    isPowerOn = desiredState;
                     if (DeviceModel.State.ContainsKey("power_state"))
                     {
-                        DeviceModel.State["power_state"] = turnOn ? "on" : "off";
+                        DeviceModel.State["power_state"] = desiredState ? "on" : "off";
                     }
-                    UpdateVisualState(); // Update visual state based on the new DeviceModel.State
-                    StateHasChanged(); // Re-render the component to reflect the state change
+                    StateHasChanged();
                 }
                 else
                 {
-                    // Command failed. Handle error (e.g., display error message to user)
-                    Console.WriteLine($"Command failed: {commandResponse.Devices[0].Message ?? "Unknown error"}");
-                    // Optionally, show an error message to the user.
+                    Console.WriteLine($"Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
                 }
-            }else{
-                if (result.StatusCode == HttpStatusCode.InternalServerError)
-                {
-                    toastService.Notify(new(ToastType.Danger, IconName.Bug, "Cannot Connect to Controller", "Cannot Connect to the Controller to Execute your Command"));
-                }
-                StateHasChanged(); // Re-render to update UI
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+            }
+            else
+            {
+                Console.WriteLine("Internal Server Error");
+                StateHasChanged();
             }
         }
         catch (Exception ex)
         {
-            // Exception during API call. Handle error.
             Console.WriteLine($"Exception during command: {ex.Message}");
-            // Optionally, show an error message to the user.
+        }
+    }
+
+    private async Task SetBrightnessAsync()
+    {
+        if (!isPowerOn) return; // Don't send brightness updates if device is off
+
+        var commandRequest = new CommandRequestDto()
+            {
+                AreaId = DeviceModel.AreaId,
+                ControllerId = ControllerId,
+                Devices = new List<DeviceCommandDto>
+            {
+                new DeviceCommandDto()
+                {
+                    DeviceId = DeviceModel.Id,
+                    Function = "setbrightness",
+                    Parameters = new Dictionary<string, object>
+                    {
+                        { "brightness", brightnessValue }
+                    }
+                }
+            }
+            };
+
+        try
+        {
+            var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
+
+                if (commandResponse?.Status?.ToLower() == "success")
+                {
+                    // Update local state only after successful API response
+                    if (DeviceModel.State.ContainsKey("brightness"))
+                    {
+                        DeviceModel.State["brightness"] = brightnessValue;
+                    }
+                    else
+                    {
+                        DeviceModel.State.Add("brightness", brightnessValue);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Brightness update failed: {commandResponse?.Devices?[0]?.Message}");
+                    // Optionally revert to previous value
+                }
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+            }
+            else
+            {
+                Console.WriteLine($"API request failed with status code: {result.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception during brightness update: {ex.Message}");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net.Sockets;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Controller;
@@ -25,8 +26,23 @@ namespace SmartHome.API.Controllers
             if (controllerIp == null)
                 return NotFound("Controller not found");
 
-            var response = await _commandService.SendCommandAsync(controllerIp, command);
-            return Ok(response);
+            try
+            {
+                var response = await _commandService.SendCommandAsync(controllerIp, command);
+                return Ok(response);
+            }
+            catch (SocketException)
+            {
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, "Controller is down or not responding");
+            }
+            catch (HttpRequestException ex) when (ex.InnerException is SocketException)
+            {
+                return StatusCode(StatusCodes.Status504GatewayTimeout, "Controller did not respond in time");
+            }
+            catch (TaskCanceledException)
+            {
+                return StatusCode(StatusCodes.Status408RequestTimeout, "The request timed out");
+            }
         }
     }
 }

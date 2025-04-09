@@ -12,7 +12,11 @@
 
 <AuthorizeView>
 	<Authorizing>
-		@Body
+        <div class="h-screen flex items-center justify-center">
+            <div class="bg-white flex place-content-center">
+                @Body
+            </div>
+        </div>
 	</Authorizing>
 <NotAuthorized>
     <div class="h-screen overflow-y-auto"> 

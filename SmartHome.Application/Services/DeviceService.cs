@@ -194,6 +194,11 @@ namespace SmartHome.Application.Services
                         device.State["power_state"] = deviceResponse.PowerState;
                     }
 
+                    if (deviceResponse.Brightness.HasValue)
+                    {
+                        device.State["brightness"] = deviceResponse.Brightness.Value;
+                    }
+
                     if (deviceResponse.FanSpeed.HasValue)
                     {
                         device.State["fan_speed"] = deviceResponse.FanSpeed.Value;

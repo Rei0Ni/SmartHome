@@ -58,7 +58,7 @@
     </div>
 
     <!-- Devices Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-2">
+    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
         <!-- to control # of Devices -->
         @foreach(var device in AreaModel.AreaDevices){
             if(device.DeviceType.Type == DeviceTypes.Lamp){

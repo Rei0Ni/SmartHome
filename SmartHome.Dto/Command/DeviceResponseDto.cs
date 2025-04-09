@@ -16,6 +16,9 @@ namespace SmartHome.Dto.Command
         [JsonPropertyName("power_state")]
         public string PowerState { get; set; }
 
+        [JsonPropertyName("brightness")]
+        public int? Brightness { get; set; }
+
         [JsonPropertyName("fan_speed")]
         public int? FanSpeed { get; set; }
     }

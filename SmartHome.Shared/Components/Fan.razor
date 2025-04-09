@@ -1,88 +1,26 @@
-﻿@* @using SmartHome.Dto.Command *@
-@* @using SmartHome.Dto.Dashboard *@
-@* @using SmartHome.Shared.Interfaces *@
-@* @using SmartHome.Shared.Models *@
-@* @using System.Text.Json *@
-@* @inject IApiService ApiService *@
-
-@* <!-- Fan Card --> *@
-@* <div class="bg-[#F9FFF4] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(sliderValue > 0 ? "background-color:#F9FFF4;" : "background-color:#FBFBFB;")"> *@
-@*     <div class="flex align-items-center justify-content-between w-100"> *@
-@*         <div> *@
-
-@*             <div class="flex align-items-center justify-content-between w-100"> *@
-@*                 <div> *@
-@*                     <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="3.2rem" height="3.2rem" viewBox="0 0 122.88 122.07" style="overflow: visible;"> *@
-@*                         <defs> *@
-@*                             <style> *@
-@*                                 .fan_on { *@
-@*                                 fill: none; *@
-@*                                 stroke: #059212; *@
-@*                                 stroke-width: 3; *@
-@*                                 stroke-linecap: round; *@
-@*                                 stroke-linejoin: round; *@
-@*                                 fill-rule: evenodd; *@
-@*                                 } *@
-
-@*                                 .fan_off { *@
-@*                                 fill: none; *@
-@*                                 stroke: rgb(186, 186, 186); *@
-@*                                 stroke-width: 3; *@
-@*                                 stroke-linecap: round; *@
-@*                                 stroke-linejoin: round; *@
-@*                                 fill-rule: evenodd; *@
-@*                                 } *@
-
-@*                                 @@keyframes spin { *@
-@*                                 from { *@
-@*                                 transform: rotate(0deg); *@
-@*                                 } *@
-
-@*                                 to { *@
-@*                                 transform: rotate(360deg); *@
-@*                                 } *@
-@*                                 } *@
-
-@*                                 .rotating-fan { *@
-@*                                 animation: spin 5s linear infinite; *@
-@*                                 transform-origin: 50% 50%; *@
-@*                                 will-change: transform; *@
-@*                                 } *@
-@*                             </style> *@
-@*                         </defs> *@
-@*                         <g id="rotate" class="@(sliderValue > 0 ? "rotating-fan" : "")" > *@
-@*                             <path class="@(sliderValue > 0 ? "fan_on" : "fan_off") w-12 h-12" d="M67.29,82.9c-.11,1.3-.26,2.6-.47,3.9-1.43,9-5.79,14.34-8.08,22.17C56,118.45,65.32,122.53,73.27,122A37.63,37.63,0,0,0,85,119a45,45,0,0,0,9.32-5.36c20.11-14.8,16-34.9-6.11-46.36a15,15,0,0,0-4.14-1.4,22,22,0,0,1-6,11.07l0,0A22.09,22.09,0,0,1,67.29,82.9ZM62.4,44.22a17.1,17.1,0,1,1-17.1,17.1,17.1,17.1,0,0,1,17.1-17.1ZM84.06,56.83c1.26.05,2.53.14,3.79.29,9.06,1,14.58,5.16,22.5,7.1,9.6,2.35,13.27-7.17,12.41-15.09a37.37,37.37,0,0,0-3.55-11.57,45.35,45.35,0,0,0-5.76-9.08C97.77,9,77.88,14,67.4,36.63a14.14,14.14,0,0,0-1,2.94A22,22,0,0,1,78,45.68l0,0a22.07,22.07,0,0,1,6,11.13Zm-26.9-17c0-1.6.13-3.21.31-4.81,1-9.07,5.12-14.6,7-22.52C66.86,2.89,57.32-.75,49.41.13A37.4,37.4,0,0,0,37.84,3.7a44.58,44.58,0,0,0-9.06,5.78C9.37,25.2,14.39,45.08,37,55.51a14.63,14.63,0,0,0,3.76,1.14A22.12,22.12,0,0,1,57.16,39.83ZM40.66,65.42a52.11,52.11,0,0,1-5.72-.24c-9.08-.88-14.67-4.92-22.62-6.73C2.68,56.25-.83,65.84.16,73.74A37.45,37.45,0,0,0,3.9,85.25a45.06,45.06,0,0,0,5.91,9c16,19.17,35.8,13.87,45.91-8.91a15.93,15.93,0,0,0,.88-2.66A22.15,22.15,0,0,1,40.66,65.42Z" /> *@
-@*                         </g> *@
-@*                     </svg> *@
-@*                 </div> *@
-@*             </div> *@
-@*         </div> *@
-@*         <div class="flex items-center "> *@
-
-
-@*             <input type="range" *@
-@*             id="range1" *@
-@*             min="0" *@
-@using SmartHome.Dto.Command
+﻿@using SmartHome.Dto.Command
 @using SmartHome.Dto.Dashboard
 @using SmartHome.Shared.Interfaces
 @using SmartHome.Shared.Models
 @using System.Text.Json
 @inject IApiService ApiService
 
-<!-- Fan Card -->
-<div class="bg-[#F9FFF4] rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm" style="@(sliderValue > 0 ? "background-color:#F9FFF4;" : "background-color:#FBFBFB;")">
-    <div class="flex align-items-center justify-content-between w-100">
-        <div>
 
-            <div class="flex align-items-center justify-content-between w-100">
+<!-- Fan Card with Modal Trigger -->
+<div class="rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm cursor-pointer"
+style="@(isPowerOn ? $"background-color: var(--fan-card-bg-on);" : $"background-color: var(--fan-card-bg-off);")"
+@onclick="() => showModal = true">
+    <div class="flex items-center justify-between w-full">
+        <div>
+            <div class="flex items-center justify-between w-full">
                 <div>
-                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="3.2rem" height="3.2rem" viewBox="0 0 122.88 122.07" style="overflow: visible;">
+                    <!-- SVG Icon for Fan -->
+                    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 122.88 122.07" style="overflow: visible;">
                         <defs>
                             <style>
                                 .fan_on {
                                 fill: none;
-                                stroke: #059212;
+                                stroke: var(--fan-off-stroke);
                                 stroke-width: 3;
                                 stroke-linecap: round;
                                 stroke-linejoin: round;
@@ -91,21 +29,23 @@
 
                                 .fan_off {
                                 fill: none;
-                                stroke: rgb(186, 186, 186);
+                                stroke: var(--fan-on-stroke);
                                 stroke-width: 3;
                                 stroke-linecap: round;
                                 stroke-linejoin: round;
                                 fill-rule: evenodd;
                                 }
-
                                 @@keyframes spin {
-                                from {
+                                from
+
+                                {
                                 transform: rotate(0deg);
                                 }
 
                                 to {
                                 transform: rotate(360deg);
                                 }
+
                                 }
 
                                 .rotating-fan {
@@ -115,50 +55,305 @@
                                 }
                             </style>
                         </defs>
-                        <g id="rotate" class="@(sliderValue > 0 ? "rotating-fan" : "")" >
-                            <path class="@(sliderValue > 0 ? "fan_on" : "fan_off") w-12 h-12" d="M67.29,82.9c-.11,1.3-.26,2.6-.47,3.9-1.43,9-5.79,14.34-8.08,22.17C56,118.45,65.32,122.53,73.27,122A37.63,37.63,0,0,0,85,119a45,45,0,0,0,9.32-5.36c20.11-14.8,16-34.9-6.11-46.36a15,15,0,0,0-4.14-1.4,22,22,0,0,1-6,11.07l0,0A22.09,22.09,0,0,1,67.29,82.9ZM62.4,44.22a17.1,17.1,0,1,1-17.1,17.1,17.1,17.1,0,0,1,17.1-17.1ZM84.06,56.83c1.26.05,2.53.14,3.79.29,9.06,1,14.58,5.16,22.5,7.1,9.6,2.35,13.27-7.17,12.41-15.09a37.37,37.37,0,0,0-3.55-11.57,45.35,45.35,0,0,0-5.76-9.08C97.77,9,77.88,14,67.4,36.63a14.14,14.14,0,0,0-1,2.94A22,22,0,0,1,78,45.68l0,0a22.07,22.07,0,0,1,6,11.13Zm-26.9-17c0-1.6.13-3.21.31-4.81,1-9.07,5.12-14.6,7-22.52C66.86,2.89,57.32-.75,49.41.13A37.4,37.4,0,0,0,37.84,3.7a44.58,44.58,0,0,0-9.06,5.78C9.37,25.2,14.39,45.08,37,55.51a14.63,14.63,0,0,0,3.76,1.14A22.12,22.12,0,0,1,57.16,39.83ZM40.66,65.42a52.11,52.11,0,0,1-5.72-.24c-9.08-.88-14.67-4.92-22.62-6.73C2.68,56.25-.83,65.84.16,73.74A37.45,37.45,0,0,0,3.9,85.25a45.06,45.06,0,0,0,5.91,9c16,19.17,35.8,13.87,45.91-8.91a15.93,15.93,0,0,0,.88-2.66A22.15,22.15,0,0,1,40.66,65.42Z" />
+                        <g id="rotate" class="@(isPowerOn ? "rotating-fan" : "")">
+                            <path class="@(isPowerOn ? "fan_on" : "fan_off") w-10 h-10" d="M67.29,82.9c-.11,1.3-.26,2.6-.47,3.9-1.43,9-5.79,14.34-8.08,22.17C56,118.45,65.32,122.53,73.27,122A37.63,37.63,0,0,0,85,119a45,45,0,0,0,9.32-5.36c20.11-14.8,16-34.9-6.11-46.36a15,15,0,0,0-4.14-1.4,22,22,0,0,1-6,11.07l0,0A22.09,22.09,0,0,1,67.29,82.9ZM62.4,44.22a17.1,17.1,0,1,1-17.1,17.1,17.1,17.1,0,0,1,17.1-17.1ZM84.06,56.83c1.26.05,2.53.14,3.79.29,9.06,1,14.58,5.16,22.5,7.1,9.6,2.35,13.27-7.17,12.41-15.09a37.37,37.37,0,0,0-3.55-11.57,45.35,45.35,0,0,0-5.76-9.08C97.77,9,77.88,14,67.4,36.63a14.14,14.14,0,0,0-1,2.94A22,22,0,0,1,78,45.68l0,0a22.07,22.07,0,0,1,6,11.13Zm-26.9-17c0-1.6.13-3.21.31-4.81,1-9.07,5.12-14.6,7-22.52C66.86,2.89,57.32-.75,49.41.13A37.4,37.4,0,0,0,37.84,3.7a44.58,44.58,0,0,0-9.06,5.78C9.37,25.2,14.39,45.08,37,55.51a14.63,14.63,0,0,0,3.76,1.14A22.12,22.12,0,0,1,57.16,39.83ZM40.66,65.42a52.11,52.11,0,0,1-5.72-.24c-9.08-.88-14.67-4.92-22.62-6.73C2.68,56.25-.83,65.84.16,73.74A37.45,37.45,0,0,0,3.9,85.25a45.06,45.06,0,0,0,5.91,9c16,19.17,35.8,13.87,45.91-8.91a15.93,15.93,0,0,0,.88-2.66A22.15,22.15,0,0,1,40.66,65.42Z" />
                         </g>
                     </svg>
                 </div>
             </div>
         </div>
-        <div class="flex items-center ">
-
-
-            <input type="range"
-            id="range1"
-            min="0"
-            max="100"
-            step="10"
-            @bind="sliderValue"
-            @bind:event="oninput"
-            class="green-range sm:w-26"
-            style="width: 90%; margin-left: 13%;"
-            @onchange="SetFanSpeed">  
-            @* Call SetFanSpeed on change *@
-            <span class="text-gray-700 font-medium"></span> <!-- Optional: Display value here -->
-
-
-
-
-        </div>
-    </div>
-    <div class="flex align-items-center justify-content-between w-100">
-        <div>
-            <h3 class="text-gray-600 font-normal">Fan Speed @sliderValue%</h3>
-        </div>
-        <div>
-            @if (sliderValue > 0)
+        <div class="flex items-center">
+            @if (isPowerOn)
             {
-                <div class="w-4 h-4 rounded-full " style="background-color:#059212"></div> <!--circle on-->
+                <!-- icon power on -->
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/icons/power_icon_on_fan.svg" alt="PowerIcon">
+                </div>
             }
             else
             {
-                <div class="w-4 h-4 rounded-full " style="background-color:rgb(128,128,128)"></div> <!--circle off-->
+                <!-- icon power off -->
+                <div>
+                    <img src="_content/SmartHome.Shared/imgs/icons/power_icon_off_lamp.svg" alt="PowerIcon">
+                </div>
+            }
+        </div>
+    </div>
+    <div class="flex items-center justify-between w-full">
+        <div>
+            <h3 class="text-gray-600 text-sm font-normal">@DeviceModel.Name @sliderValue%</h3>
+        </div>
+        <div>
+            @if (isPowerOn)
+            {
+                <div class="w-4 h-4 rounded-full" style="background-color: var(--fan-indicator-on);"></div>
+            }
+            else
+            {
+                <div class="w-4 h-4 rounded-full" style="background-color: var(--fan-indicator-off);"></div>
             }
         </div>
     </div>
 </div>
+
+<!-- Modal for Fan Speed Control -->
+@if (showModal)
+{
+    <div class="fixed inset-0 flex items-center justify-center z-50">
+        <!-- Transparent background for closing the modal -->
+        <div class="absolute inset-0 bg-black bg-opacity-50" @onclick="() => showModal = false"></div>
+
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
+            <!-- Close button at the top right -->
+            <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" @onclick="() => showModal = false">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h2 class="text-xl font-semibold text-gray-700 text-center">@DeviceModel.Name</h2>
+            <!-- عرض حالة المصباح وزر toggle on / off -->
+            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center">
+                <div class="flex items-center gap-2">
+                    @if (sliderValue > 0)
+                    {
+                        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="3.2rem" height="3.2rem" viewBox="0 0 122.88 122.07" style="overflow: visible;">
+                            <defs>
+                                <style>
+                                    .fan_on {
+                                    fill: none;
+                                    stroke: var(--fan-off-stroke);
+                                    stroke-width: 3;
+                                    stroke-linecap: round;
+                                    stroke-linejoin: round;
+                                    fill-rule: evenodd;
+                                    }
+
+                                    .fan_off {
+                                    fill: none;
+                                    stroke: var(--fan-on-stroke);
+                                    stroke-width: 3;
+                                    stroke-linecap: round;
+                                    stroke-linejoin: round;
+                                    fill-rule: evenodd;
+                                    }
+
+                                    @@keyframes spin {
+                                    from {
+                                    transform: rotate(0deg);
+                                    }
+
+                                    to {
+                                    transform: rotate(360deg);
+                                    }
+                                    }
+
+                                    .rotating-fan {
+                                    animation: spin 5s linear infinite;
+                                    transform-origin: 50% 50%;
+                                    will-change: transform;
+                                    }
+                                </style>
+                            </defs>
+                            <g id="rotate" class="@(sliderValue > 0 ? "rotating-fan" : "")">
+                                <path class="@(sliderValue > 0 ? "fan_on" : "fan_off") w-12 h-12" d="M67.29,82.9c-.11,1.3-.26,2.6-.47,3.9-1.43,9-5.79,14.34-8.08,22.17C56,118.45,65.32,122.53,73.27,122A37.63,37.63,0,0,0,85,119a45,45,0,0,0,9.32-5.36c20.11-14.8,16-34.9-6.11-46.36a15,15,0,0,0-4.14-1.4,22,22,0,0,1-6,11.07l0,0A22.09,22.09,0,0,1,67.29,82.9ZM62.4,44.22a17.1,17.1,0,1,1-17.1,17.1,17.1,17.1,0,0,1,17.1-17.1ZM84.06,56.83c1.26.05,2.53.14,3.79.29,9.06,1,14.58,5.16,22.5,7.1,9.6,2.35,13.27-7.17,12.41-15.09a37.37,37.37,0,0,0-3.55-11.57,45.35,45.35,0,0,0-5.76-9.08C97.77,9,77.88,14,67.4,36.63a14.14,14.14,0,0,0-1,2.94A22,22,0,0,1,78,45.68l0,0a22.07,22.07,0,0,1,6,11.13Zm-26.9-17c0-1.6.13-3.21.31-4.81,1-9.07,5.12-14.6,7-22.52C66.86,2.89,57.32-.75,49.41.13A37.4,37.4,0,0,0,37.84,3.7a44.58,44.58,0,0,0-9.06,5.78C9.37,25.2,14.39,45.08,37,55.51a14.63,14.63,0,0,0,3.76,1.14A22.12,22.12,0,0,1,57.16,39.83ZM40.66,65.42a52.11,52.11,0,0,1-5.72-.24c-9.08-.88-14.67-4.92-22.62-6.73C2.68,56.25-.83,65.84.16,73.74A37.45,37.45,0,0,0,3.9,85.25a45.06,45.06,0,0,0,5.91,9c16,19.17,35.8,13.87,45.91-8.91a15.93,15.93,0,0,0,.88-2.66A22.15,22.15,0,0,1,40.66,65.42Z" />
+                            </g>
+                        </svg>
+                        <span class="text-sm text-yellow-600 font-medium">Fan On</span>
+                    }
+                    else
+                    {
+                        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" width="3.2rem" height="3.2rem" viewBox="0 0 122.88 122.07" style="overflow: visible;">
+                            <defs>
+                                <style>
+                                    .fan_on {
+                                    fill: none;
+                                    stroke: var(--fan-off-stroke);
+                                    stroke-width: 3;
+                                    stroke-linecap: round;
+                                    stroke-linejoin: round;
+                                    fill-rule: evenodd;
+                                    }
+
+                                    .fan_off {
+                                    fill: none;
+                                    stroke: var(--fan-on-stroke);
+                                    stroke-width: 3;
+                                    stroke-linecap: round;
+                                    stroke-linejoin: round;
+                                    fill-rule: evenodd;
+                                    }
+
+                                    @@keyframes spin {
+                                    from {
+                                    transform: rotate(0deg);
+                                    }
+
+                                    to {
+                                    transform: rotate(360deg);
+                                    }
+                                    }
+
+                                    .rotating-fan {
+                                    animation: spin 5s linear infinite;
+                                    transform-origin: 50% 50%;
+                                    will-change: transform;
+                                    }
+                                </style>
+                            </defs>
+                            <g id="rotate" class="@(sliderValue > 0 ? "rotating-fan" : "")">
+                                <path class="@(sliderValue > 0 ? "fan_on" : "fan_off") w-12 h-12" d="M67.29,82.9c-.11,1.3-.26,2.6-.47,3.9-1.43,9-5.79,14.34-8.08,22.17C56,118.45,65.32,122.53,73.27,122A37.63,37.63,0,0,0,85,119a45,45,0,0,0,9.32-5.36c20.11-14.8,16-34.9-6.11-46.36a15,15,0,0,0-4.14-1.4,22,22,0,0,1-6,11.07l0,0A22.09,22.09,0,0,1,67.29,82.9ZM62.4,44.22a17.1,17.1,0,1,1-17.1,17.1,17.1,17.1,0,0,1,17.1-17.1ZM84.06,56.83c1.26.05,2.53.14,3.79.29,9.06,1,14.58,5.16,22.5,7.1,9.6,2.35,13.27-7.17,12.41-15.09a37.37,37.37,0,0,0-3.55-11.57,45.35,45.35,0,0,0-5.76-9.08C97.77,9,77.88,14,67.4,36.63a14.14,14.14,0,0,0-1,2.94A22,22,0,0,1,78,45.68l0,0a22.07,22.07,0,0,1,6,11.13Zm-26.9-17c0-1.6.13-3.21.31-4.81,1-9.07,5.12-14.6,7-22.52C66.86,2.89,57.32-.75,49.41.13A37.4,37.4,0,0,0,37.84,3.7a44.58,44.58,0,0,0-9.06,5.78C9.37,25.2,14.39,45.08,37,55.51a14.63,14.63,0,0,0,3.76,1.14A22.12,22.12,0,0,1,57.16,39.83ZM40.66,65.42a52.11,52.11,0,0,1-5.72-.24c-9.08-.88-14.67-4.92-22.62-6.73C2.68,56.25-.83,65.84.16,73.74A37.45,37.45,0,0,0,3.9,85.25a45.06,45.06,0,0,0,5.91,9c16,19.17,35.8,13.87,45.91-8.91a15.93,15.93,0,0,0,.88-2.66A22.15,22.15,0,0,1,40.66,65.42Z" />
+                            </g>
+                        </svg>
+                        <span class="fan_off text-sm text-gray-600 font-medium">Fan Off</span>
+                    }
+                </div>
+
+                @* @if (sliderValue > 0) *@
+                @* { *@
+                <!-- Toggle switch enabled -->
+                <input id="checkboxInput" type="checkbox" checked="@isPowerOn" @onchange="ToggleDevicePower" />
+                <label class="toggleSwitch" for="checkboxInput">
+                    <svg class="slider"
+                    viewBox="0 0 512 512"
+                    height="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="fill:">
+                        <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V256c0 17.7 14.3 32 32 32s32-14.3 32-32V32zM143.5 120.6c13.6-11.3 15.4-31.5 4.1-45.1s-31.5-15.4-45.1-4.1C49.7 115.4 16 181.8 16 256c0 132.5 107.5 240 240 240s240-107.5 240-240c0-74.2-33.8-140.6-86.6-184.6c-13.6-11.3-33.8-9.4-45.1 4.1s-9.4 33.8 4.1 45.1c38.9 32.3 63.5 81 63.5 135.4c0 97.2-78.8 176-176 176s-176-78.8-176-176c0-54.4 24.7-103.1 63.5-135.4z"></path>
+                    </svg>
+                </label>
+
+                <style>
+                    /* hide checkbox */
+                    #checkboxInput {
+                    display: none;
+                    }
+
+                    .toggleSwitch {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    width: 50px;
+                    height: 30px;
+                    background-color: rgb(170, 170, 170);
+                    border-radius: 20px;
+                    cursor: pointer;
+                    transition-duration: 0.2s;
+                    }
+
+                    .slider {
+                    height: 20px;
+                    position: absolute;
+                    left: 5px;
+                    border-radius: 50%;
+                    transition-duration: 0.2s;
+                    border: 3px solid rgb(71, 71, 71);
+                    background-color: rgb(71, 71, 71);
+                    }
+
+                    #checkboxInput:checked + .toggleSwitch .slider {
+                    transform: translateX(100%);
+                    transition-duration: 0.2s;
+                    }
+                </style>
+                @* } *@
+                @* else *@
+                @* { *@
+                @*     <!-- Toggle switch disabled --> *@
+                @*     <input id="checkboxInput" type="checkbox" disabled /> *@
+                @*     <label class="toggleSwitch" for="checkboxInput"> *@
+                @*         <svg class="slider" *@
+                @*         viewBox="0 0 512 512" *@
+                @*         height="1em" *@
+                @*         xmlns="http://www.w3.org/2000/svg" *@
+                @*         style="fill: rgb(255,129,129);"> *@
+                @*             <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32V256c0 17.7 14.3 32 32 32s32-14.3 32-32V32zM143.5 120.6c13.6-11.3 15.4-31.5 4.1-45.1s-31.5-15.4-45.1-4.1C49.7 115.4 16 181.8 16 256c0 132.5 107.5 240 240 240s240-107.5 240-240c0-74.2-33.8-140.6-86.6-184.6c-13.6-11.3-33.8-9.4-45.1 4.1s-9.4 33.8 4.1 45.1c38.9 32.3 63.5 81 63.5 135.4c0 97.2-78.8 176-176 176s-176-78.8-176-176c0-54.4 24.7-103.1 63.5-135.4z"></path> *@
+                @*         </svg> *@
+                @*     </label> *@
+
+                @*     <style> *@
+                @*         /* hide checkbox */ *@
+                @*         #checkboxInput { *@
+                @*         display: none; *@
+                @*         } *@
+
+                @*         .toggleSwitch { *@
+                @*         display: flex; *@
+                @*         align-items: center; *@
+                @*         justify-content: center; *@
+                @*         position: relative; *@
+                @*         width: 50px; *@
+                @*         height: 30px; *@
+                @*         background-color: rgb(170, 170, 170); *@
+                @*         border-radius: 20px; *@
+                @*         cursor: pointer; *@
+                @*         transition-duration: 0.2s; *@
+                @*         } *@
+
+                @*         .slider { *@
+                @*         height: 20px; *@
+                @*         position: absolute; *@
+                @*         left: 5px; *@
+                @*         border-radius: 50%; *@
+                @*         transition-duration: 0.2s; *@
+                @*         border: 3px solid rgb(71, 71, 71); *@
+                @*         background-color: rgb(71, 71, 71); *@
+                @*         } *@
+
+                @*         #checkboxInput:checked + .toggleSwitch .slider { *@
+                @*         transform: translateX(100%); *@
+                @*         transition-duration: 0.2s; *@
+                @*         } *@
+                @*     </style> *@
+                @* } *@
+            </div>
+
+            <!-- Display Fan Icon with current speed -->
+            <div class="flex items-center justify-center">
+            </div>
+
+            <!-- Slider inside the modal to adjust fan speed -->
+            <div class="flex flex-col items-center gap-4">
+                <div class="form-element">
+                    <div id="rangeValue" class="text-2xl font-medium">@sliderValue%</div>
+                    <input type="range" id="fanSpeedRange" min="5" max="100" step="5"
+                    @bind="sliderValue" @bind:event="oninput" @onchange="SetFanSpeed" class="w-full" />
+                </div>
+                <style>
+                    .form-element #rangeValue {
+                    margin-bottom: 20px;
+                    text-align: center;
+                    color: #444;
+                    }
+
+                    .form-element input[type="range"] {
+                    -webkit-appearance: none;
+                    width: 300px;
+                    height: 40px;
+                    border-radius: 15px;
+                    background: #aaa;
+                    outline: none;
+                    overflow: hidden;
+                    }
+
+                    .form-element input[type="range"]::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    width: 40px;
+                    height: 40px;
+                    background: var(--fan-slider-thumb-color);
+                    border-radius: 10px;
+                    box-shadow: -350px 0px 0px 340px var(--fan-slider-thumb-color);
+                    cursor: pointer;
+                    }
+                </style>
+            </div>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter]
@@ -167,17 +362,97 @@
     [Parameter]
     public Guid ControllerId { get; set; }
 
-    private int sliderValue = 0; // Initial value, 0 for off
-    private int lastKnownSpeed = 0; // To store the last known speed
+    private bool isPowerOn = false;
+    private int sliderValue = 0; // Initial value: 0 means the fan is off
+    private int lastKnownSpeed = 0; // Stores the last known fan speed
+    private bool showModal = false; // Controls the visibility of the modal
 
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        UpdateFanSpeedFromState(); // Initialize slider value from DeviceModel.State
+        UpdateVisualState(); // Initialize slider value from DeviceModel state
     }
 
-    private void UpdateFanSpeedFromState()
+    private async Task ToggleDevicePower()
     {
+        if (!DeviceModel.State.ContainsKey("power_state"))
+        {
+            Console.WriteLine("Device state does not contain 'power_state'. Cannot toggle.");
+            return;
+        }
+
+        bool desiredState = !isPowerOn;
+
+        var commandRequest = new CommandRequestDto()
+            {
+                AreaId = DeviceModel.AreaId,
+                ControllerId = ControllerId,
+                Devices = new List<DeviceCommandDto>()
+            {
+                new DeviceCommandDto()
+                {
+                    DeviceId = DeviceModel.Id,
+                    Function = "toggle",
+                    Parameters = new Dictionary<string, object>()
+                    {
+                        { "state", desiredState }
+                    }
+                }
+            }
+            };
+
+        try
+        {
+            var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
+
+            if (result.IsSuccessStatusCode)
+            {
+                var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
+
+                if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
+                {
+                    isPowerOn = desiredState;
+                    if (DeviceModel.State.ContainsKey("power_state"))
+                    {
+                        DeviceModel.State["power_state"] = desiredState ? "on" : "off";
+                    }
+                    StateHasChanged();
+                }
+                else
+                {
+                    Console.WriteLine($"Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
+                }
+            }
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+                StateHasChanged();
+            }
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine("Internal Server Error");
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception during command: {ex.Message}");
+        }
+    }
+
+    private void UpdateVisualState()
+    {
+        if (DeviceModel.State.TryGetValue("power_state", out var powerStateValue))
+        {
+            isPowerOn = powerStateValue?.ToString()?.ToLower() == "on";
+        }
         if (DeviceModel.State.ContainsKey("fan_speed"))
         {
             var value = DeviceModel.State["fan_speed"];
@@ -213,14 +488,19 @@
         }
         else
         {
+            isPowerOn = false;
             sliderValue = 0;
         }
-        lastKnownSpeed = sliderValue; // Update last known speed
+        // lastKnownSpeed = sliderValue;
     }
-
 
     private async Task SetFanSpeed()
     {
+        if (sliderValue > 0)
+            isPowerOn = true;
+        else
+            isPowerOn = false;
+
         var commandRequest = new CommandRequestDto()
             {
                 AreaId = DeviceModel.AreaId,
@@ -233,7 +513,7 @@
                     Function = "setspeed",
                     Parameters = new Dictionary<string, object>()
                     {
-                        { "speed", sliderValue } // Send the slider value as 'speed' parameter
+                        { "speed", sliderValue }
                     }
                 }
             }
@@ -242,195 +522,54 @@
         try
         {
             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest);
-            if (result.IsSuccessStatusCode || result.StatusCode != HttpStatusCode.InternalServerError)
+            if (result.IsSuccessStatusCode)
             {
                 var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>();
-
                 if (commandResponse != null && commandResponse.Status?.ToLower() == "success")
                 {
-                    // Command successful, update local DeviceModel.State
                     if (DeviceModel.State.ContainsKey("fan_speed"))
                     {
-                        DeviceModel.State["fan_speed"] = sliderValue; // Update with the slider value
+                        DeviceModel.State["fan_speed"] = sliderValue;
                     }
                     else
                     {
-                        DeviceModel.State.Add("fan_speed", sliderValue); // Add if not present
+                        DeviceModel.State.Add("fan_speed", sliderValue);
                     }
-                    lastKnownSpeed = sliderValue; // Update last known speed
-                    StateHasChanged(); // Re-render to update UI
+                    // lastKnownSpeed = sliderValue;
+                    StateHasChanged();
                 }
                 else
                 {
-                    Console.WriteLine($"Fan Speed Command failed: {commandResponse?.Devices[0].Message ?? "Unknown error"}");
-                    sliderValue = lastKnownSpeed; // Revert to last known speed on error
-                    StateHasChanged(); // Re-render to update UI
+                    Console.WriteLine($"Fan Speed Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
+                    // sliderValue = lastKnownSpeed;
+                    StateHasChanged();
                 }
             }
-            else{
-                if (result.StatusCode == HttpStatusCode.InternalServerError){
-                    toastService.Notify(new(ToastType.Danger, IconName.Bug, "Cannot Connect to Controller", "Cannot Connect to the Controller to Execute your Command"));
-                }
-                sliderValue = lastKnownSpeed; // Revert to last known speed on error
-                StateHasChanged(); // Re-render to update UI
+            else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
             }
-           
+            else if (result.StatusCode == HttpStatusCode.RequestTimeout)
+            {
+                Console.WriteLine("Controller Unavailable. Please try again later.");
+                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+            }
+            else
+            {
+                if (result.StatusCode == HttpStatusCode.InternalServerError)
+                {
+                    // You can call your notification service here (e.g., toastService) if available
+                }
+                // sliderValue = lastKnownSpeed;
+                StateHasChanged();
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception setting fan speed: {ex.Message}");
-            sliderValue = lastKnownSpeed; // Revert to last known speed on exception
-            StateHasChanged(); // Re-render to update UI
+            // sliderValue = lastKnownSpeed;
+            StateHasChanged();
         }
     }
 }
-@*             max="100" *@
-@*             step="10" *@
-@*             @bind="sliderValue" *@
-@*             @bind:event="oninput" *@
-@*             class="green-range sm:w-26" *@
-@*             style="width: 90%; margin-left: 13%;" *@
-@*             @onchange="SetFanSpeed">   *@
-@*              Call SetFanSpeed on change *@ 
-@*             <span class="text-gray-700 font-medium"></span> <!-- Optional: Display value here --> *@
-
-
-
-
-@*         </div> *@
-@*     </div> *@
-@*     <div class="flex align-items-center justify-content-between w-100"> *@
-@*         <div> *@
-@*             <h3 class="text-gray-600 font-normal">Fan Speed @sliderValue%</h3> *@
-@*         </div> *@
-@*         <div> *@
-@*             @if (sliderValue > 0) *@
-@*             { *@
-@*                 <div class="w-4 h-4 rounded-full " style="background-color:#059212"></div> <!--circle on--> *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 <div class="w-4 h-4 rounded-full " style="background-color:rgb(128,128,128)"></div> <!--circle off--> *@
-@*             } *@
-@*         </div> *@
-@*     </div> *@
-@* </div> *@
-
-@* @code { *@
-@*     [Parameter] *@
-@*     public OverviewDeviceDto DeviceModel { get; set; } = new(); *@
-
-@*     [Parameter] *@
-@*     public Guid ControllerId { get; set; } *@
-
-@*     private int sliderValue = 0; // Initial value, 0 for off *@
-
-@*     protected override void OnParametersSet() *@
-@*     { *@
-@*         base.OnParametersSet(); *@
-@*         UpdateFanSpeedFromState(); // Initialize slider value from DeviceModel.State *@
-@*     } *@
-
-@*     private void UpdateFanSpeedFromState() *@
-@*     { *@
-@*         if (DeviceModel.State.ContainsKey("fan_speed")) *@
-@*         { *@
-@*             var value = DeviceModel.State["fan_speed"]; *@
-@*             if (value is JsonElement element) *@
-@*             { *@
-@*                 if (element.ValueKind == JsonValueKind.Number && element.TryGetInt32(out int speed)) *@
-@*                 { *@
-@*                     sliderValue = speed; *@
-@*                 } *@
-@*                 else if (element.ValueKind == JsonValueKind.String && int.TryParse(element.GetString(), out int parsedSpeed)) *@
-@*                 { *@
-@*                     sliderValue = parsedSpeed; *@
-@*                 } *@
-@*                 else *@
-@*                 { *@
-@*                     Console.WriteLine("Warning: fan_speed in DeviceState is not a valid number or string."); *@
-@*                     sliderValue = 0; *@
-@*                 } *@
-@*             } *@
-@*             else if (value is int directSpeed) *@
-@*             { *@
-@*                 sliderValue = directSpeed; *@
-@*             } *@
-@*             else if (value is string speedString && int.TryParse(speedString, out int parsedSpeed)) *@
-@*             { *@
-@*                 sliderValue = parsedSpeed; *@
-@*             } *@
-@*             else *@
-@*             { *@
-@*                 Console.WriteLine("Warning: fan_speed in DeviceState is not in a recognized format."); *@
-@*                 sliderValue = 0; *@
-@*             } *@
-@*         } *@
-@*         else *@
-@*         { *@
-@*             sliderValue = 0; *@
-@*         } *@
-@*     } *@
-
-
-@*     private async Task SetFanSpeed() *@
-@*     { *@
-@*         var commandRequest = new CommandRequestDto() *@
-@*             { *@
-@*                 AreaId = DeviceModel.AreaId, *@
-@*                 ControllerId = ControllerId, *@
-@*                 Devices = new List<DeviceCommandDto>() *@
-@*             { *@
-@*                 new DeviceCommandDto() *@
-@*                 { *@
-@*                     DeviceId = DeviceModel.Id, *@
-@*                     Function = "setspeed", *@
-@*                     Parameters = new Dictionary<string, object>() *@
-@*                     { *@
-@*                         { "speed", sliderValue } // Send the slider value as 'speed' parameter *@
-@*                     } *@
-@*                 } *@
-@*             } *@
-@*             }; *@
-
-@*         try *@
-@*         { *@
-@*             var result = await ApiService.PostAsync<CommandRequestDto>("/api/command/send-command", commandRequest); *@
-@*             if(result.IsSuccessStatusCode){ *@
-@*                 var commandResponse = await result.Content.ReadFromJsonAsync<CommandResponseDto>(); *@
-
-@*                 if (commandResponse != null && commandResponse.Status?.ToLower() == "success") *@
-@*                 { *@
-@*                     // Command successful, update local DeviceModel.State *@
-@*                     if (DeviceModel.State.ContainsKey("fan_speed")) *@
-@*                     { *@
-@*                         DeviceModel.State["fan_speed"] = sliderValue; // Update with the slider value *@
-@*                     } *@
-@*                     else *@
-@*                     { *@
-@*                         DeviceModel.State.Add("fan_speed", sliderValue); // Add if not present *@
-@*                     } *@
-@*                     StateHasChanged(); // Re-render to update UI *@
-@*                 } *@
-@*                 else *@
-@*                 { *@
-@*                     Console.WriteLine($"Fan Speed Command failed: {commandResponse?.Devices[0].Message ?? "Unknown error"}"); *@
-@*                     // Optionally: Revert slider value on error or display error to user *@
-
-@*                 } *@
-@*             } *@
-@*             else{ *@
-@*                 if (result.StatusCode == HttpStatusCode.InternalServerError){ *@
-@*                     toastService.Notify(new(ToastType.Danger, IconName.Bug, "Cannot Connect to Controller", "Cannot Connect to the Conteoller to Executre your Command")); *@
-
-@*                 } *@
-@*             } *@
-           
-@*         } *@
-@*         catch (Exception ex) *@
-@*         { *@
-@*             Console.WriteLine($"Exception setting fan speed: {ex.Message}"); *@
-@*             // Optionally: Revert slider value on exception or display error to user *@
-@*         } *@
-@*     } *@
-@* } *@

@@ -184,7 +184,10 @@ builder.Services.AddScoped<ICommandService, CommandService>();
 
 builder.Services.AddSingleton<IHubState, HubState>();
 
-builder.Services.AddHttpClient("ControllerClient");
+builder.Services.AddHttpClient("ControllerClient", o =>
+{
+    o.Timeout = TimeSpan.FromSeconds(2);
+});
 
 builder.Services.AddTransient<MongodbHealthCheck>();
 builder.Services.AddTransient<JwtTokenServiceHealthCheck>();
