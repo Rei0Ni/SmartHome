@@ -13,6 +13,7 @@ using SmartHome.Domain.Entities;
 using SmartHome.Dto.Area;
 using SmartHome.Dto.Controller;
 using SmartHome.Enum;
+using Log = Serilog.Log;
 
 namespace SmartHome.Application.Services
 {

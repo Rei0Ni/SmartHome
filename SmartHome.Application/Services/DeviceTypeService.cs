@@ -12,6 +12,7 @@ using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.DeviceType;
 using SmartHome.Enum;
+using Log = Serilog.Log;
 
 namespace SmartHome.Application.Services
 {

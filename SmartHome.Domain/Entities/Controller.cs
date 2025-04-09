@@ -12,7 +12,7 @@ namespace SmartHome.Domain.Entities
         public string Name { get; set; } // Human-readable name
         public string MACAddress { get; set; } // Unique identifier for the ESP32
         public string IPAddress { get; set; } // Last known IP for communication
-        public DateTime LastSeen { get; set; } // Last time the controller was active
+        public DateTime LastSeen { get; set; } = DateTime.Now; // Last time the controller was active
         public ICollection<Guid> Areas { get; set; } = new List<Guid>();
     }
 }

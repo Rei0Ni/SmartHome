@@ -49,6 +49,8 @@ using SmartHome.Application.Hubs;
 using Microsoft.AspNetCore.Builder;
 using SmartHome.Application.Interfaces.Hubs;
 using SmartHome.Application.Interfaces.UserAreas;
+using SmartHome.Application.Interfaces.Logs;
+using Log = Serilog.Log;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -165,6 +167,7 @@ builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
 builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
 builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+builder.Services.AddScoped<ILogsRepository, LogsRepository>();
 
 // registering services
 builder.Services.Configure<TotpSettings>(builder.Configuration.GetSection("TotpSettings"));
@@ -181,6 +184,7 @@ builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDeviceDataService, DeviceDataService>();
 builder.Services.AddScoped<ICommandService, CommandService>();
+builder.Services.AddScoped<ILogsService, LogsService>();
 
 builder.Services.AddSingleton<IHubState, HubState>();
 

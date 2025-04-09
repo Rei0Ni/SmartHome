@@ -22,6 +22,7 @@ using SmartHome.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Serilog;
 using Microsoft.AspNetCore.Hosting;
+using Log = Serilog.Log;
 
 namespace SmartHome.Application.Services.User
 {
