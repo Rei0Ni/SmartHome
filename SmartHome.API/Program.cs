@@ -51,6 +51,7 @@ using SmartHome.Application.Interfaces.Hubs;
 using SmartHome.Application.Interfaces.UserAreas;
 using SmartHome.Application.Interfaces.Logs;
 using Log = Serilog.Log;
+using SmartHome.Application.Interfaces.IPCameras;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -167,6 +168,7 @@ builder.Services.AddScoped<IControllerRepository, ControllerRepository>();
 builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
 builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
+builder.Services.AddScoped<IIPCamerasRepository, IPCameraRepository>();
 builder.Services.AddScoped<ILogsRepository, LogsRepository>();
 
 // registering services
@@ -181,6 +183,7 @@ builder.Services.AddScoped<IControllerService, ControllerService>();
 builder.Services.AddScoped<IDeviceTypeService, DeviceTypeService>();
 builder.Services.AddScoped<IDeviceFunctionService, DeviceFunctionService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddScoped<IIPCamerasService, IPCameraService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDeviceDataService, DeviceDataService>();
 builder.Services.AddScoped<ICommandService, CommandService>();
@@ -192,6 +195,8 @@ builder.Services.AddHttpClient("ControllerClient", o =>
 {
     o.Timeout = TimeSpan.FromSeconds(2);
 });
+
+builder.Services.AddHttpClient("IPCameraClient");
 
 builder.Services.AddTransient<MongodbHealthCheck>();
 builder.Services.AddTransient<JwtTokenServiceHealthCheck>();

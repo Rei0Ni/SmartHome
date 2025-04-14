@@ -8,6 +8,6 @@ namespace SmartHome.Dto.Dashboard
 {
     public class OverviewDto
     {
-        public ICollection<OverviewAreaDto> Areas { get; set; } = new List<OverviewAreaDto>();
+        public List<OverviewAreaDto> Areas { get; set; } = new List<OverviewAreaDto>();
     }
 }

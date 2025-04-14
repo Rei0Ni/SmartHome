@@ -12,6 +12,7 @@ namespace SmartHome.Dto.Dashboard
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid ControllerId { get; set; }
-        public ICollection<OverviewDeviceDto> AreaDevices { get; set; } = new List<OverviewDeviceDto>();
+        public List<OverviewDeviceDto> AreaDevices { get; set; } = new List<OverviewDeviceDto>();
+        public List<OverviewCameraDto> AreaCameras { get; set; } = new List<OverviewCameraDto>();
     }
 }

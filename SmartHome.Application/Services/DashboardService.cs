@@ -27,7 +27,7 @@ namespace SmartHome.Application.Services
     public class DashboardService : IDashboardService
     {
         private readonly IAreaService _areaService;
-        private readonly IDeviceDataService _deviceDataService; // Use the new service
+        private readonly IDeviceDataService _deviceDataService;
         private readonly IDeviceTypeService _deviceTypeService;
         private readonly IDeviceFunctionService _deviceFunctionService;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -71,6 +71,7 @@ namespace SmartHome.Application.Services
             var areaIds = areas.Select(a => a.Id).ToList();
             //var allDevices = await _deviceService.GetDevicesForAreas(areaIds); // No longer use DeviceService directly
             var allDevices = await _deviceDataService.GetDevicesForAreas(areaIds); //Use DeviceDataService
+            var allIPCameras = await _deviceDataService.GetIPCamerasForAreas(areaIds); // Use DeviceDataService for IPCameras
             var deviceTypeIds = allDevices.Select(d => d.DeviceTypeId).Distinct().ToList();
 
             // Bulk load device types and functions
@@ -100,6 +101,12 @@ namespace SmartHome.Application.Services
                         .ToList();
 
                     overviewArea.AreaDevices.Add(overviewDevice);
+                }
+
+                foreach (var camera in allIPCameras.Where(c => c.AreaId == area.Id))
+                {
+                    var overviewCamera = _mapper.Map<OverviewCameraDto>(camera);
+                    overviewArea.AreaCameras.Add(overviewCamera);
                 }
 
                 Overview.Areas.Add(overviewArea);

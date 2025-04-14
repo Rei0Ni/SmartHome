@@ -13,6 +13,7 @@ using SmartHome.Dto.DeviceFunction;
 using SmartHome.Dto.Device;
 using SmartHome.Dto.Dashboard;
 using SmartHome.Dto.Log;
+using SmartHome.Dto.IPCamera;
 
 namespace SmartHome.Application.Configuration
 {
@@ -56,8 +57,16 @@ namespace SmartHome.Application.Configuration
             CreateMap<Device, GetDeviceDto>().ReverseMap();
             CreateMap<Device, DeviceDto>().ReverseMap();
 
+            CreateMap<IPCamera, CreateIPCameraDto>().ReverseMap();
+            CreateMap<IPCamera, UpdateIPCameraDto>().ReverseMap();
+            CreateMap<IPCamera, IPCameraConnectionInfoDto>().ReverseMap();
+            CreateMap<IPCamera, IPCameraDto>().ReverseMap();
+            
+
             CreateMap<Log, LogDto>().ReverseMap();
 
-            CreateMap<DeviceDto, OverviewDeviceDto>().ReverseMap();        }
+            CreateMap<DeviceDto, OverviewDeviceDto>().ReverseMap();
+            CreateMap<IPCameraDto, OverviewCameraDto>().ReverseMap();
+        }
     }
 }
