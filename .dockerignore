@@ -1,0 +1,25 @@
+# Ignore build artifacts
+**/bin/
+**/obj/
+
+# Ignore IDE/editor specific files
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln.docstates
+
+# Ignore Git files
+.git/
+.gitignore
+.gitattributes
+
+# Ignore Docker related files
+Dockerfile*
+.dockerignore
+docker-compose*
+
+# Ignore logs and secrets (shouldn't be in source control anyway)
+logs/
+secrets/
+appsettings.Development.json # Usually contains secrets or local dev settings
