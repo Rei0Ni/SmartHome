@@ -104,15 +104,6 @@ services:
       - ./mosquitto/log:/mosquitto/log
     networks:
       - smarthome-network
-  
-  mosquitto-test-client:
-    container_name: mosquitto-test-client
-    image: eclipse-mosquitto:latest  # Using the same image as the broker is convenient
-    entrypoint: /bin/sh -c "sleep 5 && mosquitto_sub -h smarthome-mosquitto -p 1883 -t sensor_data -u mqttuser -P 'P@ssw0rd' -v"
-    networks:
-      - smarthome-network
-    depends_on:
-      - mosquitto
 
 # Define named volumes for data persistence
 volumes:
