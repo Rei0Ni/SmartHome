@@ -40,6 +40,9 @@ namespace SmartHome.Domain.Contexts
         public IMongoCollection<Device> Devices =>
                 _database.GetCollection<Device>("Devices");
 
+        public IMongoCollection<IPCamera> IPCameras =>
+                _database.GetCollection<IPCamera>("IPCameras");
+
         public IMongoCollection<Log> Logs =>
                 _database.GetCollection<Log>("Logs");
     }

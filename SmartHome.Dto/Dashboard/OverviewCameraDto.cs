@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SmartHome.Dto.Dashboard
+{
+    public class OverviewCameraDto
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string StreamUrl { get; set; }
+        public DateTime LastAccessed { get; set; }
+        public Guid AreaId { get; set; }
+    }
+}

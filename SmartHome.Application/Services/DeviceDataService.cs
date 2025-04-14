@@ -7,23 +7,32 @@ using AutoMapper;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
+using SmartHome.Application.Interfaces.IPCameras;
 using SmartHome.Dto.Device;
+using SmartHome.Dto.IPCamera;
 
 namespace SmartHome.Application.Services
 {
     public class DeviceDataService : IDeviceDataService
     {
         private readonly IDeviceRepository _deviceRepository;
+        private readonly IIPCamerasRepository _camerasRepository;
         private readonly IMapper _mapper;
         private readonly IDeviceTypeService _deviceTypeService;
         private readonly IDeviceFunctionService _deviceFunctionService;
 
-        public DeviceDataService(IDeviceRepository deviceRepository, IMapper mapper, IDeviceTypeService deviceTypeService, IDeviceFunctionService deviceFunctionService)
+        public DeviceDataService(
+            IDeviceRepository deviceRepository, 
+            IMapper mapper, 
+            IDeviceTypeService deviceTypeService, 
+            IDeviceFunctionService deviceFunctionService, 
+            IIPCamerasRepository camerasRepository)
         {
             _deviceRepository = deviceRepository;
             _mapper = mapper;
             _deviceTypeService = deviceTypeService;
             _deviceFunctionService = deviceFunctionService;
+            _camerasRepository = camerasRepository;
         }
 
         public async Task<List<DeviceDto>> GetDevicesForAreas(List<Guid> areaIds)
@@ -50,6 +59,20 @@ namespace SmartHome.Application.Services
                 }
             }
             return deviceDtos;
+        }
+
+        public async Task<List<IPCameraDto>> GetIPCamerasForAreas(List<Guid> areaIds)
+        {
+            var cameras = await _camerasRepository.GetCamerasForAreas(areaIds);
+            var cameraDtos = _mapper.Map<List<IPCameraDto>>(cameras);
+            //foreach (var dto in cameraDtos)
+            //{
+            //    var camera = cameras.FirstOrDefault(c => c.Id == dto.Id);
+            //    if (camera == null) continue;
+            //    dto.StreamUrl = camera.StreamUrl;
+
+            //}
+            return cameraDtos;
         }
     }
 
