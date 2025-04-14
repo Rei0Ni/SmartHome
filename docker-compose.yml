@@ -1,0 +1,125 @@
+services:
+  # Your SmartHome API Service
+  smarthome-api:
+    container_name: smarthome-api # Optional: Give the container a specific name
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-final
+    restart: unless-stopped # Restart policy
+    environment:
+      # --- CRITICAL: Override appsettings.json ---
+      # Use double underscore __ for nested JSON keys
+      - ASPNETCORE_ENVIRONMENT=Production # Or Development, Staging
+      - ASPNETCORE_URLS=http://+:62062 # Ensure Kestrel listens correctly inside the container
+      - MQTTHOST=smarthome-mosquitto
+      - MongoDBConfig__ConnectionURI=mongodb://mongo:27017/ # Use service name 'mongo' if running Mongo in compose
+      - MongoDBConfig__DatabaseName=SmartHome
+      - Jwt__Key=${JWT_KEY:-YourDefaultDevelopmentJwtKeyShouldBeChanged} # Use host env variable or default
+      - Jwt__Issuer=https://yourdomain.com/ # Use your actual issuer URL
+      - Jwt__Audience=https://yourdomain.com/ # Use your actual audience URL
+      - Jwt__ExpirationDays=1
+      - DefaultAdminPassword=${ADMIN_PASSWORD:-Administrator@2024ChangeMe} # Use host env variable or default
+      - TotpSettings__Issuer=SmartHome System
+      - TotpSettings__CodeLength=6
+      - TotpSettings__ExpirySeconds=30
+    volumes:
+      # --- IMPORTANT: Persist Data Protection Keys ---
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
+      - ./host-logs:/app/logs # Map a host directory to the container's log directory
+    networks:
+      - smarthome-network # Connect to the custom network
+    depends_on:
+      - mongo # Optional: Make API wait for Mongo service to start (only if using Mongo service below)
+      - mosquitto # Optional: Make API wait for Mosquitto service to start (only if using Mosquitto service below)
+  
+  smarthome-web:
+    container_name: smarthome-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: web-final # Specify the target runtime stage for the Web App
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:5042
+      # --- Configure how Web connects to API ---
+      # The Web App connects to: https://{config["MainHost"]}:62061/
+      # Inside Docker, Nginx is reachable via service name 'nginx' on port 62061 (SSL)
+      - MainHost=nginx # Override the MainHost setting
+    networks:
+      - smarthome-network
+    depends_on:
+      - smarthome-api # Also depends on the API service itself
+
+  # Nginx Reverse Proxy Service 
+  nginx:
+    container_name: smarthome-nginx
+    image: nginx:stable-alpine # Use a lightweight Nginx image
+    restart: unless-stopped
+    ports:
+      # Map host HTTP port 80 to container port 80
+      - "80:80"
+      # Map host HTTPS port 443 to container port 443 (for Web App proxy)
+      - "443:443"
+      # Map host HTTPS port 62061 to container port 62061 (for API proxy)
+      - "62061:62061"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro # Mount the Nginx config
+      # Mount certificates (adjust source path as needed)
+      - C:/Dev/server-certificate-generator/server/:/etc/nginx/certs:ro
+    networks:
+      - smarthome-network
+    depends_on:
+      - smarthome-api # Ensure Nginx starts after the API is potentially ready
+      - smarthome-web # Ensure Nginx starts after the Web App is potentially ready
+
+  # Optional: MongoDB Service (if you want to run MongoDB in Docker)
+  mongo:
+    container_name: smarthome-mongo
+    image: mongo:latest # Use the official Mongo image
+    restart: unless-stopped
+    environment:
+      # Optional: Set root username/password for Mongo
+      # - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      # - MONGO_INITDB_ROOT_PASSWORD=yourmongosecretpassword
+      - MONGO_INITDB_DATABASE=SmartHome # Automatically creates the database if it doesn't exist
+    volumes:
+      - mongo-data:/data/db # Persist MongoDB data using a named volume
+    ports:
+      - "27017:27017" # Map the container's port 27017 to the host's port 27017
+    networks:
+      - smarthome-network
+
+  mosquitto:
+    container_name: smarthome-mosquitto
+    restart: unless-stopped
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - smarthome-network
+  
+  mosquitto-test-client:
+    container_name: mosquitto-test-client
+    image: eclipse-mosquitto:latest  # Using the same image as the broker is convenient
+    entrypoint: /bin/sh -c "sleep 5 && mosquitto_sub -h smarthome-mosquitto -p 1883 -t sensor_data -u mqttuser -P 'P@ssw0rd' -v"
+    networks:
+      - smarthome-network
+    depends_on:
+      - mosquitto
+
+# Define named volumes for data persistence
+volumes:
+  mongo-data: # Stores MongoDB data
+  dataprotection-keys: # Stores ASP.NET Data Protection keys
+
+# Define the custom network
+networks:
+  smarthome-network:
+    driver: bridge # Use the default bridge network driver

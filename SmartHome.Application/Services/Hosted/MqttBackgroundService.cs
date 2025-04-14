@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,22 +22,33 @@ namespace SmartHome.Application.Services.Hosted
         private IMqttClient? _mqttClient;
         private readonly MqttClientOptions _mqttOptions;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IConfiguration _configuration;
 
-        public MqttBackgroundService(ILogger<MqttBackgroundService> logger, IServiceProvider serviceProvider)
+        public MqttBackgroundService(ILogger<MqttBackgroundService> logger, IServiceProvider serviceProvider, IConfiguration configuration)
         {
             _logger = logger;
+            _configuration = configuration;
+
+            // --- Add Diagnostic Logging ---
+            string? rawMqttHost = _configuration["MQTTHOST"]; // Read raw value
+            bool fallbackUsed = rawMqttHost == null;
+            string effectiveMqttHost = rawMqttHost ?? "localhost"; // Determine effective value
+
+            _logger.LogInformation("MqttBackgroundService Constructor: MQTTHOST read from configuration: '{RawValue}', Fallback used: {FallbackUsed}", rawMqttHost, fallbackUsed);
+            _logger.LogInformation("MqttBackgroundService Constructor: Using MQTT Broker Host: '{EffectiveMqttHost}' for connection options.", effectiveMqttHost);
+            // --- End Diagnostic Logging ---
 
             var factory = new MqttClientFactory();
             _mqttClient = factory.CreateMqttClient();
 
             _mqttOptions = new MqttClientOptionsBuilder()
-                .WithClientId("SmartHomeService")
-                .WithTcpServer("localhost", 1883)
+                .WithTcpServer(effectiveMqttHost, 1883)
                 .WithCredentials("mqttuser", "P@ssw0rd")
                 .WithCleanSession()
                 .WithKeepAlivePeriod(TimeSpan.FromSeconds(60))
                 .Build();
             _serviceProvider = serviceProvider;
+            
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -61,7 +73,10 @@ namespace SmartHome.Application.Services.Hosted
 
                 _mqttClient.ApplicationMessageReceivedAsync += (async e =>
                 {
+                    _logger.LogInformation("ApplicationMessageReceivedAsync event triggered!");
+
                     var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                    _logger.LogInformation($"Received MQTT message on topic '{e.ApplicationMessage.Topic}': {payload}");
 
                     try
                     {
@@ -83,7 +98,7 @@ namespace SmartHome.Application.Services.Hosted
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Error processing MQTT message: {ex.Message}");
+                        _logger.LogError($"Error processing MQTT message: {ex}");
                     }
                 });
 
