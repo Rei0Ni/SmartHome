@@ -9,12 +9,11 @@
     --on-secondary: #FFFFFF;
     --background: #FFFBFE;
     --surface: #FFFFFF;
-    --surface-variant: #53437C;
+    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1) );
     --on-surface: #1C1B1E;
     --error: #B3261E;
     --on-error: #FFFFFF;
     --body-light: #F3F2FD;
-
     /* Fan-specific Colors */
     --fan-card-bg-on: #F9FFF4; /* Card background when fan is on */
     --fan-card-bg-off: #fbfbfb; /* Card background when fan is off */
@@ -23,7 +22,6 @@
     --fan-slider-thumb-color: var(--fan-indicator-on); /* Slider thumb color */
     --fan-indicator-on: #059212; /* Indicator circle color when on */
     --fan-indicator-off: rgb(128,128,128); /* Indicator circle color when off */
-
     /* Lamp-specific Colors */
     --lamp-card-bg-on: #FFFDEB; /* Card background when lamp is on */
     --lamp-card-bg-off: #FBFBFB; /* Card background when lamp is off */

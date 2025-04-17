@@ -12,7 +12,7 @@
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6 px-4">
             <h3 class="text-2xl font-semibold text-gray-800">Manage Users</h3>
-            <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            <button class="px-4 py-2  text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2" style="background-color:var(--primary)"
                     @onclick="NavigateToUserCreation">
                 <i class="bi bi-person-plus"></i>
                 New User
@@ -26,9 +26,9 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Username</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">First Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Last Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Email</th>
+                            <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700">First Name</th>
+                            <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700">Last Name</th>
+                            <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700 break-all">Email</th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Last Login</th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Role</th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
@@ -39,14 +39,14 @@
                         {
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <td class="px-4 py-3 text-sm text-gray-700">@user.Username</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.FirstName</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.LastName</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 break-all">@user.Email</td>
+                                <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700">@user.FirstName</td>
+                                <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700">@user.LastName</td>
+                                <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700 break-all">@user.Email</td>
                                 <td class="px-4 py-3 text-sm text-gray-700">@user.LastLogin</td>
                                 <td class="px-4 py-3 text-sm text-gray-700">@user.Role.Replace("_", " ")</td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
+                                        <button class="px-3 py-1.5  text-white rounded-md hover:bg-blue-700 transition-colors text-sm" style="background-color:var(--primary)"
                                                 @onclick="@(() => navigationManager.NavigateTo($"/edit-user/{user.UserId.ToString()}"))">
                                             Edit
                                         </button>

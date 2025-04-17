@@ -12,13 +12,13 @@
             IsAdmin = context.User.IsInRole("Admin");
         }
 
-        <div class="max-w-2xl mx-auto p-4 sm:p-6">
-            <div class="mb-6 sm:mb-8">
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 ">
+            <div class="px-6 py-5 border-b border-gray-200">
                 <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Create New Controller</h3>
                 <p class="text-gray-600 mt-2 text-sm sm:text-base">Fill in the details below to add a new controller</p>
             </div>
 
-            <EditForm Context="controllerCreationContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm">
+            <EditForm Context="controllerCreationContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm" class=" p-6 md:p-8">
                 <DataAnnotationsValidator />
 
                 <div class="space-y-4 sm:space-y-6">
@@ -81,7 +81,8 @@
                     <!-- Submit Button -->
                     <div class="pt-4 sm:pt-6">
                         <button type="submit"
-                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2" style="background-color:var(--primary)">
+                            
                             Create Controller
                         </button>
                     </div>
