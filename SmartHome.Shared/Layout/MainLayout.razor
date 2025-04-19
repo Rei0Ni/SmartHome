@@ -219,11 +219,11 @@
         @if (showMobileMenu)
         {
             <div class="fixed inset-0 z-50 bg-black bg-opacity-50" @onclick="ToggleMobileMenu">
-                <div class="bg-white w-3/4 h-full p-4 transform transition-transform">
+                <div class="w-3/4 h-full p-4 transform transition-transform" style="background-color:var(--menu-bg);">
                     <!-- Header -->
                     <div class="pb-4 mb-2 border-b border-gray-200 d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
-                            <img src="_content/SmartHome.Shared/imgs/logoTest2.png" alt="logo" class="w-10" />
+                            <img src="_content/SmartHome.Shared/imgs/logoTest2.svg" alt="logo" class="w-10" />
                             <h2 class="text-xl font-bold text-gray-800 pl-2">Smart Home</h2>
                         </div>
 
@@ -236,29 +236,29 @@
 
                     <!-- Menu Items -->
                     <nav class="space-y-4">
-                        <NavLink href="/overview" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
+                        <NavLink href="/overview" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: var(--menubar-color)">
                             <i class="bi bi-columns-gap text-xl text-black pe-2"></i>
                             OverView
                         </NavLink>
 
-                        <NavLink href="/Counter" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
+                        <NavLink href="/Counter" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: var(--menubar-color)">
                             <i class="fas fa-list text-xl text-black pe-2"></i>
                             Logs
                         </NavLink>
 
                         @if(context.User.IsInRole("Admin")){
-                            <NavLink href="/manage-users" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
+                            <NavLink href="/manage-users" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: var(--menubar-color)">
                                 <i class="bi bi-people text-xl text-black pe-2"></i>
                                 Manage Users
                             </NavLink>
 
-                            <NavLink href="/manage-controllers" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: #000;">
+                            <NavLink href="/manage-controllers" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: var(--menubar-color)">
                                 <i class="bi bi-motherboard text-xl text-black pe-2"></i>
                                 Manage Controllers
                             </NavLink>
                         }
 
-                        <NavLink href="/Settings" class="position-absolute bottom-0 block p-2 hover:bg-gray-100 border-b border-gray-100" style="width: 85%;     color: #000;">
+                        <NavLink href="/Settings" class="position-absolute bottom-0 block p-2 hover:bg-gray-100 border-b border-gray-100" style="width: 85%;     var(--menubar-color);">
                             <i class="fas fa-cog text-xl w-8 text-black pe-2"></i>
                             Settings
                         </NavLink>

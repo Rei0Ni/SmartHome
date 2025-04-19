@@ -15,6 +15,9 @@
     --error: #B3261E;
     --on-error: #FFFFFF;
     --body-light: #F3F2FD;
+    /* Menu on mobile */
+    --menu-bg: #F3F2FD;
+    --menubar-color: #625871;
     /* Fan-specific Colors */
     --fan-card-bg-on: #F9FFF4; /* Card background when fan is on */
     --fan-card-bg-off: #fbfbfb; /* Card background when fan is off */
