@@ -37,12 +37,24 @@
                     <!-- Home Status -->
                     <div class="bg-green-50 p-4 rounded-xl col-span-1 sm:col-span-2 lg:col-span-1 transform transition duration-300 hover:scale-105 hover:shadow-xl">
                         <h2 class="text-xl font-semibold text-green-800">🏠 Home Status</h2>
-                        <ul class="mt-2 space-y-1 text-gray-700">
-                            <li>Internal Temperature: <span class="font-medium">24°C</span></li>
-                            <li>Humidity: <span class="font-medium">40%</span></li>
-                            <li>System Health: <span class="font-medium">Healthy</span></li>
-                            @* <li>Connectivity: <span class="font-medium">Connected</span></li> *@
-                            @* <li>Security: <span class="font-medium">Active</span></li> *@
+                        <ul class="mt-2 space-y-1 text-gray-700">  
+                           <li>  
+                               Internal Temperature:  
+                               <span class="font-medium">  
+                                   @(TempratureSensor.State.ContainsKey("temperature_celsius") ?  
+                                       $"{TempratureSensor.State["temperature_celsius"]}°C" : "N/A")  
+                               </span>  
+                           </li>  
+                           <li>  
+                               Humidity:  
+                               <span class="font-medium">  
+                                   @(TempratureSensor.State.ContainsKey("humidity_percent") ?  
+                                       $"{TempratureSensor.State["humidity_percent"]}%" : "N/A")  
+                               </span>  
+                           </li>  
+                           <li>System Health: <span class="font-medium">Healthy</span></li>  
+                           @* <li>Connectivity: <span class="font-medium">Connected</span></li> *@  
+                           @* <li>Security: <span class="font-medium">Active</span></li> *@  
                         </ul>
                     </div>
                 </div>
@@ -76,4 +88,6 @@
 @code {
     private string factor => FormFactor.GetFormFactor();
     private string platform => FormFactor.GetPlatform();
+
+
 }

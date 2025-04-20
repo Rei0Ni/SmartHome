@@ -1,4 +1,4 @@
-﻿@using System.Text.Json // Although not used directly here, keep if needed elsewhere
+﻿@using System.Text.Json
 
 @* Added min-height to the outer container *@
 <div class="bg-yellow-50 p-4 rounded-xl flex flex-col items-start transform transition duration-300 hover:scale-105 hover:shadow-xl min-h-[100px]">
@@ -56,11 +56,6 @@
         // No StateHasChanged needed here as OnInitialized finishes before first render typically
     }
 
-    // Simplified this - just return the property value directly in the markup
-    // private string GetQuote()
-    // {
-    //     return dailyQuote ?? "No quote is available at the moment.";
-    // }
 
     private void SelectDailyQuote()
     {

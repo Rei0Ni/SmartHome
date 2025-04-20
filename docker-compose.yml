@@ -51,6 +51,8 @@ services:
       # The Web App connects to: https://{config["MainHost"]}:62061/
       # Inside Docker, Nginx is reachable via service name 'nginx' on port 62061 (SSL)
       - MainHost=nginx # Override the MainHost setting
+    volumes:
+      - dataprotection-keys-web:/root/.aspnet/DataProtection-Keys
     networks:
       - smarthome-network
     depends_on:
@@ -113,6 +115,7 @@ services:
 volumes:
   mongo-data: # Stores MongoDB data
   dataprotection-keys: # Stores ASP.NET Data Protection keys
+  dataprotection-keys-web: # Stores ASP.NET Data Protection keys for the Web App
 
 # Define the custom network
 networks:

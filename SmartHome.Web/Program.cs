@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http.Json;
 using SmartHome.Shared.Interfaces;
 using SmartHome.Shared.Providers;
@@ -18,6 +19,15 @@ builder.Logging.AddConsole();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+// --- Configuration for Data Protection Key Persistence ---
+// Ensure the path matches the volume mount in docker-compose.yml
+var dataProtectionKeysPath = "/root/.aspnet/DataProtection-Keys";
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath))
+    // Optional: Set an application name if keys might be shared or need isolation
+    .SetApplicationName("SmartHomeWeb"); // Or "SmartHomeShared" if API/Web share keys safely
+// --- End Data Protection Configuration ---
 
 builder.Services.AddSingleton<IFormFactor, FormFactor>();
 builder.Services.AddScoped<IAuthService, AuthService>();

@@ -65,10 +65,13 @@
             @if (users.Count == 0)
             {
                 <div class="text-center py-12">
-                    <p class="text-gray-500 mb-4">There are no users here yet.</p>
-                    <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                    <p>There are no users here yet.</p>
+                    <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                            style="background-color:var(--primary)"
+                            onmouseover="this.style.opacity='0.85'"
+                            onmouseout="this.style.opacity='1'"
                             @onclick="NavigateToUserCreation">
-                        Create a New User +
+                        Create a New User
                     </button>
                 </div>
             }

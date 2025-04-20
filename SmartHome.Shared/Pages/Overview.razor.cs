@@ -12,6 +12,7 @@ namespace SmartHome.Shared.Pages
     public partial class Overview
     {
         public OverviewDto OverviewData { get; set; } = new();
+        public OverviewDeviceDto TempratureSensor { get; set; } = new();
         public string CurrentDate { get; set; }
         protected override async Task OnInitializedAsync()
         {
@@ -23,6 +24,7 @@ namespace SmartHome.Shared.Pages
 
             OverviewData = response;
 
+
             await HubService.StartAsync("/wss/overview");
 
             HubService.On<OverviewDto>("ReceiveOverviewData", async (data) =>
@@ -33,10 +35,9 @@ namespace SmartHome.Shared.Pages
                 {
                     foreach (var device in area.AreaDevices)
                     {
-                        if (device.DeviceType.Type == Enum.DeviceTypes.PIR_MOTION_SENSOR)
+                        if (device.DeviceType.Type == Enum.DeviceTypes.TEMPRATURE_SENSOR)
                         {
-                            Console.WriteLine(device.State.First().Key);
-                            Console.WriteLine(device.State.First().Value);
+                            TempratureSensor = device;
                         }
                     }
                 }
@@ -44,6 +45,17 @@ namespace SmartHome.Shared.Pages
             });
 
             refreshService.OnRefreshRequested += HandleRefreshRequested;
+
+            foreach (var area in OverviewData!.Areas)
+            {
+                foreach (var device in area.AreaDevices)
+                {
+                    if (device.DeviceType.Type == Enum.DeviceTypes.TEMPRATURE_SENSOR)
+                    {
+                        TempratureSensor = device;
+                    }
+                }
+            }
         }
 
         private void HandleRefreshRequested()
