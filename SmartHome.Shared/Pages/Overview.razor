@@ -22,26 +22,17 @@
                         Welcome, <span class="text-indigo-600">@context.User.Identity.Name</span>!
                     </h1>
                     <p class="text-sm text-gray-500 mt-2 md:mt-0">
-                        Last update: <span class="font-medium">4:30 PM</span>
+                        <span>@CurrentDate</span>
                     </p>
                 </div>
 
                 <!-- Overview Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Temperature -->
-                    <div class="bg-indigo-50 p-4 rounded-xl flex flex-col items-start transform transition duration-300 hover:scale-105 hover:shadow-xl">
-                        <h2 class="text-xl font-semibold text-indigo-700">🌡️ Temperature</h2>
-                        <p class="text-3xl font-bold text-indigo-900 mt-2">24°C</p>
-                        <p class="text-sm text-indigo-600 mt-1">Mild & comfortable</p>
-                    </div>
+                    <!-- Weather -->
+                    <Weather />
 
-                    <!-- Suggestion -->
-                    <div class="bg-yellow-50 p-4 rounded-xl flex flex-col items-start transform transition duration-300 hover:scale-105 hover:shadow-xl">
-                        <h2 class="text-xl font-semibold text-yellow-800">💡 Suggestion</h2>
-                        <p class="text-sm text-yellow-700 mt-2">
-                            It's mild – no climate adjustment needed.
-                        </p>
-                    </div>
+                    <!-- Daily Quote -->
+					<DailyQuote />
 
                     <!-- Home Status -->
                     <div class="bg-green-50 p-4 rounded-xl col-span-1 sm:col-span-2 lg:col-span-1 transform transition duration-300 hover:scale-105 hover:shadow-xl">

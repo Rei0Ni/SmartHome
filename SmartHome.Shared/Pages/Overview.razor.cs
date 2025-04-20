@@ -12,8 +12,11 @@ namespace SmartHome.Shared.Pages
     public partial class Overview
     {
         public OverviewDto OverviewData { get; set; } = new();
+        public string CurrentDate { get; set; }
         protected override async Task OnInitializedAsync()
         {
+            CurrentDate = DateTime.Now.ToString("D");
+
             var result = await ApiService.GetAsync("/api/dashboard/overview");
 
             var response = await result.Content.ReadFromJsonAsync<OverviewDto>();

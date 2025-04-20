@@ -1,0 +1,79 @@
+﻿@using System.Text.Json // Although not used directly here, keep if needed elsewhere
+
+@* Added min-height to the outer container *@
+<div class="bg-yellow-50 p-4 rounded-xl flex flex-col items-start transform transition duration-300 hover:scale-105 hover:shadow-xl min-h-[100px]">
+    @if (!string.IsNullOrEmpty(dailyQuote))
+    {
+        <!-- Daily Quote -->
+        <h2 class="text-xl font-semibold text-yellow-800">💡 Daily Quote</h2>
+        <blockquote class="mt-2 w-full">
+            @* Added margin-top and width to blockquote *@
+            <p class="text-sm text-yellow-700">
+                @dailyQuote @* Directly use the property now GetQuote is simpler *@
+            </p>
+        </blockquote>
+    }
+    else
+    {
+        <!-- Skeleton Loader for Daily Quote -->
+        <h2 class="text-xl font-semibold text-yellow-800">💡 Daily Quote</h2>
+        <div class="w-full mt-2 space-y-2">
+            @* Container for placeholder lines *@
+            <div class="h-3 bg-yellow-200 rounded w-full shimmer"></div>
+            <div class="h-3 bg-yellow-200 rounded w-5/6 shimmer"></div>
+            <div class="h-3 bg-yellow-200 rounded w-3/4 shimmer"></div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<string> quotes = new List<string>
+    {
+        "The only way to do great work is to love what you do. - Steve Jobs",
+        "Life is what happens when you're busy making other plans. - John Lennon",
+        "Get busy living or get busy dying. - Stephen King",
+        "The purpose of our lives is to be happy. - Dalai Lama",
+        "You only live once, but if you do it right, once is enough. - Mae West",
+        "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt",
+        "The best way to predict the future is to invent it. - Alan Kay",
+        "You have to believe in yourself when no one else does. — Serena Williams",
+        "The most important thing is to enjoy your life—to be happy—it’s all that matters. — Steve Jobs",
+        "Get busy living or get busy dying. — Stephen King",
+        "Love the life you live. Live the life you love. — Bob Marley",
+        "We cannot solve problems with the kind of thinking we employed when we came up with them. — Albert Einstein",
+        "If you are working on something that you really care about, you don’t have to be pushed. The vision pulls you. — Steve Jobs",
+        "Concentrate all your thoughts upon the work in hand. The sun’s rays do not burn until brought to a focus. — Alexander Graham"
+        // Add more quotes here!
+    };
+
+    private string? dailyQuote; // Initialize as null
+
+    protected override void OnInitialized()
+    {
+        // Simulate delay if you want to see the loader
+        // System.Threading.Thread.Sleep(2000); // Blocking delay - AVOID in real apps, use Task.Delay in async methods
+        SelectDailyQuote();
+        // No StateHasChanged needed here as OnInitialized finishes before first render typically
+    }
+
+    // Simplified this - just return the property value directly in the markup
+    // private string GetQuote()
+    // {
+    //     return dailyQuote ?? "No quote is available at the moment.";
+    // }
+
+    private void SelectDailyQuote()
+    {
+        if (quotes == null || quotes.Count == 0)
+        {
+            dailyQuote = "No quotes available."; // Provide a clearer message
+            return;
+        }
+
+        DateTime epoch = new DateTime(2000, 1, 1);
+        TimeSpan timeSinceEpoch = DateTime.Today.Subtract(epoch);
+        int totalDays = (int)timeSinceEpoch.TotalDays;
+        int quoteIndex = totalDays % quotes.Count;
+        dailyQuote = quotes[quoteIndex];
+    }
+}

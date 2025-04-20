@@ -1,7 +1,5 @@
 ﻿body {
-    background-color: #FFFFFF ;
-    overflow-x: clip;
-    overflow-y: clip;
+    background-color: var(--body-light) !important;
 }
 
 ﻿.loader {

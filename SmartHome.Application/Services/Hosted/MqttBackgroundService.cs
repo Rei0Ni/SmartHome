@@ -73,10 +73,7 @@ namespace SmartHome.Application.Services.Hosted
 
                 _mqttClient.ApplicationMessageReceivedAsync += (async e =>
                 {
-                    _logger.LogInformation("ApplicationMessageReceivedAsync event triggered!");
-
                     var payload = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                    _logger.LogInformation($"Received MQTT message on topic '{e.ApplicationMessage.Topic}': {payload}");
 
                     try
                     {
@@ -93,7 +90,6 @@ namespace SmartHome.Application.Services.Hosted
                                 //var dashboardService = scope.ServiceProvider.GetRequiredService<IDashboardService>();
                                 //await dashboardService.SendOverviewUpdateToAll();  // Remove from here
                             }
-                            _logger.LogInformation("Sensor data updated in database.");
                         }
                     }
                     catch (Exception ex)

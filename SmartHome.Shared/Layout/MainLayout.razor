@@ -23,10 +23,8 @@
 
         <!-- Vertical Sidebar -->
         <div class="flex min-h-screen ">
-            <aside class="navbar-vertical @sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col " 
-            style="box-shadow: 0px 4px 12px rgb(0 0 0 / 63%);
-                  transition: width 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;" 
-            id="">
+            <aside class="navbar-vertical @sidebarClass hidden md:block text-white fixed h-full transition-all duration-200 ease-in-out flex flex-col" 
+            style="box-shadow: 0px 4px 12px rgb(0 0 0 / 63%);" id="">
                 <div class="flex-1">
                     <div>
                         <!-- Collapse Toggle -->
@@ -69,7 +67,7 @@
                 </div>
 
                 <!-- Settings at Bottom -->
-                <div class="absolute p-3 bottom-0 left-0 right-0  border-t border-gray-700 hover:bg-gray-700 ">
+                <div class="absolute p-3 bottom-0 left-0 right-0 hover:bg-gray-700 ">
                     <NavLink href="/Settings" class="@GetNavItemClass("/Settings")">
                         <i class="fas fa-cog text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
                         <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Settings</span>
@@ -224,7 +222,7 @@
                     <div class="pb-4 mb-2 border-b border-gray-200 d-flex justify-content-between align-items-center">
                         <div class="d-flex align-items-center">
                             <img src="_content/SmartHome.Shared/imgs/logotest2.svg" alt="logo" class="w-10" />
-                            <h2 class="text-xl font-bold text-gray-800 pl-2">Smart Home</h2>
+                            <h2 class="text-xl font-bold text-gray-800 pl-2 m-0 mt-1">Smart Home</h2>
                         </div>
 
                         <div>
@@ -279,6 +277,11 @@
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
         <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
     </Authorized>
+    <NotAuthorized>
+        @{
+            navigationManager.NavigateTo("/login");
+        }
+    </NotAuthorized>
 </AuthorizeView>
 
 @code {

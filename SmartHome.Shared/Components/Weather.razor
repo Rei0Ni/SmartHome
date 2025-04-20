@@ -1,0 +1,40 @@
+﻿@using SmartHome.Dto.Weather
+@using System.Text.Json
+
+<div class="bg-indigo-50 p-4 rounded-xl flex flex-col items-start transform transition duration-300 hover:scale-105 hover:shadow-xl min-h-[120px]">
+    @* Added min-height to prevent layout shift *@
+    @if (WeatherData != null)
+    {
+        <h2 class="flex items-center text-xl font-semibold text-indigo-700">
+            <img class="weather-icon-enlarged mr-2" src="_content/SmartHome.Shared/imgs/weather_icons/@(WeatherData.Weather.FirstOrDefault()?.Icon + ".svg")" width="42" alt="Weather Icon" /> @* Added mr-2 for spacing *@
+            @string.Join(" ", WeatherData.Weather.FirstOrDefault()?.Description?.Split(' ').Select(word => char.ToUpper(word[0]) + word.Substring(1).ToLower())!)
+        </h2>
+        <p class="text-3xl font-bold text-indigo-900 mt-2">@WeatherData.Main.Temp.ToString("0.##")°C</p>
+        <p class="text-sm text-indigo-600 mt-1">Feels like @WeatherData.Main.FeelsLike.ToString("0.##")°C</p>
+    }
+    else
+    {
+        @* --- Skeleton Loader Structure --- *@
+        <div class="w-full space-y-3 animate-pulse">
+            @* Use animate-pulse or keep custom shimmer *@
+            <div class="flex items-center space-x-2">
+                <div class="h-10 w-10 bg-gray-300 rounded-full shimmer"></div> @* Icon Placeholder *@
+                <div class="h-4 bg-gray-300 rounded w-3/5 shimmer"></div>   @* Description Placeholder *@
+            </div>
+            <div class="h-6 bg-gray-300 rounded w-2/5 shimmer"></div>       @* Temp Placeholder *@
+            <div class="h-3 bg-gray-300 rounded w-3/5 shimmer"></div>       @* Feels Like Placeholder *@
+        </div>
+        @* --- End Skeleton Loader Structure --- *@
+    }
+</div>
+
+@code {  
+  private WeatherResponse? WeatherData;  
+
+  protected override async Task OnInitializedAsync()  
+  {  
+      using var httpClient = new HttpClient();    
+      var response = await ApiService.GetAsync("/api/weather");    
+      WeatherData = await response.Content.ReadFromJsonAsync<WeatherResponse>();  
+  }  
+}

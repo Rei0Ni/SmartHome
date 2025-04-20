@@ -1,0 +1,20 @@
+﻿.shimmer {
+    /* Using yellow-100 (#fef9c3) as base and yellow-200 (#fef08a) as highlight */
+    background: linear-gradient(110deg, #fef9c3 8%, #fef08a 18%, #fef9c3 33%);
+    border-radius: 4px; /* Match text line roundness */
+    background-size: 200% 100%;
+    animation: shimmer-animation 1.8s linear infinite;
+}
+
+@keyframes shimmer-animation {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Keep if needed for other components, like weather icon */
+/* .weather-icon-enlarged { ... } */

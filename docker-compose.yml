@@ -23,6 +23,10 @@ services:
       - TotpSettings__Issuer=SmartHome System
       - TotpSettings__CodeLength=6
       - TotpSettings__ExpirySeconds=30
+      - Weather__APIKey=${WEATHER_API_KEY:-YourWeatherApiKey} # Use host env variable or default
+      - Weather__City=Cairo
+      - Weather__Country=EG
+      - Weather__Units=metric
     volumes:
       # --- IMPORTANT: Persist Data Protection Keys ---
       - dataprotection-keys:/root/.aspnet/DataProtection-Keys

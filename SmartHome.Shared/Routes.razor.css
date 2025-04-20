@@ -1,4 +1,8 @@
-﻿.loader {
+﻿body {
+    background-color: var(--body-light) !important;
+}
+
+.loader {
     width: 4px;
     height: 86px;
     background: #ddd;

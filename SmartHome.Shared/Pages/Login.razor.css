@@ -1,4 +1,8 @@
-﻿.logoSmartHome {
+﻿body {
+    background-color: var(--body-light) !important;
+}
+
+.logoSmartHome {
     display:flex;
     text-align: center;
     justify-content: center;
