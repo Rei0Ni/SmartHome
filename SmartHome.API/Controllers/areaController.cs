@@ -54,7 +54,7 @@ namespace SmartHome.API.Controllers
         public async Task<ActionResult> Put(UpdateAreaDto updateAreaDto)
         {
             await _areaService.UpdateArea(updateAreaDto);
-            return Ok();
+            return NoContent();
         }
 
         // DELETE api/<areaController>/5

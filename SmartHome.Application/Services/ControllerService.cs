@@ -7,6 +7,7 @@ using AutoMapper;
 using FluentValidation;
 using Serilog;
 using SmartHome.Application.Exceptions;
+using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Validations.Area;
 using SmartHome.Domain.Entities;
@@ -21,17 +22,18 @@ namespace SmartHome.Application.Services
     public class ControllerService : IControllerService
     {
         private readonly IControllerRepository _controllerRepository;
+        private readonly IAreaRepository _areaRepository;
         private readonly IValidator<CreateControllerDto> _createControllerDtoValidator;
         private readonly IValidator<UpdateControllerDto> _updateControllerDtoValidator;
         private readonly IValidator<DeleteControllerDto> _deleteControllerDtoValidator;
         private readonly IValidator<GetControllerDto> _getControllerDtoValidator;
         private readonly IMapper _mapper;
-        public ControllerService(IControllerRepository controllerRepository, IMapper mapper, 
-            IValidator<CreateControllerDto> createControllerDtoValidator, 
-            IValidator<UpdateControllerDto> updateControllerDtoValidator, 
-            IValidator<DeleteControllerDto> deleteControllerDtoValidator, 
-            IValidator<GetControllerDto> getControllerDtoValidator
-            )
+        public ControllerService(IControllerRepository controllerRepository, IMapper mapper,
+            IValidator<CreateControllerDto> createControllerDtoValidator,
+            IValidator<UpdateControllerDto> updateControllerDtoValidator,
+            IValidator<DeleteControllerDto> deleteControllerDtoValidator,
+            IValidator<GetControllerDto> getControllerDtoValidator, 
+            IAreaRepository areaRepository)
         {
             _controllerRepository = controllerRepository;
             _mapper = mapper;
@@ -39,6 +41,7 @@ namespace SmartHome.Application.Services
             _updateControllerDtoValidator = updateControllerDtoValidator;
             _deleteControllerDtoValidator = deleteControllerDtoValidator;
             _getControllerDtoValidator = getControllerDtoValidator;
+            _areaRepository = areaRepository;
         }
 
         public async Task CreateController(CreateControllerDto createControllerDto)
@@ -83,10 +86,21 @@ namespace SmartHome.Application.Services
             }
 
             var controller = await _controllerRepository.GetController(deleteController.Id);
-            if (controller != null)
+            if (controller == null)
             {
-                await _controllerRepository.DeleteController(controller);
+                Log.Error("Controller with Id: {ID} not found", deleteController.Id);
+                throw new KeyNotFoundException($"Controller with Id: {deleteController.Id} not found");
             }
+
+            var controllerAreas = await _areaRepository.GetAllAreas();
+            var areasToDelete = controllerAreas.Where(area => area.ControllerId == deleteController.Id).ToList();
+
+            foreach (var area in areasToDelete)
+            {
+                await _areaRepository.DeleteArea(area);
+            }
+
+            await _controllerRepository.DeleteController(controller);
         }
 
         public async Task<ControllerDto> GetController(GetControllerDto getController)

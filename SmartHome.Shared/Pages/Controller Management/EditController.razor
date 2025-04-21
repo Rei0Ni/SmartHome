@@ -19,7 +19,7 @@
 
             <EditForm Context="controllerEditContext"
                       Model="NewController"
-                      OnValidSubmit="SubmitCreateControllerForm"
+                      OnValidSubmit="SubmitUpdateControllerForm"
                       class="p-6 md:p-8">
                 <DataAnnotationsValidator />
 
@@ -137,7 +137,7 @@
         }
     }
 
-    private async Task SubmitCreateControllerForm()
+    private async Task SubmitUpdateControllerForm()
     {
         try
         {

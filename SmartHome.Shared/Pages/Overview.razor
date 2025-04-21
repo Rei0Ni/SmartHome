@@ -35,45 +35,34 @@
 					<DailyQuote />
 
                     <!-- Home Status -->
-                    <div class="bg-green-50 p-4 rounded-xl col-span-1 sm:col-span-2 lg:col-span-1 transform transition duration-300 hover:scale-105 hover:shadow-xl">
-                        <h2 class="text-xl font-semibold text-green-800">🏠 Home Status</h2>
-                        <ul class="mt-2 space-y-1 text-gray-700">  
-                           <li>  
-                               Internal Temperature:  
-                               <span class="font-medium">  
-                                   @(TempratureSensor.State.ContainsKey("temperature_celsius") ?  
-                                       $"{TempratureSensor.State["temperature_celsius"]}°C" : "N/A")  
-                               </span>  
-                           </li>  
-                           <li>  
-                               Humidity:  
-                               <span class="font-medium">  
-                                   @(TempratureSensor.State.ContainsKey("humidity_percent") ?  
-                                       $"{TempratureSensor.State["humidity_percent"]}%" : "N/A")  
-                               </span>  
-                           </li>  
-                           <li>System Health: <span class="font-medium">Healthy</span></li>  
-                           @* <li>Connectivity: <span class="font-medium">Connected</span></li> *@  
-                           @* <li>Security: <span class="font-medium">Active</span></li> *@  
-                        </ul>
-                    </div>
+					<HomeStatus TempratureSensor="TempratureSensor" />
                 </div>
             </div>
         </div>
 
         <!-- ====================================== -->
         <div class="contanier p-0">
-            <!-- Main Contaner of areas -->
-            <div class="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-0 m-0">
-                <!-- to control # of Area in Page-->
-                @foreach (var area in OverviewData.Areas)
-                {
-                    <Area AreaModel="area" />
-                }
+            @if (OverviewData.Areas.Count <= 0)
+            {
+                <div class="flex items-center justify-center">
+                    <span>No Areas Here Yet.</span>
+                </div>
+            }
+            else
+            {
+                <!-- Main Contaner of areas -->
+                <div class="container grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 p-0 m-0">
+                    <!-- to control # of Area in Page-->
+                    @foreach (var area in OverviewData.Areas)
+                    {
+                        <Area AreaModel="area" />
+                    }
 
-                <!-- secound Area test -->
+                    <!-- secound Area test -->
 
-            </div>
+                </div>
+            }
+            
         </div>
     </Authorized>
     <NotAuthorized> 

@@ -165,6 +165,9 @@ namespace SmartHome.Application.Services
                 throw new KeyNotFoundException(nameof(updateAreaDto.Id));
             }
 
+            area.Name = updateAreaDto.Name;
+            area.ControllerId = updateAreaDto.ControllerId;
+
             await _areaRepository.UpdateArea(area);
             Log.Information("Area updated successfully with ID: {Id}", updateAreaDto.Id);
         }

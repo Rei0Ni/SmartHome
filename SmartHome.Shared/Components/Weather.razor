@@ -32,8 +32,7 @@
   private WeatherResponse? WeatherData;  
 
   protected override async Task OnInitializedAsync()  
-  {  
-      using var httpClient = new HttpClient();    
+  {     
       var response = await ApiService.GetAsync("/api/weather");    
       WeatherData = await response.Content.ReadFromJsonAsync<WeatherResponse>();  
   }  
