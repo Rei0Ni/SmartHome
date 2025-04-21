@@ -169,10 +169,12 @@
             if (result.IsSuccessStatusCode)
             {
                 users.Remove(selectedUser);
+				toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selectedUser.Username} has been deleted successfully"));
             }
             else
             {
                 // Show error message in toast
+				toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", $"Failed to delete {selectedUser.Username}"));
             }
             showDeleteModal = false;
             selectedUser = null;

@@ -166,10 +166,12 @@
             if (result.IsSuccessStatusCode)
             {
                 controllers.Remove(selectedController);
+                toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selectedController.Name} has been successfully deleted."));
             }
             else
             {
                 // Show error message in toast
+				toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", "Failed to delete the controller."));
             }
             showDeleteModal = false;
             selectedController = null;

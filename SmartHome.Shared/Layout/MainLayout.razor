@@ -63,6 +63,11 @@
                                     <i class="bi bi-geo-alt-fill text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
                                     <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Areas</span>
                                 </NavLink>
+
+                                <NavLink href="/manage-devices" class="@GetNavItemClass("/manage-devices")" style="height: 44px;">
+                                    <i class="bi bi-lightbulb text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                                    <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Manage Devices</span>
+                                </NavLink>
                             }
 
 
@@ -82,135 +87,133 @@
             <!-- Main Content -->
             <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
                 <!-- Horizontal Navbar -->
-                <nav class="navbar-horizontal" style="">
-                    <div class="mx-auto px-4">
-                        <div class="flex justify-between items-center h-16">
-                            <!-- Left Section (Weather on Desktop) -->
-                            <div class="hidden md:flex items-center space-x-2 " >
-                                @* <i class="temperature-icon fas fa-cloud-sun text-xl" style=""></i> *@
-                                @* <span class="">28°C</span> *@
-                            </div>
+                <nav class="navbar-horizontal sticky top-0 z-50" style="">
+                   <div class="mx-auto px-4">
+                       <div class="flex justify-between items-center h-16">
+                           <!-- Left Section (Weather on Desktop) -->
+                           <div class="hidden md:flex items-center space-x-2">
+                               @* <i class="temperature-icon fas fa-cloud-sun text-xl" style=""></i> *@
+                               @* <span class="">28°C</span> *@
+                           </div>
 
-                            <!-- Mobile Menu Button -->
-                            <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
-                                <i class="fas fa-bars text-xl "></i>
-                            </button>
+                           <!-- Mobile Menu Button -->
+                           <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
+                               <i class="fas fa-bars text-xl"></i>
+                           </button>
 
-                            <!-- Center Logo -->
-                            @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
+                           <!-- Center Logo -->
+                           @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
 
-                            <!-- Right Section (User & Notifications) -->
+                           <!-- Right Section (User & Notifications) -->
+                           <div class="flex items-center space-x-4 relative">
+                               <!-- زر الإشعارات -->
+                               <div class="relative">
+                                   <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
+                                       <i class="notification-icon fas fa-bell text-xl" style=""></i>
+                                       <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                                   </button>
 
-                            <div class="flex items-center space-x-4 relative">
-                                <!-- زر الإشعارات -->
-                                <div class="relative">
-                                    <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
-                                        <i class="notification-icon fas fa-bell text-xl" style=""></i>
-                                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                                    </button>
+                                   <!-- Notifications list -->
+                                   @if (showNotifications)
+                                   {
+                                       <!-- start Notification pop -->
+                                       <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+                                           <div class="p-4 border-b">
+                                               <h6 class="font-semibold text-gray-800">Notification</h6>
+                                           </div>
+                                           <div class="max-h-64 overflow-y-auto">
+                                               <!--  Notification pop menu -->
+                                               <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
+                                                   <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
+                                                   <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
+                                               </div>
+                                               <div class="p-3 hover:bg-gray-50 cursor-pointer">
+                                                   <div class="text-sm text-gray-800">The temperature is high</div>
+                                                   <div class="text-xs text-gray-500 mt-1">An hour ago</div>
+                                               </div>
+                                           </div>
 
-                                    <!-- Notifications list -->
-                                    @if (showNotifications)
-                                    {
-                                        <!-- start Notification pop -->
-                                        <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                                            <div class="p-4 border-b">
-                                                <h6 class="font-semibold text-gray-800">Notification</h6>
-                                            </div>
-                                            <div class="max-h-64 overflow-y-auto">
-                                                <!--  Notification pop menu -->
-                                                <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
-                                                    <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
-                                                    <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
-                                                </div>
-                                                <div class="p-3 hover:bg-gray-50 cursor-pointer">
-                                                    <div class="text-sm text-gray-800">The temperature is high</div>
-                                                    <div class="text-xs text-gray-500 mt-1">An hour ago</div>
-                                                </div>
-                                            </div>
+                                           <div class="p-2 border-t text-center">
+                                               <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
+                                           </div>
+                                       </div>
+                                       <!-- end notification pop-->
+                                       <!-- close menu when you clicked out of Area -->
+                                       <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
+                                   }
+                               </div>
 
-                                            <div class="p-2 border-t text-center">
-                                                <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
-                                            </div>
-                                        </div>
-                                        <!-- end notification pop-->
-                                        <!-- close menu when you clicked out of Area -->
-                                        <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
-                                    }
-                                </div>
+                               <div class="flex items-center space-x-2">
+                                   @if (!string.IsNullOrEmpty(context.User.FindFirst("profilepicture").Value))
+                                   {
+                                       var profilepicture = context.User.FindFirst("profilepicture").Value;
+                                       <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
+                                       class="w-8 h-8 rounded-full cursor-pointer"
+                                       alt="User Avatar"
+                                       @onclick="ToggleUserMenu">
+                                   }else{
+                                       <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+                                       class="w-8 h-8 rounded-full cursor-pointer"
+                                       alt="User Avatar"
+                                       @onclick="ToggleUserMenu">
+                                   }
+                               </div>
 
-                                <div class="flex items-center space-x-2">
-                                    @if (!string.IsNullOrEmpty(context.User.FindFirst("profilepicture").Value))
-                                    {
-                                        var profilepicture = context.User.FindFirst("profilepicture").Value;
-                                        <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
-                                        class="w-8 h-8 rounded-full cursor-pointer"
-                                        alt="User Avatar"
-                                        @onclick="ToggleUserMenu">
-                                    }else{
-                                        <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                        class="w-8 h-8 rounded-full cursor-pointer"
-                                        alt="User Avatar"
-                                        @onclick="ToggleUserMenu">
-                                    }
-                                </div>
+                               <!-- w-8 h-8 deafult for user prof -->
+                               <!-- User Menu Popup -->
+                               @if (showUserMenu)
+                               {
+                                   <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
+                                   <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                       <!-- User Info Section -->
+                                       <div class="flex flex-col items-center px-4 py-3 border-b">
+                                           @if (!string.IsNullOrEmpty(context.User.FindFirst("profilepicture").Value))
+                                           {
+                                               var profilepicture = context.User.FindFirst("profilepicture").Value;
+                                               <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
+                                               class="w-12 h-12 rounded-full cursor-pointer"
+                                               alt="User Avatar"
+                                               @onclick="ToggleUserMenu">
+                                           }
+                                           else
+                                           {
+                                               <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
+                                               class="w-12 h-12 rounded-full cursor-pointer"
+                                               alt="User Avatar"
+                                               @onclick="ToggleUserMenu">
+                                           }
+                                           <span class="text-sm font-semibold text-gray-800">Hey, @context.User.Identity.Name</span>
+                                       </div>
 
+                                       <!-- Menu Items -->
+                                       <div class="px-2 py-2">
+                                           <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                               <div class="flex items-center space-x-3" @onclick="@(x => navigationManager.NavigateTo("/profile"))">
+                                                   <i class="fa-solid fa-circle-user text-black text-sm"></i>
+                                                   <span class="text-gray-700 text-sm">Profile</span>
+                                               </div>
+                                           </div>
 
-                                <!-- w-8 h-8 deafult for user prof -->
-                                <!-- User Menu Popup -->
-                                @if (showUserMenu)
-                                {
-                                    <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
-                                    <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                                        <!-- User Info Section -->
-                                        <div class="flex flex-col items-center px-4 py-3 border-b">
-                                            @if (!string.IsNullOrEmpty(context.User.FindFirst("profilepicture").Value))
-                                            {
-                                                var profilepicture = context.User.FindFirst("profilepicture").Value;
-                                                <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
-                                                class="w-12 h-12 rounded-full cursor-pointer"
-                                                alt="User Avatar"
-                                                @onclick="ToggleUserMenu">
-                                            }
-                                            else
-                                            {
-                                                <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                                class="w-12 h-12 rounded-full cursor-pointer"
-                                                alt="User Avatar"
-                                                @onclick="ToggleUserMenu">
-                                            }
-                                            <span class="text-sm font-semibold text-gray-800">Hey, @context.User.Identity.Name</span>
-                                        </div>
+                                           <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                               <div class="flex items-center space-x-3">
+                                                   <i class="fa-solid fa-gear text-black text-sm"></i>
+                                                   <span class="text-gray-700 text-sm">Settings</span>
+                                               </div>
+                                           </div>
 
-                                        <!-- Menu Items -->
-                                        <div class="px-2 py-2">
-                                            <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                                <div class="flex items-center space-x-3" @onclick="@(x => navigationManager.NavigateTo("/profile"))">
-                                                    <i class="fa-solid fa-circle-user text-black text-sm"></i>
-                                                    <span class="text-gray-700 text-sm">Profile</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                                <div class="flex items-center space-x-3">
-                                                    <i class="fa-solid fa-gear text-black text-sm"></i>
-                                                    <span class="text-gray-700 text-sm">Settings</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                                <div class="flex items-center space-x-3" @onclick="logout">
-                                                    <i class="fa-solid fa-arrow-right-from-bracket text-black text-sm"></i>
-                                                    <span class="text-gray-700 text-sm">Logout</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                <!-- end User Menu Popup -->
-                            </div>
-                        </div>
-                    </div>
+                                           <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                               <div class="flex items-center space-x-3" @onclick="logout">
+                                                   <i class="fa-solid fa-arrow-right-from-bracket text-black text-sm"></i>
+                                                   <span class="text-gray-700 text-sm">Logout</span>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   </div>
+                               }
+                               <!-- end User Menu Popup -->
+                           </div>
+                       </div>
+                   </div>
                 </nav>
                 <article class="content px-3  md:px-3 lg:px-4">
                     @Body
@@ -263,6 +266,11 @@
                             <NavLink href="/manage-areas" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: var(--menubar-color)">
                                 <i class="bi bi-geo-alt-fill text-xl text-black pe-2"></i>
                                 Manage Areas
+                            </NavLink>
+
+                            <NavLink href="/manage-devices" class="block p-2 hover:bg-gray-100 border-b border-gray-100" style="color: var(--menubar-color)">
+                                <i class="bi bi-lightbulb text-xl text-black pe-2"></i>
+                                Manage Devcies
                             </NavLink>
                         }
 

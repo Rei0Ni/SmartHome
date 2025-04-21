@@ -1,9 +1,9 @@
-﻿@page "/manage-areas"
+﻿@page "/manage-devices"
 @using System.Text.Json
-@using SmartHome.Dto.Area
+@using SmartHome.Dto.Device
 @layout MainLayout
 
-<PageTitle>Manage Areas</PageTitle>
+<PageTitle>Manage Devices</PageTitle>
 
 <AuthorizeView>
     <Authorized>
@@ -13,26 +13,26 @@
             toastService.Notify(new(ToastType.Warning, IconName.ExclamationTriangle, "Not Authorized", "You are NOT Authorized to be Here"));
         }
         <div class="flex justify-between items-center mb-6 px-4">
-            <h3 class="text-2xl font-semibold text-gray-800">Manage Areas</h3>
+            <h3 class="text-2xl font-semibold text-gray-800">Manage devices</h3>
             <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
                     style="background-color:var(--primary)"
                     onmouseover="this.style.opacity='0.85'"
                     onmouseout="this.style.opacity='1'"
-                    @onclick="NavigateToAreaCreation">
-                <i class="fas fa-plus mr-2"></i>New Area
+                    @onclick="NavigateTodeviceCreation">
+                <i class="fas fa-plus mr-2"></i>New device
             </button>
         </div>
 
-        @if (Areas.Count == 0)
+        @if (devices.Count == 0)
         {
             <div class="text-center mt-12 p-8 bg-gray-50 rounded-xl">
-                <p>There are no Areas here yet.</p>
+                <p>There are no devices here yet.</p>
                 <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
                         style="background-color:var(--primary)"
                         onmouseover="this.style.opacity='0.85'"
                         onmouseout="this.style.opacity='1'"
-                        @onclick="NavigateToAreaCreation">
-                    Create New Area
+                        @onclick="NavigateTodeviceCreation">
+                    Create New device
                 </button>
             </div>
         }
@@ -43,23 +43,29 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Controller</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manufacturer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Updated</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach (var Area in Areas)
+                        @foreach (var device in devices)
                         {
                             <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@Area.Name</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@Area.Controller.Name</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@device.Name</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@device.Brand</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@device.Manufacturer</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@device.DeviceType.Name</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@device.LastUpdated</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
                                     <button class="px-3 py-1.5  text-white rounded-md hover:bg-blue-700 transition-colors" style="background-color:var(--primary)"
-                                            @onclick="@(() => navigationManager.NavigateTo($"/edit-area/{Area.Id.ToString()}"))">
+                                            @onclick="@(() => navigationManager.NavigateTo($"/edit-device/{device.Id.ToString()}"))">
                                         Edit
                                     </button>
                                     <button class="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
-                                            @onclick="() => ConfirmDelete(Area)">
+                                            @onclick="() => ConfirmDelete(device)">
                                         Delete
                                     </button>
                                 </td>
@@ -95,7 +101,7 @@
                         <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
                             <h3 class="text-lg leading-6 font-medium text-gray-900">Confirm Deletion</h3>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500">Are you sure you want to delete @selectedArea?.Name?</p>
+                                <p class="text-sm text-gray-500">Are you sure you want to delete @selecteddevice?.Name?</p>
                             </div>
                         </div>
                     </div>
@@ -110,7 +116,7 @@
                     </button>
                     <button type="button"
                             class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:text-sm"
-                            @onclick="DeleteArea">
+                            @onclick="Deletedevice">
                         Delete
                     </button>
                 </div>
@@ -120,18 +126,18 @@
 }
 
 @code {
-    List<AreaDto> Areas = new List<AreaDto>();
+    List<DeviceDto> devices = new List<DeviceDto>();
     private bool showDeleteModal = false;
-    private AreaDto? selectedArea;
+    private DeviceDto? selecteddevice;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var result = await ApiService.GetAsync("api/area/get/all");
+        var result = await ApiService.GetAsync("api/device/get/all");
         if (result.IsSuccessStatusCode)
         {
-            var content = await result.Content.ReadFromJsonAsync<List<AreaDto>>();
-            Areas = content;
+            var content = await result.Content.ReadFromJsonAsync<List<DeviceDto>>();
+            devices = content;
         }
         else
         {
@@ -139,42 +145,40 @@
         }
     }
 
-    private void NavigateToAreaCreation()
+    private void NavigateTodeviceCreation()
     {
-        navigationManager.NavigateTo("/create-Area");
+        navigationManager.NavigateTo("/create-device");
     }
 
-    private void ConfirmDelete(AreaDto Area)
+    private void ConfirmDelete(DeviceDto device)
     {
-        selectedArea = Area;
+        selecteddevice = device;
         showDeleteModal = true;
     }
 
     private void CloseDeleteModal()
     {
         showDeleteModal = false;
-        selectedArea = null;
+        selecteddevice = null;
     }
 
-    private async Task DeleteArea()
+    private async Task Deletedevice()
     {
-        if (selectedArea != null)
+        if (selecteddevice != null)
         {
-            var result = await ApiService.SendAsync<object>(HttpMethod.Delete, $"api/Area/delete/{selectedArea.Id}");
+            var result = await ApiService.SendAsync<object>(HttpMethod.Delete, $"api/device/delete/{selecteddevice.Id}");
             if (result.IsSuccessStatusCode)
             {
-                Areas.Remove(selectedArea);
-                toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selectedArea.Name} has been successfully deleted."));
-
+                devices.Remove(selecteddevice);
+				toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selecteddevice.Name} has been deleted successfully"));
             }
             else
             {
                 // Show error message in toast
-                toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", "Failed to delete the selected area. Please try again."));
-
+				toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", $"Failed to delete {selecteddevice.Name}"));
             }
             showDeleteModal = false;
-            selectedArea = null;
+            selecteddevice = null;
         }
     }
 }
