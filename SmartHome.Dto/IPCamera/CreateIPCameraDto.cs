@@ -12,7 +12,7 @@ namespace SmartHome.Dto.IPCamera
         public string IPAddress { get; set; }
         public string Username { get; set; }
         public string Password { get; set; }
-        public string StreamUrl { get; set; }
+        //public string StreamUrl { get; set; }
         public Guid AreaId { get; set; }
     }
 }

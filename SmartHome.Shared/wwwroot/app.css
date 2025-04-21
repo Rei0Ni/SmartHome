@@ -30,6 +30,9 @@
     --lamp-card-bg-off: #FBFBFB; /* Card background when lamp is off */
     --lamp-indicator-on: #FBB03B; /* Indicator circle color when lamp is on */
     --lamp-indicator-off: rgb(128,128,128); /* Indicator circle color when lamp is off */
+    /* IPCamera-specific Colors */
+    --ipcamera-card-bg-on: #ECF8F5; /* Card background when IPCamera is on */
+    --ipcamera-card-bg-off: #FBFBFB; /* Card background when IPCamera is off */
 }
 
 html, body {

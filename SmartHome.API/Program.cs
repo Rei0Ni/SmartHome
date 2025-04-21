@@ -264,4 +264,4 @@ using (var scope = app.Services.CreateScope())
     await seedDataService.InitializeAsync();
 }
 
-app.Run("http://*:62062");
+app.Run();

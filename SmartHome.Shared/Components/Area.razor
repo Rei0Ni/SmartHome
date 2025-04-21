@@ -79,6 +79,11 @@
                     <Fan DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
                 }
             }
+
+			@foreach (var camera in AreaModel.AreaCameras)
+			{
+				<IPCamera CameraModel="camera" />
+			}
         </div>
     }
     
