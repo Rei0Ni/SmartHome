@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SmartHome.Application.Interfaces.Controller;
+using SmartHome.Application.Interfaces.ESPConfig;
 using SmartHome.Dto.Controller;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,10 +12,12 @@ namespace SmartHome.API.Controllers
     public class controllerController : ControllerBase
     {
         private readonly IControllerService _controllerService;
+        private readonly IESPConfigService _espConfigService;
 
-        public controllerController(IControllerService controllerService)
+        public controllerController(IControllerService controllerService, IESPConfigService espConfigService)
         {
             _controllerService = controllerService;
+            _espConfigService = espConfigService;
         }
 
         // GET: api/<controllerController>
@@ -64,6 +67,20 @@ namespace SmartHome.API.Controllers
             var dto = new DeleteControllerDto { Id = Id };
             await _controllerService.DeleteController(dto);
             return NoContent();
+        }
+
+        [HttpPost("/config/update/{Id}")]
+           public async Task<ActionResult> UpdateConfig(Guid Id)
+        {
+            var result = await _espConfigService.UpdateESPCotrollerConfig(Id);
+            if (result)
+            {
+                return Ok(new { Message = "Configuration updated successfully." });
+            }
+            else
+            {
+                return BadRequest(new { Message = "Could not update controller configuration." });
+            }
         }
     }
 }

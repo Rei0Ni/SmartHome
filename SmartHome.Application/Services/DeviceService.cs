@@ -13,6 +13,7 @@ using Serilog;
 using SmartHome.Application.Hubs;
 using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Area;
+using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Interfaces.Device;
 using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
@@ -35,6 +36,7 @@ namespace SmartHome.Application.Services
         private readonly IDeviceTypeRepository _deviceTypeRepository;
         private readonly IDeviceFunctionService _deviceFunctionService;
         private readonly IAreaRepository _areaRepository;
+        private readonly IControllerRepository _controllerRepository;
         private readonly IHubContext<OverviewHub> _overviewHubContext;
         private readonly IHubState _hubState;
         private IValidator<CreateDeviceDto> _createDeviceDtoValidator;
@@ -57,7 +59,8 @@ namespace SmartHome.Application.Services
             IHubContext<OverviewHub> overviewHubContext,
             IHubState hubState,
             IDashboardService dashboardService,
-            IDeviceDataService deviceDataService) // Add IDeviceDataService to the constructor
+            IDeviceDataService deviceDataService,
+            IControllerRepository controllerRepository) // Add IDeviceDataService to the constructor
         {
             _deviceRepository = deviceRepository;
             _createDeviceDtoValidator = createDeviceDtoValidator;
@@ -72,6 +75,7 @@ namespace SmartHome.Application.Services
             _hubState = hubState;
             _dashboardService = dashboardService;
             _deviceDataService = deviceDataService; // Store the injected instance
+            _controllerRepository = controllerRepository;
         }
 
 
@@ -120,8 +124,11 @@ namespace SmartHome.Application.Services
             await _deviceTypeRepository.UpdateDeviceType(deviceType);
 
             var area = await _areaRepository.GetArea(device.AreaId);
+            var controller = await _controllerRepository.GetController(area.ControllerId);
             area.Devices.Add(device.Id);
+            controller.NeedsReconfiguration = true;
             await _areaRepository.UpdateArea(area);
+            await _controllerRepository.UpdateController(controller);
         }
 
         public async Task DeleteDevice(DeleteDeviceDto deleteDeviceDto)
