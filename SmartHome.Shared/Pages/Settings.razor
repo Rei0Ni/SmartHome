@@ -1,0 +1,165 @@
+﻿<!-- Sohiala design -->
+@page "/settings"
+@layout MainLayout
+
+<div class="min-h-screen bg-gray-100 py-10 px-4 sm:px-10 overflow-x-hidden">
+    <h1 class="text-2xl font-bold mb-8">Settings</h1>
+
+    <!-- Global Settings -->
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Global Settings</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">System Time Zone</label>
+                <select class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none">
+                    <option>GMT+2</option>
+                    <option>GMT+3</option>
+                    <option>GMT+1</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Global Theme</label>
+                <select class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none">
+                    <option>Light</option>
+                    <option>Dark</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Control Board Connection -->
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Control Board Connection</h2>
+        <div class="space-y-3">
+            <div class="w-40 h-4 bg-gray-200 rounded"></div>
+            <div class="w-full h-10 bg-gray-100 rounded"></div>
+        </div>
+    </div>
+
+    <!-- Logs Configuration -->
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Logs Configuration</h2>
+        <div class="flex items-center justify-between mb-4">
+            <span class="text-sm text-gray-700">Log File Rollover</span>
+            <!-- Custom Toggle Switch -->
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" class="sr-only peer" @bind="IsRolloverEnabled">
+                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-indigo-600 transition-colors duration-300"></div>
+                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 transform peer-checked:translate-x-5"></div>
+            </label>
+        </div>
+
+        <div class="mt-4">
+            <label class="block text-sm text-gray-700 mb-1">Log File Rollover</label>
+            <select class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none">
+                <option>Weekly</option>
+                <option>Daily</option>
+                <option>Monthly</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Save Button -->
+    <div class="flex justify-center mt-6">
+        <button class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            Save
+        </button>
+    </div>
+</div>
+
+@code {
+    private bool IsRolloverEnabled = true;
+}
+
+
+
+
+
+<!-- my design -->
+
+
+@* @page "/settings" *@
+
+@* <div class="min-h-screen bg-gray-100 py-10 px-4 sm:px-10 overflow-x-hidden"> *@
+@*     <div class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-2xl shadow-lg space-y-8"> *@
+@*         <!-- Header --> *@
+@*         <h2 class="text-2xl sm:text-3xl font-bold flex items-center text-gray-800"> *@
+@*             <i class="bi bi-gear-fill text-gray-600 mr-3 text-xl sm:text-2xl"></i> *@
+@*             Smart Home Settings *@
+@*         </h2> *@
+
+@*         <!-- General Settings --> *@
+@*         <div> *@
+@*             <h3 class="text-xl font-semibold mb-4 text-gray-700 flex items-center"> *@
+@*                 <i class="bi bi-sliders text-gray-500 mr-2"></i> *@
+@*                 General *@
+@*             </h3> *@
+
+@*             <div class="space-y-4"> *@
+@*                 <div class="flex items-center justify-between"> *@
+@*                     <span class="text-gray-700">Enable Notifications</span> *@
+@*                     <label class="inline-flex items-center cursor-pointer"> *@
+@*                         <input type="checkbox" class="sr-only peer" @bind="EnableNotifications" /> *@
+@*                         <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 transition-all duration-300"></div> *@
+@*                         <div class="dot absolute w-4 h-4 bg-white rounded-full transition-all duration-300 -ml-9 peer-checked:translate-x-full peer-checked:ml-0 mt-1 ml-1"></div> *@
+@*                     </label> *@
+@*                 </div> *@
+
+@*                 <div class="flex items-center justify-between"> *@
+@*                     <span class="text-gray-700">Auto-update Devices</span> *@
+@*                     <label class="inline-flex items-center cursor-pointer"> *@
+@*                         <input type="checkbox" class="sr-only peer" @bind="AutoUpdate" /> *@
+@*                         <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 transition-all duration-300"></div> *@
+@*                         <div class="dot absolute w-4 h-4 bg-white rounded-full transition-all duration-300 -ml-9 peer-checked:translate-x-full peer-checked:ml-0 mt-1 ml-1"></div> *@
+@*                     </label> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+
+@*         <!-- Security Settings --> *@
+@*         <div> *@
+@*             <h3 class="text-xl font-semibold mb-4 text-gray-700 flex items-center"> *@
+@*                 <i class="bi bi-shield-lock-fill text-gray-500 mr-2"></i> *@
+@*                 Security *@
+@*             </h3> *@
+
+@*             <div class="space-y-4"> *@
+@*                 <div class="flex items-center justify-between"> *@
+@*                     <span class="text-gray-700">Enable 2FA</span> *@
+@*                     <label class="inline-flex items-center cursor-pointer"> *@
+@*                         <input type="checkbox" class="sr-only peer" @bind="Enable2FA" /> *@
+@*                         <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 transition-all duration-300"></div> *@
+@*                         <div class="dot absolute w-4 h-4 bg-white rounded-full transition-all duration-300 -ml-9 peer-checked:translate-x-full peer-checked:ml-0 mt-1 ml-1"></div> *@
+@*                     </label> *@
+@*                 </div> *@
+
+@*                 <div class="flex items-center justify-between"> *@
+@*                     <span class="text-gray-700">Location Tracking</span> *@
+@*                     <label class="inline-flex items-center cursor-pointer"> *@
+@*                         <input type="checkbox" class="sr-only peer" @bind="LocationTracking" /> *@
+@*                         <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:bg-green-500 transition-all duration-300"></div> *@
+@*                         <div class="dot absolute w-4 h-4 bg-white rounded-full transition-all duration-300 -ml-9 peer-checked:translate-x-full peer-checked:ml-0 mt-1 ml-1"></div> *@
+@*                     </label> *@
+@*                 </div> *@
+@*             </div> *@
+@*         </div> *@
+
+@*         <!-- Save Button --> *@
+@*         <div class="text-right"> *@
+@*             <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg transition duration-200 inline-flex items-center"> *@
+@*                 <i class="bi bi-save-fill mr-2"></i> *@
+@*                 Save Settings *@
+@*             </button> *@
+@*         </div> *@
+@*     </div> *@
+@* </div> *@
+
+@* @code { *@
+@*     private bool EnableNotifications = true; *@
+@*     private bool AutoUpdate = false; *@
+@*     private bool Enable2FA = true; *@
+@*     private bool LocationTracking = false; *@
+@* } *@
