@@ -75,7 +75,7 @@ namespace SmartHome.API.Controllers
             var result = await _espConfigService.UpdateESPCotrollerConfig(Id);
             if (result)
             {
-                return Ok(new { Message = "Configuration updated successfully." });
+                return Ok(new { Message = "Configuration updated successfully.\nRestarting Controller" });
             }
             else
             {
