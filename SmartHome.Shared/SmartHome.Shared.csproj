@@ -26,4 +26,11 @@
     <ProjectReference Include="..\SmartHome.Enum\SmartHome.Enum.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\js\IPCamera.js">
+      <SubType>Code</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

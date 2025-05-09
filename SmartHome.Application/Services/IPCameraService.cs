@@ -52,6 +52,7 @@ namespace SmartHome.Application.Services
             }
 
             var cameraEntity = _mapper.Map<IPCamera>(camera);
+            cameraEntity.StreamUrl = $"http://{camera.IPAddress}:8080/video";
             var addedCamera = await _camerasRepository.CreateCameraAsync(cameraEntity);
             return _mapper.Map<IPCameraDto>(addedCamera);
         }
@@ -126,6 +127,7 @@ namespace SmartHome.Application.Services
                 throw new FluentValidationException("error", "Validation Error", validationResult.Errors);
             }
             var cameraEntity = _mapper.Map<IPCamera>(camera);
+            cameraEntity.StreamUrl = $"http://{camera.IPAddress}:8080/video";
             var updatedCamera = await _camerasRepository.UpdateCameraAsync(cameraEntity);
             return _mapper.Map<IPCameraDto>(updatedCamera);
         }

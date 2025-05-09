@@ -1,0 +1,31 @@
+﻿.weather-icon-enlarged {
+    transform: translateX(10px) scale(1.5); /* Increase the scale factor (e.g., 1.5 = 150%) */
+    transform-origin: center right; /* Scale from the center-left edge to minimize overlap */
+    /* Ensures the scaled image doesn't affect layout height calculation much */
+    display: inline-block;
+    vertical-align: middle; /* Helps keep alignment with text */
+}
+
+    /* Optional: If using Tailwind and want to ensure vertical alignment with text */
+    .weather-icon-enlarged + span {
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+.shimmer {
+    /* Using indigo-100 (#e0e7ff) as base and indigo-200 (#c7d2fe) as highlight */
+    background: linear-gradient(110deg, #e0e7ff 8%, #c7d2fe 18%, #e0e7ff 33%);
+    border-radius: 5px;
+    background-size: 200% 100%;
+    animation: shimmer-animation 1.8s linear infinite; /* Slightly slower animation */
+}
+
+@keyframes shimmer-animation {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}

@@ -21,7 +21,9 @@ using SmartHome.Domain.Entities;
 using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
 using SmartHome.Dto.DeviceFunction;
+using SmartHome.Dto.DeviceType;
 using SmartHome.Dto.Sensors;
+using SmartHome.Enum;
 using Log = Serilog.Log;
 
 namespace SmartHome.Application.Services
@@ -82,9 +84,38 @@ namespace SmartHome.Application.Services
             }
 
             var device = _mapper.Map<Device>(createDeviceDto);
+
+            // Initialize basic state based on the device type  
+            var deviceType = await _deviceTypeRepository.GetDeviceType(device.DeviceTypeId);
+            if (deviceType != null)
+            {
+                device.State = new Dictionary<string, object>();
+
+                switch (deviceType.Type)
+                {
+                    case DeviceTypes.Lamp:
+                        device.State["power_state"] = "off";
+                        device.State["brightness"] = 0;
+                        break;
+                    case DeviceTypes.TEMPRATURE_SENSOR:
+                        device.State["temperature_celsius"] = 0.0;
+                        device.State["humidity_percent"] = 0.0;
+                        break;
+                    case DeviceTypes.FAN:
+                        device.State["power_state"] = "off";
+                        device.State["fan_speed"] = 0;
+                        break;
+                    case DeviceTypes.PIR_MOTION_SENSOR:
+                        device.State["motion_detected"] = false;
+                        break;
+                    default:
+                        Log.Warning($"No default state defined for device type {deviceType.Type}");
+                        break;
+                }
+            }
+
             await _deviceRepository.CreateDevice(device);
 
-            var deviceType = await _deviceTypeRepository.GetDeviceType(device.DeviceTypeId);
             deviceType.Devices.Add(device.Id);
             await _deviceTypeRepository.UpdateDeviceType(deviceType);
 
@@ -147,7 +178,20 @@ namespace SmartHome.Application.Services
         public async Task<List<DeviceDto>> GetDevices()
         {
             var devices = await _deviceRepository.GetDevices();
-            return _mapper.Map<List<DeviceDto>>(devices);
+            var deviceDtos = _mapper.Map<List<DeviceDto>>(devices);
+            var deviceTypes = await _deviceTypeRepository.GetDeviceTypes();
+
+            // Map device types to their corresponding deviceDtos  
+            foreach (var deviceDto in deviceDtos)
+            {
+                var deviceType = deviceTypes.FirstOrDefault(dt => dt.Id == deviceDto.DeviceTypeId);
+                if (deviceType != null)
+                {
+                    deviceDto.DeviceType = _mapper.Map<DeviceTypeDto>(deviceType);
+                }
+            }
+
+            return deviceDtos;
         }
 
         public async Task<List<DeviceDto>> GetDevicesByArea(Guid Id)

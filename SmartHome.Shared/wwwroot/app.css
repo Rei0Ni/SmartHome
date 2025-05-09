@@ -9,12 +9,14 @@
     --on-secondary: #FFFFFF;
     --background: #FFFBFE;
     --surface: #FFFFFF;
-    --surface-variant: #53437C;
+    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1) );
     --on-surface: #1C1B1E;
     --error: #B3261E;
     --on-error: #FFFFFF;
     --body-light: #F3F2FD;
-
+    /* Menu on mobile */
+    --menu-bg: #F3F2FD;
+    --menubar-color: #625871;
     /* Fan-specific Colors */
     --fan-card-bg-on: #F9FFF4; /* Card background when fan is on */
     --fan-card-bg-off: #fbfbfb; /* Card background when fan is off */
@@ -23,25 +25,24 @@
     --fan-slider-thumb-color: var(--fan-indicator-on); /* Slider thumb color */
     --fan-indicator-on: #059212; /* Indicator circle color when on */
     --fan-indicator-off: rgb(128,128,128); /* Indicator circle color when off */
-
     /* Lamp-specific Colors */
     --lamp-card-bg-on: #FFFDEB; /* Card background when lamp is on */
     --lamp-card-bg-off: #FBFBFB; /* Card background when lamp is off */
     --lamp-indicator-on: #FBB03B; /* Indicator circle color when lamp is on */
     --lamp-indicator-off: rgb(128,128,128); /* Indicator circle color when lamp is off */
+    /* IPCamera-specific Colors */
+    --ipcamera-card-bg-on: #ECF8F5; /* Card background when IPCamera is on */
+    --ipcamera-card-bg-off: #FBFBFB; /* Card background when IPCamera is off */
 }
 
-
 html, body {
-    /*    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;*/
-    /*    font-family: "Maven Pro", sans-serif !important;*/
-        font-family: "Titillium Web", sans-serif !important;
-/*    font-family: "Big Shoulders", sans-serif !important;*/
+    font-family: "Maven Pro", sans-serif !important;
+/*        font-family: "Titillium Web", sans-serif !important;*/
     font-optical-sizing: auto;
     font-weight: 500;
     font-style: normal;
     user-select: none;
-    background-color: var(--body-light) ;
+    background-color: var(--body-light) !important;
 }
 
 a, .btn-link {

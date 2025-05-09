@@ -5,77 +5,107 @@
 @using SmartHome.Dto.Controller
 @layout MainLayout
 
+<PageTitle>Edit Controller</PageTitle>
+
 <AuthorizeView>
     <Authorized>
         @{
             IsAdmin = context.User.IsInRole("Admin");
         }
 
-        <!-- Header Section -->
-        <div class="mb-8 px-4">
-            <h3 class="text-2xl font-semibold text-gray-800">Edit Controller</h3>
-        </div>
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-5 border-b border-gray-200">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Edit Controller</h3>
+                <p class="text-gray-600 mt-2 text-sm sm:text-base">Fill in the details below to update the controller</p>
+            </div>
 
-        <EditForm Context="controllerEditContext" Model="NewController" OnValidSubmit="SubmitCreateControllerForm">
-            <DataAnnotationsValidator />
+            <EditForm Context="controllerEditContext"
+                      Model="NewController"
+                      OnValidSubmit="SubmitUpdateControllerForm"
+                      class="p-6 md:p-8">
+                <DataAnnotationsValidator />
 
-            <!-- Form Grid -->
-            <div class="max-w-2xl mx-auto space-y-6 px-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Name Field -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <InputText @bind-Value="NewController.Name"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                   placeholder="Enter Controller Name" />
-                        <ValidationMessage For="@(() => NewController.Name)" class="text-red-500 text-sm" />
-                    </div>
+                <div class="space-y-4 sm:space-y-6">
+                    <!-- Name & MAC Address Row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Name Field -->
+                        <div>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Controller Name</label>
+                            <div class="mt-1">
+                                <InputText @bind-Value="NewController.Name"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="Enter controller name" />
+                                <ValidationMessage For="@(() => NewController.Name)"
+                                                   class="text-red-600 text-sm mt-1" />
+                            </div>
+                        </div>
 
-                    <!-- MAC Address Field -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">MAC Address</label>
-                        <InputText @bind-Value="NewController.MACAddress"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                   placeholder="XX:XX:XX:XX:XX:XX" />
-                        <ValidationMessage For="@(() => NewController.MACAddress)" class="text-red-500 text-sm" />
+                        <!-- MAC Address Field -->
+                        <div>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">MAC Address</label>
+                            <div class="mt-1">
+                                <InputText @bind-Value="NewController.MACAddress"
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           placeholder="00:1A:2B:3C:4D:5E" />
+                                <ValidationMessage For="@(() => NewController.MACAddress)"
+                                                   class="text-red-600 text-sm mt-1" />
+                            </div>
+                        </div>
                     </div>
 
                     <!-- IP Address Field -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700">IP Address</label>
-                        <InputText @bind-Value="NewController.IPAddress"
-                                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                   placeholder="192.168.1.1" />
-                        <ValidationMessage For="@(() => NewController.IPAddress)" class="text-red-500 text-sm" />
+                    <div>
+                        <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">IP Address</label>
+                        <div class="mt-1">
+                            <InputText @bind-Value="NewController.IPAddress"
+                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                       placeholder="192.168.1.1" />
+                            <ValidationMessage For="@(() => NewController.IPAddress)"
+                                               class="text-red-600 text-sm mt-1" />
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-red-400"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700">@ErrorMessage</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Submit Button -->
+                    <div class="pt-4 sm:pt-6">
+                        <button type="submit"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                                style="background-color:var(--primary)"
+                                onmouseover="this.style.opacity='0.85'"
+                                onmouseout="this.style.opacity='1'">
+                            <i class="bi bi-pencil-square"></i>
+                            Update Controller
+                        </button>
                     </div>
                 </div>
-
-                <!-- Error Message -->
-                @if (!string.IsNullOrEmpty(ErrorMessage))
-                {
-                    <div class="p-4 bg-red-50 text-red-700 rounded-md">
-                        @ErrorMessage
-                    </div>
-                }
-
-                <!-- Submit Button -->
-                <div class="pt-6">
-                    <button type="submit"
-                            class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2">
-                        <i class="bi bi-pencil-square"></i>
-                        Update Controller
-                    </button>
-                </div>
-            </div>
-        </EditForm>
+            </EditForm>
+        </div>
     </Authorized>
     <NotAuthorized>
-        <div class="p-4 bg-red-100 text-red-700 rounded-md mx-4 my-6">
-            You are not authorized to edit controllers.
+        <div class="text-center p-6 sm:p-8">
+            <div class="mx-auto max-w-md">
+                <i class="fas fa-ban text-red-500 text-3xl sm:text-4xl mb-4"></i>
+                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Unauthorized Access</h3>
+                <p class="text-gray-600 text-sm sm:text-base">You don't have permission to edit controllers</p>
+                <p class="text-gray-600 text-sm sm:text-base">You don't have permission to edit controllers</p>
+            </div>
         </div>
     </NotAuthorized>
 </AuthorizeView>
-
 
 @code {
     [Parameter]
@@ -94,7 +124,6 @@
             var content = await result.Content.ReadFromJsonAsync<ControllerDto>();
             if (content != null)
             {
-
                 NewController.Name = content.Name;
                 NewController.MACAddress = content.MACAddress;
                 NewController.IPAddress = content.IPAddress;
@@ -110,41 +139,20 @@
         }
     }
 
-    private async Task SubmitCreateControllerForm()
+    private async Task SubmitUpdateControllerForm()
     {
         try
         {
             NewController.Id = Guid.Parse(Id);
             HttpResponseMessage result = await ApiService.SendAsync<UpdateControllerDto>(HttpMethod.Put, "/api/controller/update", NewController);
 
-            // if (!result.IsSuccessStatusCode)
-            // {
-            //     var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
-            //     if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
-            //     {
-            //         var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
-            //         foreach (var error in errors)
-            //         {
-            //             toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
-            //         }
-            //     }
-            //     else
-            //     {
-            //         ErrorMessage = "Controller Edit failed: " + response?.Data;
-            //     }
-            // }
-            // else
-            // {
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Controller Updated Successfully", "The Controller was Updated Successfully"));
-
-                // Reset form and navigate
                 NewController = new UpdateControllerDto();
                 StateHasChanged();
                 navigationManager.NavigateTo("/manage-controllers", false, false);
             }
-            // }
         }
         catch (Exception ex)
         {

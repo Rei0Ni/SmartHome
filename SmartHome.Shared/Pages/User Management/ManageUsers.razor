@@ -12,7 +12,7 @@
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6 px-4">
             <h3 class="text-2xl font-semibold text-gray-800">Manage Users</h3>
-            <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+            <button class="px-4 py-2  text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2" style="background-color:var(--primary)"
                     @onclick="NavigateToUserCreation">
                 <i class="bi bi-person-plus"></i>
                 New User
@@ -20,58 +20,63 @@
         </div>
 
         <!-- Users Table -->
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden mx-4">
+        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
-                <table class="w-full min-w-[800px]">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Username</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">First Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Last Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Email</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Last Login</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Role</th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        @foreach (var user in users)
-                        {
-                            <tr class="hover:bg-gray-50 transition-colors">
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.Username</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.FirstName</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.LastName</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 break-all">@user.Email</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.LastLogin</td>
-                                <td class="px-4 py-3 text-sm text-gray-700">@user.Role.Replace("_", " ")</td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <button class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors text-sm"
-                                                @onclick="@(() => navigationManager.NavigateTo($"/edit-user/{user.UserId.ToString()}"))">
-                                            Edit
-                                        </button>
-                                        <button class="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
-                                                @onclick="() => ConfirmDelete(user)">
-                                            Delete
-                                        </button>
-                                    </div>
-                                </td>
+                @if (users.Count == 0)
+                {
+                    <div class="text-center py-12">
+                        <p>There are no users here yet.</p>
+                        <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                                style="background-color:var(--primary)"
+                                onmouseover="this.style.opacity='0.85'"
+                                onmouseout="this.style.opacity='1'"
+                                @onclick="NavigateToUserCreation">
+                            Create a New User
+                        </button>
+                    </div>
+                }
+                else
+                {
+                    <table class="w-full min-w-[800px]">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Username</th>
+                                <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700">First Name</th>
+                                <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700">Last Name</th>
+                                <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700 break-all">Email</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Last Login</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Role</th>
+                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            @foreach (var user in users)
+                            {
+                                <tr class="hover:bg-gray-50 transition-colors">
+                                    <td class="px-4 py-3 text-sm text-gray-700">@user.Username</td>
+                                    <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700">@user.FirstName</td>
+                                    <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700">@user.LastName</td>
+                                    <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700 break-all">@user.Email</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">@user.LastLogin</td>
+                                    <td class="px-4 py-3 text-sm text-gray-700">@user.Role.Replace("_", " ")</td>
+                                    <td class="px-4 py-3">
+                                        <div class="flex items-center gap-2">
+                                            <button class="px-3 py-1.5  text-white rounded-md hover:bg-blue-700 transition-colors text-sm" style="background-color:var(--primary)"
+                                                    @onclick="@(() => navigationManager.NavigateTo($"/edit-user/{user.UserId.ToString()}"))">
+                                                Edit
+                                            </button>
+                                            <button class="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                                                    @onclick="() => ConfirmDelete(user)">
+                                                Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
             </div>
-
-            @if (users.Count == 0)
-            {
-                <div class="text-center py-12">
-                    <p class="text-gray-500 mb-4">There are no users here yet.</p>
-                    <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                            @onclick="NavigateToUserCreation">
-                        Create a New User +
-                    </button>
-                </div>
-            }
         </div>
     </Authorized>
     <NotAuthorized>
@@ -164,10 +169,12 @@
             if (result.IsSuccessStatusCode)
             {
                 users.Remove(selectedUser);
+				toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selectedUser.Username} has been deleted successfully"));
             }
             else
             {
                 // Show error message in toast
+				toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", $"Failed to delete {selectedUser.Username}"));
             }
             showDeleteModal = false;
             selectedUser = null;

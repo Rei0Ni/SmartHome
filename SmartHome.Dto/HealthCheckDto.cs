@@ -2,7 +2,7 @@
 {
     public class HealthCheckDto
     {
-        public required string Status { get; set; }
+        public string Status { get; set; } = "Unknown";
         public List<ComponentHealthCheckDto>? Checks { get; set; }
     }
 }

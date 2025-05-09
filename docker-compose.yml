@@ -3,17 +3,20 @@ services:
   smarthome-api:
     container_name: smarthome-api # Optional: Give the container a specific name
     build:
+      network: host # Use host networking for the API service
+      # This is important for the API to bind to the host's network stack
       context: .
       dockerfile: Dockerfile
       target: api-final
     restart: unless-stopped # Restart policy
+    network_mode: host # to allow direct access to the host network
     environment:
       # --- CRITICAL: Override appsettings.json ---
       # Use double underscore __ for nested JSON keys
       - ASPNETCORE_ENVIRONMENT=Production # Or Development, Staging
-      - ASPNETCORE_URLS=http://+:62062 # Ensure Kestrel listens correctly inside the container
-      - MQTTHOST=smarthome-mosquitto
-      - MongoDBConfig__ConnectionURI=mongodb://mongo:27017/ # Use service name 'mongo' if running Mongo in compose
+      - ASPNETCORE_URLS=http://0.0.0.0:62062 # Ensure Kestrel listens correctly inside the container
+      - MQTTHOST=localhost
+      - MongoDBConfig__ConnectionURI=mongodb://localhost:27017/ # Use service name 'mongo' if running Mongo in compose
       - MongoDBConfig__DatabaseName=SmartHome
       - Jwt__Key=${JWT_KEY:-YourDefaultDevelopmentJwtKeyShouldBeChanged} # Use host env variable or default
       - Jwt__Issuer=https://yourdomain.com/ # Use your actual issuer URL
@@ -23,12 +26,16 @@ services:
       - TotpSettings__Issuer=SmartHome System
       - TotpSettings__CodeLength=6
       - TotpSettings__ExpirySeconds=30
+      - Weather__APIKey=${WEATHER_API_KEY:-YourWeatherApiKey} # Use host env variable or default
+      - Weather__City=Cairo
+      - Weather__Country=EG
+      - Weather__Units=metric
     volumes:
       # --- IMPORTANT: Persist Data Protection Keys ---
       - dataprotection-keys:/root/.aspnet/DataProtection-Keys
       - ./host-logs:/app/logs # Map a host directory to the container's log directory
-    networks:
-      - smarthome-network # Connect to the custom network
+    # networks:
+    #   - smarthome-network # Connect to the custom network
     depends_on:
       - mongo # Optional: Make API wait for Mongo service to start (only if using Mongo service below)
       - mosquitto # Optional: Make API wait for Mosquitto service to start (only if using Mosquitto service below)
@@ -47,6 +54,8 @@ services:
       # The Web App connects to: https://{config["MainHost"]}:62061/
       # Inside Docker, Nginx is reachable via service name 'nginx' on port 62061 (SSL)
       - MainHost=nginx # Override the MainHost setting
+    volumes:
+      - dataprotection-keys-web:/root/.aspnet/DataProtection-Keys
     networks:
       - smarthome-network
     depends_on:
@@ -109,6 +118,7 @@ services:
 volumes:
   mongo-data: # Stores MongoDB data
   dataprotection-keys: # Stores ASP.NET Data Protection keys
+  dataprotection-keys-web: # Stores ASP.NET Data Protection keys for the Web App
 
 # Define the custom network
 networks:

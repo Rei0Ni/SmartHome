@@ -1,0 +1,437 @@
+﻿@page "/create-device"
+@using SmartHome.Dto.Area
+@using SmartHome.Dto.Device
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Web
+@using SmartHome.Dto.DeviceType
+@using System.ComponentModel.DataAnnotations
+@using SmartHome.Enum
+@layout MainLayout
+
+<PageTitle>Create New Device</PageTitle>
+
+<AuthorizeView>
+    <Authorized Context="authContext">
+        @* Renamed context to avoid conflict *@
+        @{
+            IsAdmin = authContext.User.IsInRole("Admin");
+        }
+
+        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 ">
+            <div class="px-6 py-5 border-b border-gray-200">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Create New device</h3>
+                <p class="text-gray-600 mt-2 text-sm sm:text-base">Fill in the details below to add a new device</p>
+            </div>
+
+            <EditForm Context="deviceCreationContext" Model="NewDevice" OnValidSubmit="SubmitCreatedeviceForm" class=" p-6 md:p-8">
+                <DataAnnotationsValidator />
+
+                <div class="space-y-4 sm:space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Name -->
+                        <div>
+                           <label for="deviceName" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Device Name</label>
+                           <div class="mt-1">
+                               <InputText id="deviceName" @bind-Value="NewDevice.Name"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter device name" />
+                               <ValidationMessage For="@(() => NewDevice.Name)"
+                                                  class="text-red-600 text-sm mt-1" />
+                           </div>
+                        </div>
+
+                        <div>
+                           <label for="description" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Description</label>
+                           <div class="mt-1">
+                               <InputText id="description" @bind-Value="NewDevice.Description"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter device description" />
+                               <ValidationMessage For="@(() => NewDevice.Description)"
+                                                  class="text-red-600 text-sm mt-1" />
+                           </div>
+                        </div>
+
+                        <div>
+                           <label for="brand" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Brand</label>
+                           <div class="mt-1">
+                               <InputText id="brand" @bind-Value="NewDevice.Brand"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter device brand" />
+                               <ValidationMessage For="@(() => NewDevice.Brand)"
+                                                  class="text-red-600 text-sm mt-1" />
+                           </div>
+                        </div>
+
+                        <div>
+                           <label for="model" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Model</label>
+                           <div class="mt-1">
+                               <InputText id="model" @bind-Value="NewDevice.Model"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter device model" />
+                               <ValidationMessage For="@(() => NewDevice.Model)"
+                                                  class="text-red-600 text-sm mt-1" />
+                           </div>
+                        </div>
+
+                        <div>
+                           <label for="manufacturer" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Manufacturer</label>
+                           <div class="mt-1">
+                               <InputText id="manufacturer" @bind-Value="NewDevice.Manufacturer"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter device manufacturer" />
+                               <ValidationMessage For="@(() => NewDevice.Manufacturer)"
+                                                  class="text-red-600 text-sm mt-1" />
+                           </div>
+                        </div>
+
+                        <div>
+                           <label for="serialNumber" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Serial Number</label>
+                           <div class="mt-1">
+                               <InputText id="serialNumber" @bind-Value="NewDevice.SerialNumber"
+                                          class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                          placeholder="Enter device serial number" />
+                               <ValidationMessage For="@(() => NewDevice.SerialNumber)"
+                                                  class="text-red-600 text-sm mt-1" />
+                           </div>
+                        </div>
+					</div>
+
+                    <div class="mt-6">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4 flex justify-between items-center">
+                            Manage Device Pins
+                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                    style="background-color:var(--primary)" @onclick="() => ShowPinModal = true">
+                                Add New Pin
+                            </button>
+                        </h4>
+                        <table class="min-w-full border border-gray-300 rounded-md">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">Pin Number</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">Purpose</th>
+                                    <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 border-b">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (NewDevice.Pins != null && NewDevice.Pins.Any())
+                                {
+                                    @foreach (var pin in NewDevice.Pins)
+                                    {
+                                        <tr>
+                                            <td class="px-4 py-2 text-sm text-gray-800 border-b">@pin.PinNumber</td>
+                                            <td class="px-4 py-2 text-sm text-gray-800 border-b">@pin.Purpose</td>
+                                            <td class="px-4 py-2 text-sm text-gray-800 border-b">
+                                                <button type="button" class="text-red-600 hover:underline" @onclick="() => RemovePin(pin)">Remove</button>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="3" class="px-4 py-2 text-sm text-gray-500 text-center">No pins added yet.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (ShowPinModal)
+                    {
+                        <div class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center z-50">
+                            <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                                <h5 class="text-lg font-medium text-gray-700 mb-4">Add New Pin</h5>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="pinNumber" class="block text-sm font-medium text-gray-700">Pin Number</label>
+                                        <InputNumber id="pinNumber" @bind-Value="NewPin.PinNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                    </div>
+                                    <div>
+                                        <label for="pinPurpose" class="block text-sm font-medium text-gray-700">Purpose</label>
+                                        <InputSelect id="pinPurpose" @bind-Value="NewPin.Purpose" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                            <option value="">-- Select Purpose --</option>
+                                            @foreach (var purpose in Enum.GetValues<DevicePinPurpose>())
+                                            {
+                                                <option value="@purpose">@purpose</option>
+                                            }
+                                        </InputSelect>
+                                    </div>
+                                </div>
+                                <ValidationMessage For="@(() => NewPin.PinNumber)" class="text-red-600 text-sm mt-1" />
+                                <ValidationMessage For="@(() => NewPin.Purpose)" class="text-red-600 text-sm mt-1" />
+                                <div class="mt-6 flex justify-end space-x-4">
+                                    <button type="button" class="px-4 py-2 bg-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500" @onclick="() => ShowPinModal = false">
+                                        Cancel
+                                    </button>
+                                    <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            style="background-color:var(--primary)" @onclick="AddPin">
+                                        Add Pin
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <div>
+                        <!-- area Selection -->
+                        <div>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Select area</label>
+                            @if (!Areas.Any())
+                            {
+                                <p class="text-sm text-gray-500 italic mt-1">No areas available to select.</p>
+                            }
+                            else
+                            {
+                                @* --- Option 1: Radio Buttons (Recommended for clarity if list isn't huge) --- *@
+                                @* <InputRadioGroup @bind-Value="Newdevice.areaId" class="mt-2 space-y-3"> *@
+                                @*     <ValidationMessage For="@(() => Newdevice.areaId)" class="text-red-600 text-sm mb-2" /> *@
+                                @*     @foreach (var area in areas) *@
+                                @*     { *@
+                                @*         <div class="flex items-center p-3 border border-gray-200 rounded-md hover:bg-gray-50 transition duration-150 ease-in-out"> *@
+                                @*             <InputRadio id="@($"area-{area.Id}")" Value="area.Id" class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500" /> *@
+                                @*             <label for="@($"area-{area.Id}")" class="ml-3 flex flex-col cursor-pointer"> *@
+                                @*                 <span class="block text-sm font-medium text-gray-900">@area.Name</span> *@
+                                @*                 <span class="block text-sm text-gray-500">MAC: @area.MACAddress</span> *@
+                                @*             </label> *@
+                                @*         </div> *@
+                                @*     } *@
+                                @* </InputRadioGroup> *@
+
+                                @* --- Option 2: Dropdown (InputSelect) - Uncomment to use --- *@
+                                <div class="mt-1">  
+                                   <InputSelect @bind-Value="NewDevice.AreaId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">  
+                                       <option value="@Guid.Empty">-- Select an area --</option>  
+                                       @foreach (var area in Areas)  
+                                       {  
+                                           <option value="@area.Id">@area.Name (@area.Id)</option>  
+                                       }  
+                                   </InputSelect>  
+                                   <ValidationMessage For="@(() => NewDevice.AreaId)" class="text-red-600 text-sm mt-1" />  
+                                </div>
+                            }
+                        </div>
+
+                        <div>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Select device type</label>
+                            @if (!DeviceTypes.Any())
+                            {
+                                <p class="text-sm text-gray-500 italic mt-1">No device types available to select.</p>
+                            }
+                            else
+                            {
+                                <div class="mt-1">
+                                    <InputSelect @bind-Value="NewDevice.DeviceTypeId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                        <option value="@Guid.Empty">-- Select a device type --</option>
+                                        @foreach (var deviceType in DeviceTypes)
+                                        {
+                                            <option value="@deviceType.Id">@deviceType.Name (@deviceType.Id)</option>
+                                        }
+                                    </InputSelect>
+                                    <ValidationMessage For="@(() => NewDevice.DeviceTypeId)" class="text-red-600 text-sm mt-1" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div class="bg-red-50 border-l-4 border-red-400 p-4 mt-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    @* Assuming Font Awesome is available via MainLayout or similar *@
+                                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1.707-4.293a1 1 0 001.414 1.414L10 11.414l.293.293a1 1 0 001.414-1.414L11.414 10l.293-.293a1 1 0 00-1.414-1.414L10 8.586 9.707 8.293a1 1 0 00-1.414 1.414L8.586 10l-.293.293a1 1 0 000 1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm text-red-700">@ErrorMessage</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Submit Button -->
+                    <div class="pt-4 sm:pt-6">
+                        <button type="submit"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                style="background-color:var(--primary)"
+                                onmouseover="this.style.opacity='0.85'"
+                                onmouseout="this.style.opacity='1'">
+                            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            Create device
+                        </button>
+                    </div>
+                </div>
+            </EditForm>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="text-center p-6 sm:p-8">
+            <div class="mx-auto max-w-md">
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <h3 class="mt-2 text-lg sm:text-xl font-semibold text-gray-800 mb-2">Unauthorized Access</h3>
+                <p class="text-gray-600 text-sm sm:text-base">You don't have permission to create devices.</p>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    // Make sure CreatedeviceDto has a nullable areaId for easy validation
+    // [Required] should be placed on the areaId property within CreatedeviceDto itself.
+    private CreateDeviceDto NewDevice = new();
+    private List<AreaDto> Areas = new();
+    private List<DeviceTypeDto> DeviceTypes = new();
+    private DevicePin NewPin = new DevicePin();
+    private bool ShowPinModal = false;
+    private bool IsAdmin;
+    private string ErrorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        // Clear previous errors
+        ErrorMessage = string.Empty;
+        try
+        {
+            var areaResult = await ApiService.GetAsync("/api/area/get/all");
+            if (areaResult.IsSuccessStatusCode)
+            {
+                Areas = await areaResult.Content.ReadFromJsonAsync<List<AreaDto>>() ?? new List<AreaDto>();
+            }
+            else
+            {
+                var errorContent = await areaResult.Content.ReadAsStringAsync();
+                Console.WriteLine($"Failed to load areas: {areaResult.StatusCode} - {errorContent}"); // Log detailed error
+                ErrorMessage = $"Failed to load areas (Status: {areaResult.StatusCode}). Please check logs or try again.";
+                Areas = new List<AreaDto>(); // Ensure areas list is empty on failure
+            }
+
+			var deviceTypeResult = await ApiService.GetAsync("/api/devicetype/get/all");
+			if (deviceTypeResult.IsSuccessStatusCode)
+			{
+				DeviceTypes = await deviceTypeResult.Content.ReadFromJsonAsync<List<DeviceTypeDto>>() ?? new List<DeviceTypeDto>();
+			}
+			else
+			{
+				var errorContent = await deviceTypeResult.Content.ReadAsStringAsync();
+				Console.WriteLine($"Failed to load device types: {deviceTypeResult.StatusCode} - {errorContent}"); // Log detailed error
+				ErrorMessage = $"Failed to load device types (Status: {deviceTypeResult.StatusCode}). Please check logs or try again.";
+				DeviceTypes = new List<DeviceTypeDto>(); // Ensure device types list is empty on failure
+			}
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception loading areas: {ex}"); // Log detailed exception
+            ErrorMessage = "An error occurred while loading area data. Please try again later.";
+            Areas = new List<AreaDto>(); // Ensure areas list is empty on exception
+        }
+    }
+
+    // Renamed method to avoid potential naming conflicts
+    private async Task SubmitCreatedeviceForm()
+    {
+        ErrorMessage = string.Empty; // Clear previous errors
+        try
+        {
+            HttpResponseMessage result = await ApiService.PostAsync<CreateDeviceDto>("/api/device/create", NewDevice);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                string errorDetails = "An unknown error occurred.";
+                try
+                {
+                    // Try reading as standard API response first
+                    var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
+                    if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+                    {
+                        var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
+                        errorDetails = string.Join(" ", errors ?? new List<string>());
+                        // Display individual errors as toasts
+                        (errors ?? new List<string>()).ForEach(error =>
+                            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Validation Error", error))
+                        );
+                    }
+                    else if (response?.Data != null)
+                    {
+                        errorDetails = response.Data.ToString() ?? "Error details unavailable.";
+                    }
+                    else
+                    {
+                        // Fallback if JSON parsing fails or structure is unexpected
+                        errorDetails = await result.Content.ReadAsStringAsync();
+                        if (string.IsNullOrWhiteSpace(errorDetails))
+                        {
+                            errorDetails = $"Request failed with status code {result.StatusCode}.";
+                        }
+                    }
+                }
+                catch (JsonException jsonEx)
+                {
+                    // Handle cases where response is not JSON or doesn't match ApiResponse structure
+                    errorDetails = await result.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(errorDetails))
+                    {
+                        errorDetails = $"Request failed with status code {result.StatusCode}. Invalid JSON response.";
+                    }
+                    Console.WriteLine($"JSON parsing error: {jsonEx.Message}");
+                }
+                catch (Exception readEx)
+                {
+                    // Catch other potential exceptions during error reading
+                    errorDetails = $"Request failed with status code {result.StatusCode}. Could not read error details.";
+                    Console.WriteLine($"Error reading response content: {readEx.Message}");
+                }
+
+                ErrorMessage = $"device creation failed: {errorDetails}";
+                // Optionally show a generic toast as well
+                // toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Creation Failed", ErrorMessage));
+            }
+            else
+            {
+                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "device Created", "The new device was created successfully."));
+
+                // Reset form and navigate
+                NewDevice = new CreateDeviceDto(); // Reset the model
+                                               // areas list remains loaded, no need to reload unless necessary
+                StateHasChanged(); // Ensure UI updates after reset
+                navigationManager.NavigateTo("/manage-devices", forceLoad: false); // Navigate without full page reload
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception during device creation submission: {ex}"); // Log detailed exception
+            ErrorMessage = "An unexpected error occurred while submitting the form: " + ex.Message;
+            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.ExclamationTriangle, "Error", ErrorMessage));
+        }
+    }
+
+    private void AddPin()
+    {
+        if (NewDevice.Pins == null)
+        {
+            NewDevice.Pins = new List<DevicePin>();
+        }
+
+        if (NewPin.PinNumber > 0 && !string.IsNullOrEmpty(NewPin.Purpose.ToString()))
+        {
+            NewDevice.Pins.Add(new DevicePin
+                {
+                    PinNumber = NewPin.PinNumber,
+                    Purpose = NewPin.Purpose
+                });
+
+            NewPin = new DevicePin(); // Reset the form
+        }
+    }
+
+    private void RemovePin(DevicePin pin)
+    {
+        NewDevice.Pins?.Remove(pin);
+    }
+}

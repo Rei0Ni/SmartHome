@@ -1,0 +1,267 @@
+﻿@using SmartHome.Dto.Command
+@using SmartHome.Dto.Dashboard
+@using SmartHome.Shared.Interfaces
+@using SmartHome.Shared.Models
+@using System.Text.Json
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime // Inject IJSRuntime
+@inject IConfiguration config // Inject IConfiguration if using it for URL
+@implements IAsyncDisposable // Implement IAsyncDisposable for JS module cleanup
+
+<!-- Lamp Card -->
+<div class="rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center cursor-pointer"
+     style="background-color: var(--ipcamera-card-bg-on);"
+     @onclick="() => OpenModal()">
+    <!-- ... card content ... -->
+    <div class="flex items-center justify-between w-full">
+        <div>
+            <img src="_content/SmartHome.Shared/imgs/icons/camera.svg" alt="camera" class="w-10 h-10 object-contain">
+        </div>
+
+        <div>
+            <h3 class="text-gray-600 text-sm font-normal">@CameraModel.Name</h3>
+        </div>
+    </div>
+    @* <div class="flex items-center justify-between w-full"> *@
+    @*     <div> *@
+    @*         <h3 class="text-gray-600 text-sm font-normal">@CameraModel.Name</h3> *@
+    @*     </div> *@
+        
+    @* </div> *@
+</div>
+
+<!-- Modal clicked -->
+@if (showModal)
+{
+    <div class="fixed inset-0 flex items-center justify-center z-50">
+        <!-- transparent background -->
+        <div class="absolute inset-0 bg-black bg-opacity-50" @onclick="CloseModal"></div>
+
+        <!-- start Modal -->
+        <div class="relative bg-white rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-60 flex flex-col gap-4">
+            <!-- close button -->
+            <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 z-10" @onclick="CloseModal">
+                <!-- ... close icon ... -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
+            <h2 class="text-xl font-semibold text-gray-700 text-center">@CameraModel.Name</h2>
+
+            <!-- MJPEG Stream Display Container -->
+            <div @key="streamContainerId" id="@streamContainerId" class="relative w-full h-64 bg-black rounded-lg overflow-hidden flex items-center justify-center">
+                @if (!string.IsNullOrEmpty(StreamUrl))
+                {
+                    <img class="w-full h-full object-cover" src="@StreamUrl" alt="Live stream for @CameraModel.Name" />
+
+                    <!-- Fullscreen Toggle Button -->
+                    <button @onclick="ToggleFullscreen"
+                            title="@(isFullscreen ? "Exit Fullscreen" : "View Fullscreen")"
+                            class="absolute bottom-2 right-2 p-1.5 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-opacity duration-200 opacity-75 hover:opacity-100 z-10"
+                            aria-label="@(isFullscreen ? "Exit fullscreen mode" : "Enter fullscreen mode")">
+                        @if (isFullscreen)
+                        {
+                            <!-- Minimize Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l-4 4m0 0l4-4m-4 4V10m14 4l-4 4m0 0l4-4m-4 4V10M14 10l4-4m0 0l-4 4m4-4H10" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <!-- Maximize Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 1v4m0 0h-4m4 0l-5-5" />
+                            </svg>
+                        }
+                    </button>
+                }
+                else
+                {
+                    <p class="text-center text-gray-500">@(string.IsNullOrEmpty(CameraModel?.Id.ToString()) || CameraModel.Id == Guid.Empty ? "Camera ID is missing." : "Loading stream...")</p>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public OverviewCameraDto CameraModel { get; set; } = new();
+
+    private bool showModal = false;
+    private string? StreamUrl { get; set; }
+    private IJSObjectReference? jsModule;
+    private DotNetObjectReference<IPCamera>? dotNetHelper; // Reference to this component instance
+    private string streamContainerId = $"cam-stream-{Guid.NewGuid()}";
+    private bool isFullscreen = false; // State variable for fullscreen mode
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                // Ensure the path matches your JS file location/naming convention
+                jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/SmartHome.Shared/js/IPCamera.js"); // Or wherever it is
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Error loading JS module: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task OpenModal() // Make async for JS interop call
+    {
+        if (CameraModel == null || CameraModel.Id == Guid.Empty)
+        {
+            Console.WriteLine("Error: Invalid CameraModel or ID.");
+            return;
+        }
+
+        streamContainerId = $"cam-stream-{Guid.NewGuid()}";
+
+        var relativeUrl = $"api/camera/stream/{CameraModel.Id}";
+        // 1. Define the relative path to your API endpoint
+        var relativeApiPath = $"api/camera/stream/{CameraModel.Id}";
+
+        // 2. Get the base URI the browser used (e.g., "https://192.168.1.9/" or "https://yourdomain.com/")
+        var baseUri = new Uri(NavigationManager.BaseUri);
+
+        // 3. Construct the correct absolute URL using the base URI's scheme and host,
+        //    but substituting the known API port (62061).
+        var builder = new UriBuilder("https://", baseUri.Host, 62061, relativeApiPath); // Use the correct port
+        StreamUrl = builder.ToString();
+
+        showModal = true;
+        isFullscreen = false; // Reset fullscreen state when opening modal
+
+        // We need to wait for the modal to render before setting up the listener
+        await Task.Delay(50); // Small delay to allow DOM update, might need adjustment or better technique like MutationObserver if flaky
+        await SetupJsListener(); // Set up listener after modal is likely rendered
+		await InvokeAsync(StateHasChanged); // Notify Blazor to re-render
+    }
+
+    private async Task SetupJsListener()
+    {
+        if (jsModule is not null)
+        {
+            try
+            {
+                dotNetHelper = DotNetObjectReference.Create(this);
+                await jsModule.InvokeVoidAsync("setupFullscreenListener", streamContainerId, dotNetHelper);
+            }
+            catch (JSException ex)
+            {
+                Console.Error.WriteLine($"Error setting up JS fullscreen listener: {ex.Message}");
+                dotNetHelper?.Dispose(); // Clean up if setup failed
+                dotNetHelper = null;
+            }
+            catch (ObjectDisposedException) { /* Ignore if component disposed during setup */ }
+        }
+    }
+
+    private async Task CloseModal()
+    {
+        // Explicitly tell JS to drop the connection
+        if (jsModule is not null)
+        {
+            await jsModule.InvokeVoidAsync("stopStream", streamContainerId);
+        }
+
+        // Now hide the modal
+        showModal = false;
+        StreamUrl = null;
+        isFullscreen = false;
+        await CleanupJsListener();
+        await InvokeAsync(StateHasChanged);
+    }
+
+
+
+    private async Task ToggleFullscreen()
+    {
+        if (jsModule is not null)
+        {
+            try
+            {
+                // Call the *new* toggle function in JavaScript
+                await jsModule.InvokeVoidAsync("toggleFullscreen", streamContainerId);
+            }
+            catch (JSException ex)
+            {
+                Console.Error.WriteLine($"Error calling JS toggleFullscreen function: {ex.Message}");
+            }
+            catch (ObjectDisposedException) { /* Ignore if component disposed during call */ }
+        }
+        else
+        {
+            Console.Error.WriteLine("JS Module not loaded yet for toggleFullscreen.");
+        }
+    }
+
+    // Method called FROM JavaScript when fullscreen state changes
+    [JSInvokable]
+    public void OnFullscreenChanged(bool isNowFullscreen)
+    {
+        // Check if the component is still active
+        if (dotNetHelper != null)
+        {
+            if (isFullscreen != isNowFullscreen) // Only update if state actually changed
+            {
+                isFullscreen = isNowFullscreen;
+                Console.WriteLine($"Fullscreen state changed to: {isFullscreen}");
+                StateHasChanged(); // Notify Blazor to re-render the button icon/title
+            }
+        }
+        else
+        {
+            Console.WriteLine("OnFullscreenChanged called but dotNetHelper is null (likely disposed).");
+        }
+    }
+
+    private async Task CleanupJsListener()
+    {
+        if (jsModule is not null && dotNetHelper is not null)
+        {
+            try
+            {
+                await jsModule.InvokeVoidAsync("cleanupFullscreenListener");
+            }
+            catch (JSException ex)
+            {
+                // Don't worry too much if cleanup fails (e.g., JS context lost)
+                Console.WriteLine($"Error cleaning up JS listener: {ex.Message}");
+            }
+            catch (ObjectDisposedException) { /* Ignore */ }
+            finally
+            {
+                dotNetHelper?.Dispose(); // Dispose the .NET reference
+                dotNetHelper = null;
+                isFullscreen = false; // Ensure state is reset
+            }
+        }
+    }
+
+
+    // Implement IAsyncDisposable
+    public async ValueTask DisposeAsync()
+    {
+        await CleanupJsListener(); // Clean up JS listener
+
+        if (jsModule is not null)
+        {
+            try
+            {
+                await jsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException) { /* Ignore */ }
+            catch (ObjectDisposedException) { /* Ignore */ }
+            catch (JSException ex) { Console.WriteLine($"Error disposing JS Module: {ex.Message}"); }
+        }
+        jsModule = null;
+        GC.SuppressFinalize(this);
+    }
+}

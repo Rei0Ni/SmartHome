@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg fill="#8c8c8c"
+    height="800px"
+    width="800px"
+    version="1.1"
+    id="Capa_1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+	viewBox="0 0 217.43 217.43"
+    xml:space="preserve">
+
+    <defs>
+        <style type="text/css"><![CDATA[
+
+            @keyframes am-weather-fog-drift {
+              0% {
+                -webkit-transform: translate(0px, 0px);
+                   -moz-transform: translate(0px, 0px);
+                    -ms-transform: translate(0px, 0px);
+                        transform: translate(0px, 0px);
+                opacity: 0.6;
+              }
+
+              50% {
+                -webkit-transform: translate(10px, 0px);
+                   -moz-transform: translate(10px, 0px);
+                    -ms-transform: translate(10px, 0px);
+                        transform: translate(10px, 0px);
+                 opacity: 0.8;
+              }
+
+              100% {
+                -webkit-transform: translate(0px, 0px);
+                   -moz-transform: translate(0px, 0px);
+                    -ms-transform: translate(0px, 0px);
+                        transform: translate(0px, 0px);
+                 opacity: 0.6;
+              }
+            }
+
+            .am-weather-fog-line {
+              -webkit-animation-name: am-weather-fog-drift;
+                 -moz-animation-name: am-weather-fog-drift;
+                  -ms-animation-name: am-weather-fog-drift;
+                      animation-name: am-weather-fog-drift;
+              -webkit-animation-duration: 7s;
+                 -moz-animation-duration: 7s;
+                  -ms-animation-duration: 7s;
+                      animation-duration: 7s;
+              -webkit-animation-timing-function: ease-in-out;
+                 -moz-animation-timing-function: ease-in-out;
+                  -ms-animation-timing-function: ease-in-out;
+                      animation-timing-function: ease-in-out;
+              -webkit-animation-iteration-count: infinite;
+                 -moz-animation-iteration-count: infinite;
+                  -ms-animation-iteration-count: infinite;
+                      animation-iteration-count: infinite;
+               fill: #8c8c8c;
+               opacity: 0.6;
+            }
+
+            .am-weather-fog-delay-1 {
+              -webkit-animation-delay: 0s;
+                 -moz-animation-delay: 0s;
+                  -ms-animation-delay: 0s;
+                      animation-delay: 0s;
+            }
+            .am-weather-fog-delay-2 {
+              -webkit-animation-delay: 0.6s;
+                 -moz-animation-delay: 0.6s;
+                  -ms-animation-delay: 0.6s;
+                      animation-delay: 0.6s;
+            }
+            .am-weather-fog-delay-3 {
+              -webkit-animation-delay: 1.2s;
+                 -moz-animation-delay: 1.2s;
+                  -ms-animation-delay: 1.2s;
+                      animation-delay: 1.2s;
+            }
+
+        ]]></style>
+    </defs>
+
+    <g>
+        <path class="am-weather-fog-line am-weather-fog-delay-1" d="M144.797,47.095c0-4.142-3.358-7.5-7.5-7.5H7.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.142,3.358,7.5,7.5,7.5h129.797
+            C141.439,54.595,144.797,51.237,144.797,47.095z"/>
+        <path class="am-weather-fog-line am-weather-fog-delay-2" d="M209.93,70.405H58.632c-4.142,0-7.5,3.358-7.5,7.5s3.358,7.5,7.5,7.5H209.93c4.142,0,7.5-3.358,7.5-7.5
+            S214.072,70.405,209.93,70.405z"/>
+        <path class="am-weather-fog-line am-weather-fog-delay-3" d="M174.53,116.214c4.142,0,7.5-3.358,7.5-7.5c0-4.142-3.358-7.5-7.5-7.5H22.446c-4.142,0-7.5,3.358-7.5,7.5
+            c0,4.142,3.358,7.5,7.5,7.5H174.53z"/>
+        <path class="am-weather-fog-line am-weather-fog-delay-1" d="M199.441,132.024H47.619c-4.142,0-7.5,3.358-7.5,7.5s3.358,7.5,7.5,7.5h151.822c4.142,0,7.5-3.358,7.5-7.5
+            S203.583,132.024,199.441,132.024z"/>
+        <path class="am-weather-fog-line am-weather-fog-delay-2" d="M125.759,162.835H25.068c-4.142,0-7.5,3.358-7.5,7.5c0,4.142,3.358,7.5,7.5,7.5h100.69c4.142,0,7.5-3.358,7.5-7.5
+            C133.259,166.193,129.901,162.835,125.759,162.835z"/>
+    </g>
+</svg>

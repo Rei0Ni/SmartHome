@@ -3,16 +3,21 @@
 @using SmartHome.Dto.Controller
 @layout MainLayout
 
+<PageTitle>Manage Controllers</PageTitle>
+
 <AuthorizeView>
     <Authorized>
         @if (!context.User.IsInRole("Admin"))
         {
-            @* navigationManager.NavigateTo("/overview"); *@
+            navigationManager.NavigateTo("/overview");
             toastService.Notify(new(ToastType.Warning, IconName.ExclamationTriangle, "Not Authorized", "You are NOT Authorized to be Here"));
         }
         <div class="flex justify-between items-center mb-6 px-4">
             <h3 class="text-2xl font-semibold text-gray-800">Manage Controllers</h3>
-            <button class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+            <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                    style="background-color:var(--primary)"
+                    onmouseover="this.style.opacity='0.85'"
+                    onmouseout="this.style.opacity='1'"
                     @onclick="NavigateToControllerCreation">
                 <i class="fas fa-plus mr-2"></i>New Controller
             </button>
@@ -21,8 +26,11 @@
         @if (controllers.Count == 0)
         {
             <div class="text-center mt-12 p-8 bg-gray-50 rounded-xl">
-                <p class="text-gray-600 mb-4">There are no Controllers here yet.</p>
-                <button class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                <p>There are no Controllers here yet.</p>
+                <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                        style="background-color:var(--primary)"
+                        onmouseover="this.style.opacity='0.85'"
+                        onmouseout="this.style.opacity='1'"
                         @onclick="NavigateToControllerCreation">
                     Create New Controller
                 </button>
@@ -48,7 +56,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@controller.MACAddress</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">@controller.IPAddress</td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                                    <button class="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                    <button class="px-3 py-1.5  text-white rounded-md hover:bg-blue-700 transition-colors" style="background-color:var(--primary)"
                                             @onclick="@(() => navigationManager.NavigateTo($"/edit-controller/{controller.Id.ToString()}"))">
                                         Edit
                                     </button>
@@ -158,10 +166,12 @@
             if (result.IsSuccessStatusCode)
             {
                 controllers.Remove(selectedController);
+                toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selectedController.Name} has been successfully deleted."));
             }
             else
             {
                 // Show error message in toast
+				toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", "Failed to delete the controller."));
             }
             showDeleteModal = false;
             selectedController = null;

@@ -48,10 +48,10 @@ using SmartHome.Application.Interfaces.UserAreas;
 using SmartHome.Application.Hubs;
 using Microsoft.AspNetCore.Builder;
 using SmartHome.Application.Interfaces.Hubs;
-using SmartHome.Application.Interfaces.UserAreas;
 using SmartHome.Application.Interfaces.Logs;
 using Log = Serilog.Log;
 using SmartHome.Application.Interfaces.IPCameras;
+using SmartHome.Application.Interfaces.Weather;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -169,6 +169,7 @@ builder.Services.AddScoped<IDeviceTypeRepository, DeviceTypeRepository>();
 builder.Services.AddScoped<IDeviceFunctionRepository, DeviceFunctionRepository>();
 builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 builder.Services.AddScoped<IIPCamerasRepository, IPCameraRepository>();
+builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<ILogsRepository, LogsRepository>();
 
 // registering services
@@ -187,6 +188,8 @@ builder.Services.AddScoped<IIPCamerasService, IPCameraService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IDeviceDataService, DeviceDataService>();
 builder.Services.AddScoped<ICommandService, CommandService>();
+builder.Services.AddScoped<IOpenWeatherMapService, OpenWeatherMapService>();
+builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<ILogsService, LogsService>();
 
 builder.Services.AddSingleton<IHubState, HubState>();
@@ -197,6 +200,11 @@ builder.Services.AddHttpClient("ControllerClient", o =>
 });
 
 builder.Services.AddHttpClient("IPCameraClient");
+
+builder.Services.AddHttpClient("WeatherClient", o =>
+{
+    o.BaseAddress = new Uri("https://api.openweathermap.org/data/2.5/weather");
+});
 
 builder.Services.AddTransient<MongodbHealthCheck>();
 builder.Services.AddTransient<JwtTokenServiceHealthCheck>();
@@ -256,4 +264,4 @@ using (var scope = app.Services.CreateScope())
     await seedDataService.InitializeAsync();
 }
 
-app.Run("http://*:62062");
+app.Run();

@@ -43,6 +43,8 @@ namespace SmartHome.Domain.Contexts
         public IMongoCollection<IPCamera> IPCameras =>
                 _database.GetCollection<IPCamera>("IPCameras");
 
+        public IMongoCollection<Weather> Weather =>
+                _database.GetCollection<Weather>("Weather");
         public IMongoCollection<Log> Logs =>
                 _database.GetCollection<Log>("Logs");
     }

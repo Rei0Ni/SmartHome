@@ -57,18 +57,36 @@
         
     </div>
 
-    <!-- Devices Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
-        <!-- to control # of Devices -->
-        @foreach(var device in AreaModel.AreaDevices){
-            if(device.DeviceType.Type == DeviceTypes.Lamp){
-                <Lamp DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
+    @if (AreaModel.AreaDevices.Count <= 0)
+    {
+        <div class="flex items-center justify-center">
+            <span>No Devicecs Here Yet.</span>
+        </div>
+    }
+    else
+    {
+        <!-- Devices Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-2">
+            <!-- to control # of Devices -->
+            @foreach (var device in AreaModel.AreaDevices)
+            {
+                if (device.DeviceType.Type == DeviceTypes.Lamp)
+                {
+                    <Lamp DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
+                }
+                else if (device.DeviceType.Type == DeviceTypes.FAN)
+                {
+                    <Fan DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
+                }
             }
-            else if (device.DeviceType.Type == DeviceTypes.FAN){
-                <Fan DeviceModel="device" ControllerId="@AreaModel.ControllerId" />
-            }
-        }
-    </div>
+
+			@foreach (var camera in AreaModel.AreaCameras)
+			{
+				<IPCamera CameraModel="camera" />
+			}
+        </div>
+    }
+    
 </div>
 
 @code {

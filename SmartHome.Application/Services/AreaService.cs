@@ -14,6 +14,7 @@ using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Interfaces.UserAreas;
 using SmartHome.Domain.Entities;
 using Log = Serilog.Log;
+using SmartHome.Dto.Controller;
 
 namespace SmartHome.Application.Services
 {
@@ -128,8 +129,18 @@ namespace SmartHome.Application.Services
         public async Task<List<AreaDto>> GetAllAreas()
         {
             var areas = await _areaRepository.GetAllAreas();
-            var getAreaDtos = _mapper.Map<List<AreaDto>>(areas);
-            return getAreaDtos;
+            var controllers = await _controllerRepository.GetControllers();
+            
+            var AreaDtos = _mapper.Map<List<AreaDto>>(areas);
+            foreach (var area in AreaDtos)
+            {
+                var controller = controllers.FirstOrDefault(x => x.Areas.Contains(area.Id));
+                if (controller != null)
+                {
+                    area.Controller = _mapper.Map<ControllerDto>(controller);
+                }
+            }
+            return AreaDtos;
         }
 
         public async Task UpdateArea(UpdateAreaDto updateAreaDto)
@@ -153,6 +164,9 @@ namespace SmartHome.Application.Services
                 Log.Error("Area with ID: {Id} not found", updateAreaDto.Id);
                 throw new KeyNotFoundException(nameof(updateAreaDto.Id));
             }
+
+            area.Name = updateAreaDto.Name;
+            area.ControllerId = updateAreaDto.ControllerId;
 
             await _areaRepository.UpdateArea(area);
             Log.Information("Area updated successfully with ID: {Id}", updateAreaDto.Id);

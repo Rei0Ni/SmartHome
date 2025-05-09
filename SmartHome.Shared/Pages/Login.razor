@@ -7,7 +7,7 @@
 <AuthorizeView>
     <NotAuthorized>
         <div class="logoSmartHome">
-            <img src="_content/SmartHome.Shared/imgs/logoTest2.png" alt="logo" />
+            <img src="_content/SmartHome.Shared/imgs/logotest2.svg" width="120"  alt="logo" />
         </div>
 
         <div class="text">
@@ -19,7 +19,7 @@
             <DataAnnotationsValidator />
 
             <div class="data">
-                <input type="text" class="text-black" placeholder="username" @bind="LoginModel.Username">
+                <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 valid" placeholder="username" @bind="LoginModel.Username">
                 @* @if (!string.IsNullOrEmpty(usernameErrorMessage)) *@
                 @* { *@
                 @*     <p class="error-message">@usernameErrorMessage</p> *@
@@ -31,7 +31,7 @@
                 <input type="@(showPassword ? "text" : "password")"
                 placeholder="password"
                 @bind="LoginModel.Password"
-                class="w-full pl-3 pr-10 py-2 border rounded-lg focus:outline-none focus:border-blue-500 text-black">
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 valid">
 
                 <i class="absolute right-4 top-4 -translate-y-1/2 text-gray-400 cursor-pointer
               fas @(showPassword ? "fa-eye-slash" : "fa-eye")"

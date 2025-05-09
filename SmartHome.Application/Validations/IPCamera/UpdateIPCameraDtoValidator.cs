@@ -24,9 +24,6 @@ namespace SmartHome.Application.Validations.IPCamera
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Password is required.")
                 .MaximumLength(50).WithMessage("Password must not exceed 50 characters.");
-            RuleFor(x => x.StreamUrl)
-                .NotEmpty().WithMessage("Stream URL is required.")
-                .Matches(@"^(http|https)://").WithMessage("Stream URL must start with http:// or https://.");
             RuleFor(x => x.AreaId)
                 .NotEmpty().WithMessage("Area ID is required.")
                 .Must(x => Guid.TryParse(x.ToString(), out _)).WithMessage("Invalid Area ID.");
