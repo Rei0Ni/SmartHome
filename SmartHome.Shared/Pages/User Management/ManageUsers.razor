@@ -92,10 +92,10 @@
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
         <div class="bg-white rounded-lg p-6 max-w-xs w-full mx-4">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold">Confirm Deletion</h3>
-                <button class="text-gray-500 hover:text-gray-700"
-                        @onclick="CloseDeleteModal">
-                    &times;
+                <h3 class="text-lg font-semibold m-0">Confirm Deletion</h3>
+                <button class="text-gray-500 hover:text-gray-700 flex items-center gap-2"
+                       @onclick="CloseDeleteModal">
+                    <i class="fas fa-x text-md text-black pe-2"></i>
                 </button>
             </div>
             <p class="mb-6 text-gray-600">Are you sure you want to delete @selectedUser?.Username?</p>

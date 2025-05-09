@@ -19,7 +19,7 @@ namespace SmartHome.API.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetLogs()
+        public async Task<IActionResult> GetLogs()
         {
             var userId = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
@@ -29,7 +29,7 @@ namespace SmartHome.API.Controllers
 
             if (HttpContext.User.IsInRole("Admin"))
             {
-                var logs = _logsService.GetLogsAsync(1, 25);
+                var logs = await _logsService.GetLogsAsync(1, 25);
                 if (logs == null)
                 {
                     return NotFound("No logs found");
@@ -38,7 +38,7 @@ namespace SmartHome.API.Controllers
             }
             else
             {
-                var logs = _logsService.GetLogsByUserAsync(new Guid(userId), 1, 25);
+                var logs = await _logsService.GetLogsByUserAsync(new Guid(userId), 1, 25);
                 if (logs == null)
                 {
                     return NotFound("No logs found for the logged in User");
