@@ -3,90 +3,115 @@
 @layout MainLayout
 
 @using System
+@using SmartHome.Dto.Log
+@using Enums = SmartHome.Enum
 
 <div class="p-2 sm:p-6 bg-gray-100 min-h-screen">
     <!-- Filter Buttons -->
-    <div class="flex flex-wrap gap-3 sm:space-x-4 sm:flex-nowrap mb-6 justify-center sm:justify-start">
-        @foreach (var type in Enum.GetValues<LogType>())
+    <div class="flex flex-wrap gap-2 sm:space-x-4 sm:flex-nowrap mb-6 justify-center sm:justify-start">
+        @foreach (var type in Enum.GetValues<Enums.LogLevel>())
         {
-            <button class="px-4 py-2 rounded-full shadow text-sm sm:text-base transition-all duration-200
-                       @(SelectedType == type ? ActiveButtonClass(type) : InactiveButtonClass(type))"
-                    @onclick="() => FilterLogs(type)">
+            <button class="px-4 py-2 rounded-full shadow-md text-sm sm:text-base transition-all duration-200
+                              @(SelectedType == type ? ActiveButtonClass(type) : InactiveButtonClass(type))"
+                    @onclick="() => ChangeLogLevel(type)">
                 @type
             </button>
         }
     </div>
 
-    <!-- Log Cards -->
-    <div class="space-y-4 bg-white p-4 rounded-xl shadow-md border">
-        @foreach (var log in FilteredLogs)
-        {
-            <div class="bg-gray-50 rounded-lg shadow-sm p-4 border">
-                <div class="text-gray-800 font-medium text-sm sm:text-base">@log.Message</div>
-                <div class="text-xs sm:text-sm text-gray-600 mt-1">
-                    by User: <span class="font-semibold">@log.User</span>
-                </div>
-                <div class="text-xs text-gray-500 text-right mt-2">@log.TimeAgo</div>
-            </div>
-        }
-    </div>
-</div>
+    <!-- Log Cards -->  
+    <div class="space-y-4 bg-white p-4 rounded-xl shadow-md border transition-opacity duration-500"  
+        style="opacity: @(IsTransitioning ? 0 : 1);">  
+        @if (FilteredLogs.Any())  
+        {  
+            @foreach (var log in FilteredLogs)  
+            {  
+                <div class="bg-gray-50 rounded-lg shadow-sm p-4 border">  
+                    <div class="text-gray-800 font-medium text-sm sm:text-base">@log.Message</div>  
+                    <div class="text-xs sm:text-sm text-gray-600 mt-1">  
+                        Device: <span class="font-semibold">@log.DeviceName</span> | Area: <span class="font-semibold">@log.AreaName</span>  
+                    </div>  
+                    <div class="text-xs sm:text-sm text-gray-600 mt-1">  
+                        by User: <span class="font-semibold">@log.UserName</span>  
+                    </div>  
+                    <div class="text-xs text-gray-500 text-right mt-2">@log.Timestamp.ToString("g")</div>  
+                </div>  
+            }  
+        }  
+        else  
+        {  
+            <div class="text-center text-gray-500 py-4">No logs found.</div>  
+        }  
+    </div>  
+</div>  
 
 @code {
-    enum LogType
-    {
-        Actions,
-        Errors,
-        Warning
-    }
+    List<LogDto> AllLogs = new();
+    List<LogDto> FilteredLogs = new();
+    Enums.LogLevel SelectedType = Enums.LogLevel.Info;
+    bool IsTransitioning = false;
 
-    class LogEntry
-    {
-        public string Message { get; set; }
-        public string User { get; set; }
-        public string TimeAgo { get; set; }
-        public LogType Type { get; set; }
-    }
+    @inject HttpClient Http
 
-    List<LogEntry> AllLogs = new()
+    protected override async Task OnInitializedAsync()
     {
-        new LogEntry { Message = "Lamp in Living Room Turned on", User = "Ahmed", TimeAgo = "2 hours ago", Type = LogType.Actions },
-        new LogEntry { Message = "Failed to connect to thermostat", User = "System", TimeAgo = "3 hours ago", Type = LogType.Errors },
-        new LogEntry { Message = "Battery low in sensor", User = "System", TimeAgo = "5 hours ago", Type = LogType.Warning },
-        new LogEntry { Message = "Fan turned off", User = "Fatma", TimeAgo = "10 minutes ago", Type = LogType.Actions }
-    };
-
-    List<LogEntry> FilteredLogs = new();
-    LogType SelectedType = LogType.Actions;
-
-    protected override void OnInitialized()
-    {
+        await LoadLogsAsync();
         FilterLogs(SelectedType);
     }
 
-    void FilterLogs(LogType type)
+    async Task LoadLogsAsync()
     {
-        SelectedType = type;
-        FilteredLogs = AllLogs.Where(log => log.Type == type).ToList();
+        try
+        {
+            var result = await ApiService.GetAsync("api/logs");
+            var response = await result.Content.ReadFromJsonAsync<List<LogDto>>();
+
+            if (response != null)
+            {
+                AllLogs = response;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching logs: {ex.Message}");
+        }
     }
 
-    string ActiveButtonClass(LogType type) =>
-        type switch
-        {
-            LogType.Actions => "bg-gray-800 text-white",
-            LogType.Errors => "bg-red-500 text-white",
-            LogType.Warning => "bg-yellow-400 text-black",
-            _ => ""
-        };
+    async Task ChangeLogLevel(Enums.LogLevel type)
+    {
+        IsTransitioning = true;
+        await Task.Delay(300); // Delay for animation
+        FilterLogs(type);
+        IsTransitioning = false;
+    }
 
-    string InactiveButtonClass(LogType type) =>
-        type switch
-        {
-            LogType.Actions => "bg-gray-300 text-gray-800",
-            LogType.Errors => "bg-red-300 text-white",
-            LogType.Warning => "bg-yellow-200 text-yellow-900",
-            _ => ""
-        };
+    void FilterLogs(Enums.LogLevel type)  
+    {  
+       SelectedType = type;  
+       FilteredLogs = AllLogs.Where(log => log.Level == type)  
+                             .OrderByDescending(log => log.Timestamp)  
+                             .ToList();  
+    }
+
+    string ActiveButtonClass(Enums.LogLevel type) =>
+       type switch
+       {
+           Enums.LogLevel.Info => "bg-blue-600 text-white hover:bg-blue-700",
+           Enums.LogLevel.Error => "bg-red-600 text-white hover:bg-red-700",
+           Enums.LogLevel.Warning => "bg-yellow-500 text-black hover:bg-yellow-600",
+           Enums.LogLevel.Critical => "bg-gray-700 text-white hover:bg-gray-800",
+           _ => ""
+       };
+
+    string InactiveButtonClass(Enums.LogLevel type) =>
+       type switch
+       {
+           Enums.LogLevel.Info => "bg-blue-200 text-blue-800 hover:bg-blue-300",
+           Enums.LogLevel.Error => "bg-red-200 text-red-800 hover:bg-red-300",
+           Enums.LogLevel.Warning => "bg-yellow-200 text-yellow-900 hover:bg-yellow-300",
+           Enums.LogLevel.Critical => "bg-gray-300 text-gray-800 hover:bg-gray-400",
+           _ => ""
+       };
 }
 
 

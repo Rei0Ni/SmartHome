@@ -44,19 +44,19 @@ namespace SmartHome.API.Controllers
             }
             catch (SocketException)
             {
-                await _logsService.AddLogAsync("Controller is down or not responding", command.Devices[0].DeviceId, new Guid(userId!), command.AreaId, Enum.LogLevel.Critical);
+                await _logsService.AddLogAsync("Controller is down or not responding", command.Devices[0].DeviceId, new Guid(userId!), command.AreaId, Enum.LogLevel.Error);
 
                 return StatusCode(StatusCodes.Status503ServiceUnavailable, "Controller is down or not responding");
             }
             catch (HttpRequestException ex) when (ex.InnerException is SocketException)
             {
-                await _logsService.AddLogAsync("Controller is down or not responding", command.Devices[0].DeviceId, new Guid(userId!), command.AreaId, Enum.LogLevel.Critical);
+                await _logsService.AddLogAsync("Controller is down or not responding", command.Devices[0].DeviceId, new Guid(userId!), command.AreaId, Enum.LogLevel.Error);
 
                 return StatusCode(StatusCodes.Status504GatewayTimeout, "Controller did not respond in time");
             }
             catch (TaskCanceledException)
             {
-                await _logsService.AddLogAsync("Controller is down or not responding, The request timed out.", command.Devices[0].DeviceId, new Guid(userId!), command.AreaId, Enum.LogLevel.Critical);
+                await _logsService.AddLogAsync("Controller is down or not responding, The request timed out.", command.Devices[0].DeviceId, new Guid(userId!), command.AreaId, Enum.LogLevel.Error);
 
                 return StatusCode(StatusCodes.Status408RequestTimeout, "The request timed out");
             }
