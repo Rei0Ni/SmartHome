@@ -52,6 +52,7 @@ using SmartHome.Application.Interfaces.Logs;
 using Log = Serilog.Log;
 using SmartHome.Application.Interfaces.IPCameras;
 using SmartHome.Application.Interfaces.Weather;
+using SmartHome.Application.Interfaces.ESPConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -191,12 +192,23 @@ builder.Services.AddScoped<ICommandService, CommandService>();
 builder.Services.AddScoped<IOpenWeatherMapService, OpenWeatherMapService>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<ILogsService, LogsService>();
+builder.Services.AddScoped<IESPConfigService, ESPConfigService>();
 
 builder.Services.AddSingleton<IHubState, HubState>();
 
 builder.Services.AddHttpClient("ControllerClient", o =>
 {
     o.Timeout = TimeSpan.FromSeconds(2);
+});
+
+builder.Services.AddHttpClient("ESPConfigClient", o =>
+{
+    o.Timeout = TimeSpan.FromSeconds(2);
+});
+
+builder.Services.AddHttpClient("WeatherClient", o =>
+{
+    o.BaseAddress = new Uri("https://api.openweathermap.org/data/2.5/weather");
 });
 
 builder.Services.AddHttpClient("IPCameraClient");

@@ -78,6 +78,7 @@ namespace SmartHome.Application.Services
             await _areaRepository.CreateArea(newArea);
 
             Controller.Areas.Add(newArea.Id);
+            Controller.NeedsReconfiguration = true;
 
             await _controllerRepository.UpdateController(Controller);
 
