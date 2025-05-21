@@ -39,6 +39,10 @@ builder.Services.AddScoped<IHubService, HubService>();
 builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
 builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
 builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
+builder.Services.AddSingleton<INetworkMonitor, NetworkMonitor>();
+builder.Services.AddSingleton<IHostStatusService, HostStatusService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
+
 
 builder.Services.AddBlazorBootstrap();
 builder.Services.AddSingleton<RefreshService>();

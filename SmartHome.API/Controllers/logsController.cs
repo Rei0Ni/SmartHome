@@ -29,7 +29,7 @@ namespace SmartHome.API.Controllers
 
             if (HttpContext.User.IsInRole("Admin"))
             {
-                var logs = await _logsService.GetLogsAsync(1, 25);
+                var logs = await _logsService.GetLogsAsync();
                 if (logs == null)
                 {
                     return NotFound("No logs found");
@@ -38,7 +38,7 @@ namespace SmartHome.API.Controllers
             }
             else
             {
-                var logs = await _logsService.GetLogsByUserAsync(new Guid(userId), 1, 25);
+                var logs = await _logsService.GetLogsByUserAsync(new Guid(userId));
                 if (logs == null)
                 {
                     return NotFound("No logs found for the logged in User");

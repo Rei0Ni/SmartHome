@@ -24,6 +24,12 @@ namespace SmartHome.App.Services
         {
             try
             {
+                // Ensure PrimaryHost has the correct port  
+                PrimaryHost = ReplaceOrAppendPort(PrimaryHost, "62061");
+
+                // Ensure SecondaryHost has the correct port  
+                SecondaryHost = ReplaceOrAppendPort(SecondaryHost, "62061");
+
                 await SecureStorage.SetAsync(key: _primaryHostKey, value: PrimaryHost);
                 await SecureStorage.SetAsync(key: _secondaryHostKey, value: SecondaryHost);
                 return true;
@@ -32,6 +38,13 @@ namespace SmartHome.App.Services
             {
                 return false;
             }
+        }
+
+        private string ReplaceOrAppendPort(string host, string port)
+        {
+            var uriBuilder = new UriBuilder(host);
+            uriBuilder.Port = int.Parse(port);
+            return uriBuilder.ToString();
         }
     }
 }

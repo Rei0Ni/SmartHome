@@ -33,7 +33,7 @@ namespace SmartHome.Web.Services
         {
             if (_hubConnection == null)
             {
-                var hubUrl = $"https://{_configuration["MainHost"]}:62061" + endpointPath;
+                var hubUrl = $"https://{_configuration["MainHost"]}:62061/" + endpointPath;
 
                 string? accessToken = await _jwtStorageService.GetTokenAsync(); // Get token using the injected service
 

@@ -1,5 +1,48 @@
-﻿html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+﻿:root {
+    /* Material 3 Palette */
+    --primary: #6750A4;
+    --on-primary: #FFFFFF;
+    --secondary: #625B71;
+    --on-secondary: #FFFFFF;
+    --background: #FFFBFE;
+    --surface: #FFFFFF;
+    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1) );
+    --on-surface: #1C1B1E;
+    --error: #B3261E;
+    --on-error: #FFFFFF;
+    --body-light: #F3F2FD;
+    /* Menu on mobile */
+    --menu-bg: #F3F2FD;
+    --menubar-color: #625871;
+    /* Fan-specific Colors */
+    --fan-card-bg-on: #F9FFF4; /* Card background when fan is on */
+    --fan-card-bg-off: #fbfbfb; /* Card background when fan is off */
+    --fan-on-stroke: #808080; /* Fan stroke color when on */
+    --fan-off-stroke: var(--fan-indicator-on); /* Fan stroke color when off */
+    --fan-slider-thumb-color: var(--fan-indicator-on); /* Slider thumb color */
+    --fan-indicator-on: #059212; /* Indicator circle color when on */
+    --fan-indicator-off: rgb(128,128,128); /* Indicator circle color when off */
+    /* Lamp-specific Colors */
+    --lamp-card-bg-on: #FFFDEB; /* Card background when lamp is on */
+    --lamp-card-bg-off: #FBFBFB; /* Card background when lamp is off */
+    --lamp-indicator-on: #FBB03B; /* Indicator circle color when lamp is on */
+    --lamp-indicator-off: rgb(128,128,128); /* Indicator circle color when lamp is off */
+    /* IPCamera-specific Colors */
+    --ipcamera-card-bg-on: #ECF8F5; /* Card background when IPCamera is on */
+    --ipcamera-card-bg-off: #FBFBFB; /* Card background when IPCamera is off */
+}
+
+html, body {
+    font-family: "Maven Pro", sans-serif !important;
+    /*        font-family: "Titillium Web", sans-serif !important;*/
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+    user-select: none;
+    background-color: var(--body-light) !important;
+    height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
 a, .btn-link {
@@ -82,5 +125,66 @@ h1:focus {
 
     .flex-column, .navbar-brand {
         padding-left: env(safe-area-inset-left);
+    }
+}
+
+/* Loader lamp swing animation */
+.loader {
+    width: 4px;
+    height: 86px;
+    background: #ddd;
+    animation: shake 1s linear infinite alternate, lightup 1s linear infinite;
+    transform-origin: top center;
+    margin-bottom: 2ex;
+    position: relative;
+}
+
+    /* Lamp cap — should be on top */
+    .loader::before {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 100%;
+        transform: translateX(-50%);
+        width: 32px;
+        height: 16px;
+        box-sizing: border-box;
+        border: 5px solid #120126;
+        border-top: none;
+        border-radius: 0 0 20px 20px;
+    }
+
+    /* Lamp dome — placed just below cap */
+    .loader::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 64px;
+        height: 32px;
+        border-radius: 50px 50px 0 0;
+        background: #ddd;
+        z-index: 1;
+    }
+
+/* Swinging animation */
+@keyframes shake {
+    0% {
+        transform: rotate(10deg)
+    }
+
+    100% {
+        transform: rotate(-10deg)
+    }
+}
+
+@keyframes lightup {
+    0%,20%, 40% {
+        opacity: 0
+    }
+
+    10%, 30%, 50%, 100% {
+        opacity: 1
     }
 }

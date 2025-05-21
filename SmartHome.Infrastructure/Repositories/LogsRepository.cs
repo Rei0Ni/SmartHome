@@ -25,12 +25,9 @@ namespace SmartHome.Infrastructure.Repositories
             await _context.Logs.InsertOneAsync(log);
         }
 
-        public async Task<List<Log>> GetLogsAsync(int pageNumber, int pageSize)
+        public async Task<List<Log>> GetLogsAsync()
         {
-            return await _context.Logs.Find(_ => true)
-                .Skip((pageNumber - 1) * pageSize)
-                .Limit(pageSize)
-                .ToListAsync();
+            return await _context.Logs.Find(_ => true).ToListAsync();
         }
 
         public async Task<List<Log>> GetLogsAsync(Guid userId, Guid areaId, int pageNumber, int pageSize)
@@ -69,14 +66,11 @@ namespace SmartHome.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<Log>> GetLogsByUserAsync(Guid userId, int pageNumber, int pageSize)
+        public async Task<List<Log>> GetLogsByUserAsync(Guid userId)
         {
             var filter = Builders<Log>.Filter.Eq(l => l.UserId, userId);
 
-            return await _context.Logs.Find(filter)
-                .Skip((pageNumber - 1) * pageSize)
-                .Limit(pageSize)
-                .ToListAsync();
+            return await _context.Logs.Find(filter).ToListAsync();
         }
     }
 }

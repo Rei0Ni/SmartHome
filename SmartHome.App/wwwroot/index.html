@@ -9,13 +9,28 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="SmartHome.App.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+
 </head>
 
 <body>
 
     <div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div style="
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            ">
+            <div class="loader"></div>
+            <div class="mt-3 text-center">
+                <span class="fw-bold fs-3 text-dark">Smart Home</span>
+            </div>
+        </div>
+        
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -26,5 +41,4 @@
     <script src="_framework/blazor.webview.js" autostart="false"></script>
 
 </body>
-
 </html>

@@ -23,6 +23,8 @@ using Microsoft.AspNetCore.Http;
 using Serilog;
 using Microsoft.AspNetCore.Hosting;
 using Log = Serilog.Log;
+using Microsoft.AspNetCore.Mvc;
+using SmartHome.Dto.Totp;
 
 namespace SmartHome.Application.Services.User
 {
@@ -105,10 +107,10 @@ namespace SmartHome.Application.Services.User
             return await CreateUserWithAreasAsync(dto, Role.Normal_User);
         }
 
-        public async Task<ApiResponse<object>> CreateGuestUserAsync(RegisterUserDto dto)
-        {
-            return await CreateUserWithAreasAsync(dto, Role.Guest);
-        }
+        //public async Task<ApiResponse<object>> CreateGuestUserAsync(RegisterUserDto dto)
+        //{
+        //    return await CreateUserWithAreasAsync(dto, Role.Guest);
+        //}
 
         public async Task<ApiResponse<object>> CreateUserAsync(RegisterUserDto dto, Role role)
         {
@@ -445,33 +447,37 @@ namespace SmartHome.Application.Services.User
             };
         }
 
-        public async Task<ApiResponse<object>> GetProfilePictureAsync(string userId)
+        public async Task<FileStreamResult> GetProfilePictureAsync(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
-                return new ApiResponse<object>
-                {
-                    Status = ApiResponseStatus.Error.ToString(),
-                    Message = "User not found"
-                };
+                throw new Exception("User not found");
             }
 
             if (string.IsNullOrEmpty(user.ProfilePictureUrl))
             {
-                return new ApiResponse<object>
-                {
-                    Status = ApiResponseStatus.Error.ToString(),
-                    Message = "Profile picture not found"
-                };
+                throw new Exception("Profile picture not found");
             }
 
-            return new ApiResponse<object>
+            var files = Directory.EnumerateFiles(ProfilePicturesPath, user.Id + ".*");
+            var filePath = files.FirstOrDefault();
+
+            if (filePath == null || !System.IO.File.Exists(filePath))
             {
-                Status = ApiResponseStatus.Success.ToString(),
-                Message = "Profile picture URL retrieved successfully",
-                Data = new { ProfilePictureUrl = user.ProfilePictureUrl } // return the relative url.
-            };
+                throw new Exception("Profile picture file not found");
+            }
+
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            var contentType = "application/octet-stream"; // Default content type  
+            var extension = Path.GetExtension(filePath).ToLower();
+
+            if (extension == ".jpg" || extension == ".jpeg")
+                contentType = "image/jpeg";
+            else if (extension == ".png")
+                contentType = "image/png";
+
+            return new FileStreamResult(fileStream, contentType);
         }
 
         public async Task<ApiResponse<object>> UpdateProfilePictureAsync(UpdateProfilePictureDto dto, string UserId)
@@ -583,6 +589,36 @@ namespace SmartHome.Application.Services.User
                 Log.Error($"an error happened while Deleting invoice for transaction with id of \"{UserId}\"\n{ex}");
                 return false;
             }
+        }
+        public async Task<ApiResponse<TotpInfoDto>> GetUserTotpDetailsAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return new ApiResponse<TotpInfoDto>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "User not found"
+                };
+            }
+
+            if (string.IsNullOrEmpty(user.TOTPSecret))
+            {
+                return new ApiResponse<TotpInfoDto>
+                {
+                    Status = ApiResponseStatus.Error.ToString(),
+                    Message = "TOTP details not available for this user"
+                };
+            }
+
+            var totpQRUri = _totpService.GenerateQrCodeUrl(user.UserName, user.TOTPSecret);
+
+            return new ApiResponse<TotpInfoDto>
+            {
+                Status = ApiResponseStatus.Success.ToString(),
+                Message = "TOTP details retrieved successfully",
+                Data = new TotpInfoDto{ UserId = user.Id, TotpQRUri = totpQRUri, SecretKey = user.TOTPSecret }
+            };
         }
     }
 }

@@ -1,0 +1,179 @@
+﻿@using SmartHome.Dto.Settings 
+@using Xamarin.Essentials 
+@using System.Threading
+@implements IDisposable
+
+@if (isLoadingSettings)
+{
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Host Settings</h2>
+        <p><em>Loading host settings...</em></p>
+    </div>
+}
+else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
+{
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Host Settings</h2>
+        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+            <span class="font-medium">Error loading host settings:</span> @settingsLoadErrorMessage
+        </div>
+    </div>
+}
+else
+{
+    <EditForm Model="HostSettings" OnValidSubmit="SaveHostSettingsAsync" class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Host Settings</h2>
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-red-600 list-disc ml-4 mb-3" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Primary Hostname</label>
+                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="HostSettings.PrimaryHost" />
+                <ValidationMessage For="@(() => HostSettings.PrimaryHost)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Secondary Hostname</label>
+                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="HostSettings.SecondaryHost" />
+                <ValidationMessage For="@(() => HostSettings.SecondaryHost)" class="text-red-600 text-sm mt-1" />
+            </div>
+        </div>
+        <div class="flex justify-start items-center mt-6">
+            <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 me-4 transition" disabled="@isSaving">
+                @if (isSaving)
+                {
+                    <span class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+                    <span class="ml-2">Saving...</span>
+                }
+                else
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Save</span>
+                }
+            </button>
+            @if (!string.IsNullOrEmpty(SaveStatusMessage))
+            {
+                <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") ml-4">
+                    @SaveStatusMessage
+                </div>
+            }
+        </div>
+    </EditForm>
+}
+
+
+@code {
+    public HostSettings HostSettings { get; set; } = new HostSettings();
+
+    // DevicePlatform devicePlatform = DeviceInfo.Platform; // This line seems unused in the provided logic
+    // bool isMobile = false; // This line also seems unused
+
+    private bool isLoadingSettings = true;
+    private string? settingsLoadErrorMessage;
+
+    private string? SaveStatusMessage;
+    private bool IsSaveSuccess;
+    private bool isSaving = false;
+    private Timer _statusMessageTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoadingSettings = true;
+        settingsLoadErrorMessage = null;
+
+        try
+        {
+            // isMobile = devicePlatform == DevicePlatform.Android || devicePlatform == DevicePlatform.iOS; // If needed
+            var hostnamesTuple = await secureStorageService.GetHostnamesAsync();
+
+            HostSettings.PrimaryHost = hostnamesTuple.Item1 ?? "";
+            HostSettings.SecondaryHost = hostnamesTuple.Item2 ?? "";
+            // await base.OnInitializedAsync(); // Typically not needed unless inheriting from a custom base with async init logic. Removed for clarity unless specified.
+        }
+        catch (Exception ex)
+        {
+            settingsLoadErrorMessage = $"An unexpected error occurred while loading host settings: {ex.Message}";
+            Console.WriteLine($"Error loading host settings: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingSettings = false;
+        }
+    }
+
+    private async Task SaveHostSettingsAsync()
+    {
+        SaveStatusMessage = null;
+        IsSaveSuccess = false;
+        isSaving = true;
+        _statusMessageTimer?.Dispose();
+
+        try
+        {
+            var primaryHostname = HostSettings.PrimaryHost;
+            var secondaryHostname = HostSettings.SecondaryHost;
+            EnsureHttps(ref primaryHostname);
+            EnsureHttps(ref secondaryHostname);
+
+            HostSettings.PrimaryHost = primaryHostname; // Update model with potentially modified values
+            HostSettings.SecondaryHost = secondaryHostname;
+
+            var result = await secureStorageService.SetHostnamesAsync(HostSettings.PrimaryHost, HostSettings.SecondaryHost);
+            if (!result)
+            {
+                // If SetHostnamesAsync returns false, it indicates a failure that might not be an exception.
+                SaveStatusMessage = "Failed to save host settings. Please try again.";
+                IsSaveSuccess = false;
+                Console.WriteLine("secureStorageService.SetHostnamesAsync returned false.");
+            }
+            else
+            {
+                SaveStatusMessage = "Host settings saved successfully.";
+                IsSaveSuccess = true;
+            }
+        }
+        // HttpRequestException might not be directly thrown by secureStorageService unless it's a wrapper for HTTP calls.
+        // Catching general Exception is safer if its behavior is not strictly HTTP.
+        catch (Exception ex)
+        {
+            SaveStatusMessage = $"An unexpected error occurred while saving host settings: {ex.Message}";
+            IsSaveSuccess = false;
+            Console.WriteLine($"Unexpected Error saving host settings: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+            if (!string.IsNullOrEmpty(SaveStatusMessage)) // Only start timer if there's a message
+            {
+                _statusMessageTimer = new System.Threading.Timer(_ =>
+                {
+                    SaveStatusMessage = null;
+                    InvokeAsync(StateHasChanged);
+                    _statusMessageTimer?.Dispose();
+                }, null, 3000, System.Threading.Timeout.Infinite);
+            }
+        }
+    }
+
+    private void EnsureHttps(ref string hostname)
+    {
+        if (!hostname.StartsWith("https://"))
+        {
+            if (hostname.StartsWith("http://"))
+            {
+                hostname = "https://" + hostname.Substring(7);
+            }
+            else
+            {
+                hostname = "https://" + hostname;
+            }
+        }
+    }
+
+    public void Dispose()
+    {
+        _statusMessageTimer?.Dispose();
+    }
+}

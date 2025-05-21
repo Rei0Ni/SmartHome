@@ -7,15 +7,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="EmailTemplates\CriticalTemplate.html" />
+    <None Remove="EmailTemplates\ErrorTemplate.html" />
+    <None Remove="EmailTemplates\InfoTemplate.html" />
+    <None Remove="EmailTemplates\WarningTemplate.html" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AspNetCore.Identity.Mongo" Version="9.1.2" />
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
+    <PackageReference Include="MailKit" Version="4.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.11" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="7.1.2" />
     <PackageReference Include="MQTTnet" Version="5.0.1.1416" />
+    <PackageReference Include="SendGrid" Version="9.29.3" />
     <PackageReference Include="Serilog" Version="4.2.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
 	<PackageReference Include="System.Text.Encodings.Web" Version="8.0.0" />
@@ -25,6 +34,21 @@
     <ProjectReference Include="..\SmartHome.Domain\SmartHome.Domain.csproj" />
     <ProjectReference Include="..\SmartHome.Dto\SmartHome.Dto.csproj" />
     <ProjectReference Include="..\SmartHome.Enum\SmartHome.Enum.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="EmailTemplates\CriticalTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="EmailTemplates\ErrorTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="EmailTemplates\InfoTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="EmailTemplates\WarningTemplate.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

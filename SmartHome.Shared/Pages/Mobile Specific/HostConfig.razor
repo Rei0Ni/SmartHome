@@ -1,91 +1,74 @@
 ﻿@page "/hostconfiguration"
+@using SmartHome.Dto.Settings
 @inject ISecureStorageService SecureStorageService
-@inject NavigationManager NavigationManager
 
-<h3>Host Configuration</h3>
+<EditForm Model="HostSettings" OnValidSubmit="SaveConfigurations">
+    <DataAnnotationsValidator />
+    <div class="text-center mb-4">
+        <h3 class="text-xl font-bold text-sky-400">Host Configuration</h3>
+        <p class="mt-4 text-slate-400">Configure Primary and Secondary Hostnames for Backend Connection.</p>
+    </div>
 
-<p>Please configure the Primary and Secondary Hostnames for API access.</p>
+    <div class="space-y-4">
+        <div>
+            <label for="primaryHostname" class="mb-1">Local Hostname:</label>
+            <InputText type="text" id="primaryHostname"
+                class="block w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg shadow-sm placeholder-slate-500 text-slate-100
+                        focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                placeholder="e.g., 192.168.1.1 or mylocal.dev" @bind-value="HostSettings.PrimaryHost" />
+            <ValidationMessage For="@(() => HostSettings.PrimaryHost)"
+                               class="text-red-600 text-sm mt-1" />
+        </div>
 
-<div class="form-group">
-    <label for="primaryHostname">Local Hostname:</label>
-    <input type="text" id="primaryHostname" class="form-control" placeholder="192.168.1.1" @bind="PrimaryHostname" />
-    @if (PrimaryHostnameError != null)
-    {
-        <div class="text-danger">@PrimaryHostnameError</div>
-    }
-</div>
+        <div>
+            <label for="secondaryHostname" class="mb-1">Secondary Hostname:</label>
+            <InputText type="text" id="secondaryHostname"
+                class="block w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg shadow-sm placeholder-slate-500 text-slate-100
+                        focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+                placeholder="e.g., remote-api.example.com" @bind-value="HostSettings.SecondaryHost" />
+            <ValidationMessage For="@(() => HostSettings.SecondaryHost)"
+                               class="text-red-600 text-sm mt-1" />
+        </div>
+    </div>
 
-<div class="form-group">
-    <label for="secondaryHostname">Secondary Hostname:</label>
-    <input type="text" id="secondaryHostname" class="form-control" placeholder="remote_host.com" @bind="SecondaryHostname" />
-    @if (SecondaryHostnameError != null)
-    {
-        <div class="text-danger">@SecondaryHostnameError</div>
-    }
-</div>
-
-<div class="d-flex justify-content-center mt-2">
-    <button class="btn btn-primary" @onclick="SaveConfigurations">Save Configurations</button>
-</div>
+    <div class="pt-2 flex justify-content-center mt-4">
+        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                style="background-color:var(--primary)">
+            Save Configurations
+        </button>
+    </div>
+</EditForm>
 
 @code {
-    private string PrimaryHostname { get; set; } = "";
-    private string SecondaryHostname { get; set; } = "";
-    private string? PrimaryHostnameError { get; set; }
-    private string? SecondaryHostnameError { get; set; }
+    private HostSettings HostSettings { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         var Hostnames = await SecureStorageService.GetHostnamesAsync();
 
-        PrimaryHostname = Hostnames.Item1 ?? "";
-        SecondaryHostname = Hostnames.Item2 ?? "";
+        HostSettings.PrimaryHost = Hostnames.Item1 ?? "";
+        HostSettings.SecondaryHost = Hostnames.Item2 ?? "";
         await base.OnInitializedAsync();
     }
 
     private async Task SaveConfigurations()
     {
-        if (!ValidateFields())
-        {
-            return;
-        }
 
-        var primaryHostname = PrimaryHostname;
-        var secondaryHostname = SecondaryHostname;
+        var primaryHostname = HostSettings.PrimaryHost;
+        var secondaryHostname = HostSettings.SecondaryHost;
 
         EnsureHttps(ref primaryHostname);
         EnsureHttps(ref secondaryHostname);
 
-        PrimaryHostname = primaryHostname;
-        SecondaryHostname = secondaryHostname;
+        HostSettings.PrimaryHost = primaryHostname;
+        HostSettings.SecondaryHost = secondaryHostname;
 
-        var result = await SecureStorageService.SetHostnamesAsync(PrimaryHostname, SecondaryHostname);
+        var result = await SecureStorageService.SetHostnamesAsync(HostSettings.PrimaryHost, HostSettings.SecondaryHost);
         if (!result)
         {
             return;
         }
-        NavigationManager.NavigateTo("/");
-    }
-
-    private bool ValidateFields()
-    {
-        bool isValid = true;
-        PrimaryHostnameError = null;
-        SecondaryHostnameError = null;
-
-        if (string.IsNullOrWhiteSpace(PrimaryHostname))
-        {
-            PrimaryHostnameError = "Primary Hostname is required.";
-            isValid = false;
-        }
-
-        if (string.IsNullOrWhiteSpace(SecondaryHostname))
-        {
-            SecondaryHostnameError = "Secondary Hostname is required.";
-            isValid = false;
-        }
-
-        return isValid;
+        navigationManager.NavigateTo("/");
     }
 
     private void EnsureHttps(ref string hostname)

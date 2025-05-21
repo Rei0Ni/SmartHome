@@ -1,0 +1,207 @@
+@using SmartHome.Dto.Email
+@using System.Net.Http.Json 
+@using System.Threading 
+@implements IDisposable
+
+@if (isLoadingSettings)
+{
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Email Settings</h2>
+        <p><em>Loading email settings...</em></p>
+    </div>
+}
+else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
+{
+    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Email Settings</h2>
+        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+            <span class="font-medium">Error loading email settings:</span> @settingsLoadErrorMessage
+        </div>
+    </div>
+}
+else
+{
+    <EditForm Model="EmailSettings" OnValidSubmit="SaveEmailSettingsAsync" class="bg-white rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Email Settings</h2>
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-red-600 list-disc ml-4 mb-3" />
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">SMTP Server</label>
+                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.SmtpServer" />
+                <ValidationMessage For="@(() => EmailSettings.SmtpServer)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Port</label>
+                <InputNumber class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.Port" />
+                <ValidationMessage For="@(() => EmailSettings.Port)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Sender Email</label>
+                <InputText type="email" class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.SenderEmail" />
+                <ValidationMessage For="@(() => EmailSettings.SenderEmail)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Sender Name</label>
+                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.SenderName" />
+                <ValidationMessage For="@(() => EmailSettings.SenderName)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Username</label>
+                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.Username" />
+                <ValidationMessage For="@(() => EmailSettings.Username)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div>
+                <label class="block text-sm text-gray-700 mb-1">Password</label>
+                <InputText type="password" class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.Password" />
+                <ValidationMessage For="@(() => EmailSettings.Password)" class="text-red-600 text-sm mt-1" />
+            </div>
+            <div class="flex items-center">
+                <InputCheckbox @bind-Value="EmailSettings.UseSsl" />
+                <label class="block text-sm text-gray-700 mb-1 ms-2">Use SSL</label>
+            </div>
+        </div>
+        <div class="flex justify-start items-center mt-6">
+            <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 me-4 transition" disabled="@isSaving">
+                @if (isSaving)
+                {
+                    <span class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+                    <span class="ml-2">Saving...</span>
+                }
+                else
+                {
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Save</span>
+                }
+            </button>
+            @if (!string.IsNullOrEmpty(SaveStatusMessage))
+            {
+                <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") ml-4">
+                    @SaveStatusMessage
+                </div>
+            }
+        </div>
+    </EditForm>
+}
+
+@code {
+    public UpdateEmailSettingsDto EmailSettings { get; set; } = new UpdateEmailSettingsDto();
+
+    private bool isLoadingSettings = true;
+    private string? settingsLoadErrorMessage;
+
+    private string? SaveStatusMessage;
+    private bool IsSaveSuccess;
+    private bool isSaving = false;
+    private Timer _statusMessageTimer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoadingSettings = true;
+        settingsLoadErrorMessage = null;
+
+        try
+        {
+            var emailSettingsResponse = await ApiService.GetAsync("api/settings/get/email");
+
+            if (emailSettingsResponse.IsSuccessStatusCode)
+            {
+                var emailSettingsContent = await emailSettingsResponse.Content.ReadFromJsonAsync<EmailSettingsDto>();
+                if (emailSettingsContent != null)
+                {
+                    EmailSettings = new UpdateEmailSettingsDto
+                        {
+                            Id = emailSettingsContent.Id,
+                            SmtpServer = emailSettingsContent.SmtpServer,
+                            Port = emailSettingsContent.Port,
+                            SenderEmail = emailSettingsContent.SenderEmail,
+                            SenderName = emailSettingsContent.SenderName,
+                            UseSsl = emailSettingsContent.UseSsl
+                            // Username and Password are not typically loaded for display
+                        };
+                }
+                else
+                {
+                    settingsLoadErrorMessage = "Email settings data is empty or invalid.";
+                    Console.WriteLine(settingsLoadErrorMessage);
+                }
+            }
+            else
+            {
+                settingsLoadErrorMessage = $"Failed to load email settings. Status: {emailSettingsResponse.StatusCode}. Reason: {emailSettingsResponse.ReasonPhrase}";
+                Console.WriteLine(settingsLoadErrorMessage);
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            settingsLoadErrorMessage = $"Network error loading email settings: {httpEx.Message}";
+            Console.WriteLine($"HTTP Error loading email settings: {httpEx.Message}");
+        }
+        catch (System.Text.Json.JsonException jsonEx)
+        {
+            settingsLoadErrorMessage = $"Error parsing email settings data: {jsonEx.Message}";
+            Console.WriteLine($"JSON parsing error for email settings: {jsonEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            settingsLoadErrorMessage = $"An unexpected error occurred while loading email settings: {ex.Message}";
+            Console.WriteLine($"Error loading email settings: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingSettings = false;
+        }
+    }
+
+    private async Task SaveEmailSettingsAsync()
+    {
+        SaveStatusMessage = null;
+        IsSaveSuccess = false;
+        isSaving = true;
+        _statusMessageTimer?.Dispose();
+
+        try
+        {
+            // The original code uses SendAsync, which is fine. Ensure ApiService handles JSON serialization.
+            // If ApiService.SendAsync doesn't automatically serialize EmailSettings to JSON,
+            // you might need new StringContent(JsonSerializer.Serialize(EmailSettings), Encoding.UTF8, "application/json")
+            var updateEmailResult = await ApiService.SendAsync(HttpMethod.Put ,"api/settings/email/update", EmailSettings); // Assuming PutAsync handles JSON
+            updateEmailResult.EnsureSuccessStatusCode();
+
+            SaveStatusMessage = "Email settings saved successfully.";
+            EmailSettings.Username = null; // Clear sensitive fields after successful save
+            EmailSettings.Password = null;
+            IsSaveSuccess = true;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            SaveStatusMessage = $"Error saving email settings: {httpEx.Message} (Status: {httpEx.StatusCode})";
+            IsSaveSuccess = false;
+            Console.WriteLine($"HTTP Error saving email settings: {httpEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            SaveStatusMessage = $"An unexpected error occurred: {ex.Message}";
+            IsSaveSuccess = false;
+            Console.WriteLine($"Unexpected Error saving email settings: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+            _statusMessageTimer = new System.Threading.Timer(_ =>
+            {
+                SaveStatusMessage = null;
+                InvokeAsync(StateHasChanged);
+                _statusMessageTimer?.Dispose();
+            }, null, 3000, System.Threading.Timeout.Infinite);
+        }
+    }
+
+    public void Dispose()
+    {
+        _statusMessageTimer?.Dispose();
+    }
+}

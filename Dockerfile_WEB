@@ -1,0 +1,51 @@
+# Stage 1: Build the application using local NuGet cache
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /source
+
+# Copy the solution file
+# COPY *.sln .
+
+COPY . .
+
+# Remove the SmartHome.App project from the solution
+RUN dotnet sln remove SmartHome.App/SmartHome.App.csproj
+
+# Copy all necessary project files (excluding SmartHome.App)
+# COPY SmartHome.API/*.csproj ./SmartHome.API/
+# COPY SmartHome.Application/*.csproj ./SmartHome.Application/
+# COPY SmartHome.Domain/*.csproj ./SmartHome.Domain/
+# COPY SmartHome.Infrastructure/*.csproj ./SmartHome.Infrastructure/
+# COPY SmartHome.Dto/*.csproj ./SmartHome.Dto/
+# COPY SmartHome.Enum/*.csproj ./SmartHome.Enum/
+# COPY SmartHome.Web/*.csproj ./SmartHome.Web/
+# COPY SmartHome.Shared/*.csproj ./SmartHome.Shared/
+
+# Copy the NuGet.config file if you have one
+# COPY NuGet.config ./
+
+# Copy the NuGet cache into Docker build context (Optional)
+COPY .docker-nuget-cache /root/.nuget/packages
+
+# Restore dependencies using the local cache
+RUN dotnet restore --configfile NuGet.config
+
+# Publish SmartHome.Web
+WORKDIR /source
+RUN dotnet publish "SmartHome.Web/SmartHome.Web.csproj" -c Release -o /app/publish-web --no-restore
+
+# Stage 3: Runtime image for SmartHome.Web
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS web-final
+WORKDIR /app
+
+
+# Copy the CA certificate into the container
+# Make sure ca.crt is in the build context (e.g., next to Dockerfile)
+COPY ca.crt /usr/local/share/ca-certificates/SmartHomeCA.crt
+# Update the OS certificate store to include the new CA cert
+RUN update-ca-certificates
+
+COPY --from=build /app/publish-web .
+EXPOSE 5042
+ENV ASPNETCORE_ENVIRONMENT=Production
+ENV ASPNETCORE_URLS=http://+:5042
+ENTRYPOINT ["dotnet", "SmartHome.Web.dll"]

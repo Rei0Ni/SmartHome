@@ -10,6 +10,6 @@ namespace SmartHome.Enum
     {
         Admin = 0,
         Normal_User = 1,
-        Guest = 2
+        //Guest = 2
     }
 }

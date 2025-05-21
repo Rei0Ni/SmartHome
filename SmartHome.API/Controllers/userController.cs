@@ -1,8 +1,10 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SmartHome.Application.Interfaces.User;
 using SmartHome.Dto;
+using SmartHome.Dto.Totp;
 using SmartHome.Dto.User;
 using SmartHome.Enum;
 
@@ -83,17 +85,17 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
-        [HttpPost("create/guest")]
-        [Authorize(Roles = "Admin,Normal_User")]
-        public async Task<ActionResult<ApiResponse<object>>> CreateGuestUser(RegisterUserDto dto)
-        {
-            var response = await _userService.CreateGuestUserAsync(dto);
-            if (response.Status == "Error")
-            {
-                return BadRequest(response);
-            }
-            return Ok(response);
-        }
+        //[HttpPost("create/guest")]
+        //[Authorize(Roles = "Admin,Normal_User")]
+        //public async Task<ActionResult<ApiResponse<object>>> CreateGuestUser(RegisterUserDto dto)
+        //{
+        //    var response = await _userService.CreateGuestUserAsync(dto);
+        //    if (response.Status == "Error")
+        //    {
+        //        return BadRequest(response);
+        //    }
+        //    return Ok(response);
+        //}
 
         [HttpPost("create")]
         [Authorize(Roles = "Admin")]
@@ -156,30 +158,63 @@ namespace SmartHome.API.Controllers
             return Ok(response);
         }
 
-        [HttpPut("update/profile-picture")]
+        [HttpPost("update/profile-picture")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<object>>> UpdateProfilePicture([FromForm] UpdateProfilePictureDto dto)
+        public async Task<ActionResult<ApiResponse<object>>> UpdateProfilePicture(IFormFile ProfilePicture)
         {
             var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var response = await _userService.UpdateProfilePictureAsync(dto, id);
-            if (response.Status == "Error")
+
+            var dto = new UpdateProfilePictureDto
             {
-                return BadRequest(response);
-            }
+                ProfilePicture = ProfilePicture
+            };
+
+            var response = await _userService.UpdateProfilePictureAsync(dto, id);
+
+            if (response.Status == "Error") return BadRequest(response);
             return Ok(response);
         }
 
         [HttpGet("get/profile-picture")]
         [Authorize]
-        public async Task<ActionResult<ApiResponse<object>>> GetProfilePicture([FromForm] UpdateProfilePictureDto dto)
+        public async Task<IActionResult> GetProfilePicture()
         {
-            var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var response = await _userService.GetProfilePictureAsync(id);
-            if (response.Status == "Error")
+            try
             {
-                return BadRequest(response);
+                var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var response = await _userService.GetProfilePictureAsync(id);
+
+                return File(response.FileStream, response.ContentType);
             }
-            return Ok(response);
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<object>
+                {
+                    Status = "Error",
+                    Message = $"{ex.Message}"
+                });
+            }
+        }
+
+        [HttpGet("get/totp-info")]
+        [Authorize]
+        public async Task<IActionResult> GetTotpInfo()
+        {
+            try
+            {
+                var id = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var totpinfo = await _userService.GetUserTotpDetailsAsync(id);
+                return Ok(totpinfo);
+
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new ApiResponse<TotpInfoDto>
+                {
+                    Status = "Error",
+                    Message = $"{ex.Message}"
+                });
+            }
         }
 
         // DELETE api/<userController>/5

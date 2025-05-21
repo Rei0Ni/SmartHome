@@ -3,39 +3,49 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Security.Cryptography.X509Certificates;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Retry;
-using SmartHome.Shared.Interfaces;
+using SmartHome.Shared.Interfaces; // For IApiService, IHostStatusService, ISecureStorageService, IJwtStorageService
 
 namespace SmartHome.App.Services
 {
+    /// <summary>
+    /// Provides API communication services with fallback mechanisms and error signaling.
+    /// Hostnames are fetched from secure storage on every API request to ensure they are always fresh.
+    /// </summary>
     public class ApiService : IApiService
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly JsonSerializerOptions _jsonOptions;
-        private readonly ISecureStorageService _secureStorageService;
-        private readonly IJwtStorageService _jwtStorageService; // Inject IJwtStorageService
+        private readonly ISecureStorageService _secureStorageService; // Used to fetch hostnames
+        private readonly IJwtStorageService _jwtStorageService;
+        private readonly IHostStatusService _hostStatusService;
+        private readonly INetworkMonitor _networkMonitor; // Assuming this is part of your setup
         private readonly ILogger<ApiService> _logger;
 
-        private string? _currentHostname;
-        private string? _secondaryHostname;
+        // Hostnames are no longer cached as fields; they will be fetched per request.
+        // private string? _primaryHostname;
+        // private string? _secondaryHostname;
 
         private readonly AsyncRetryPolicy<HttpResponseMessage> _retryPolicy;
 
         public ApiService(
             IHttpClientFactory httpClientFactory,
             ISecureStorageService secureStorageService,
-            IJwtStorageService jwtStorageService, // Receive IJwtStorageService in constructor
-            ILogger<ApiService> logger)
+            IJwtStorageService jwtStorageService,
+            ILogger<ApiService> logger,
+            IHostStatusService hostStatusService,
+            INetworkMonitor networkMonitor) // Assuming INetworkMonitor is injected
         {
             _httpClientFactory = httpClientFactory;
-            _secureStorageService = secureStorageService;
-            _jwtStorageService = jwtStorageService; // Assign IJwtStorageService
+            _secureStorageService = secureStorageService; // Keep this for fetching hostnames
+            _jwtStorageService = jwtStorageService;
             _logger = logger;
+            _hostStatusService = hostStatusService;
+            _networkMonitor = networkMonitor; // Assign INetworkMonitor
 
             _jsonOptions = new JsonSerializerOptions
             {
@@ -43,11 +53,12 @@ namespace SmartHome.App.Services
                 PropertyNameCaseInsensitive = true
             };
 
+            // Retry policy configuration (same as before)
             _retryPolicy = Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
                 .WaitAndRetryAsync(
-                    retryCount: 3,
-                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    retryCount: 1, // You had 1 retry, keeping it. Adjust as needed.
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(1),
                     onRetry: (exception, timeSpan, retryAttempt, context) =>
                     {
                         _logger.LogWarning($"Retry #{retryAttempt} due to: {exception.Exception.Message}. Waiting {timeSpan}...");
@@ -55,55 +66,61 @@ namespace SmartHome.App.Services
                 );
         }
 
-        private async Task InitializeHostnamesAsync()
-        {
-            if (string.IsNullOrEmpty(_currentHostname))
-            {
-                var (primaryHostname, secondaryHostname) = await _secureStorageService.GetHostnamesAsync();
-                if (string.IsNullOrEmpty(primaryHostname) || string.IsNullOrEmpty(secondaryHostname))
-                {
-                    _logger.LogWarning("Primary or secondary hostnames are not configured in secure storage. Using default placeholders.");
-                    primaryHostname ??= "http://localhost";
-                    secondaryHostname ??= "http://localhost";
-                }
+        // InitializeHostnamesAsync is no longer needed as hostnames are fetched per request.
+        // public async Task InitializeHostnamesAsync() { ... }
 
-                _currentHostname = primaryHostname;
-                _secondaryHostname = secondaryHostname;
-            }
-        }
-
-        public async Task RefreshHostnamesAsync()
-        {
-            _logger.LogInformation("Refreshing hostnames from secure storage.");
-            _currentHostname = null;
-            _secondaryHostname = null;
-            await InitializeHostnamesAsync();
-            _logger.LogInformation("Hostnames refreshed. Current hostname: {CurrentHostname}", _currentHostname);
-        }
+        // RefreshHostnamesAsync is no longer needed as hostnames are fetched per request.
+        // public async Task RefreshHostnamesAsync() { ... }
 
         private HttpClient CreateHttpClient(string hostname)
         {
-            //var handler = new HttpClientHandler();
-
-            // Trust SSL for the primary host (local server)
-            //if (hostname.StartsWith("https")) // Replace with actual local host
-            //{
-            //    handler.ServerCertificateCustomValidationCallback = (message, cert, chain, sslPolicyErrors) => true;
-            //}
-
             return new HttpClient() { BaseAddress = new Uri(hostname) };
         }
 
-        private async Task<HttpResponseMessage?> ExecuteRequestWithFallbackAsync(Func<HttpClient, Task<HttpResponseMessage?>> requestFunc)
+        /// <summary>
+        /// Executes an HTTP request with a fallback mechanism to a secondary host if the primary fails.
+        /// Hostnames are fetched from secure storage at the start of this method to ensure freshness.
+        /// Signals host configuration errors via IHostStatusService and always returns a non-null HttpResponseMessage.
+        /// </summary>
+        /// <param name="requestFunc">A function that takes an HttpClient and returns the HttpResponseMessage.</param>
+        /// <returns>The HttpResponseMessage from the successful request, or an error response if all hosts fail.</returns>
+        private async Task<HttpResponseMessage> ExecuteRequestWithFallbackAsync(Func<HttpClient, Task<HttpResponseMessage?>> requestFunc)
         {
-            await InitializeHostnamesAsync();
-            if (string.IsNullOrWhiteSpace(_currentHostname) || string.IsNullOrWhiteSpace(_secondaryHostname))
+            // 1. Check Network Status
+            _networkMonitor.ForceUpdateStatus(); // Ensure network status is current
+
+            if (_networkMonitor.CurrentStatus != NetworkStatus.Internet)
             {
-                _logger.LogError("Hostnames are not properly configured.");
-                return default;
+                _logger.LogError("No Internet Connection. Signalling network error.");
+                _hostStatusService.SetNetworkConnectionError(true); // Signal network connection error
+                return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                {
+                    ReasonPhrase = "No Internet Connection"
+                };
+            }
+            else
+            {
+                _hostStatusService.SetNetworkConnectionError(false); // Clear network error if connected
             }
 
-            var primaryHttpClient = CreateHttpClient(_currentHostname); // Custom HttpClient
+            // 2. Fetch Hostnames from Secure Storage on every request
+            var (primaryHostname, secondaryHostname) = await _secureStorageService.GetHostnamesAsync();
+
+            // Handle case where hostnames are not properly configured in storage
+            if (string.IsNullOrWhiteSpace(primaryHostname) || string.IsNullOrWhiteSpace(secondaryHostname))
+            {
+                _logger.LogError("Hostnames are not properly configured in secure storage. Signalling host error.");
+                _hostStatusService.SetHostConfigurationError(true); // Signal the host configuration error
+                return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                {
+                    ReasonPhrase = "Hostnames not configured."
+                };
+            }
+
+            var currentPrimaryHostname = primaryHostname; // Use local variables for clarity
+            var currentSecondaryHostname = secondaryHostname;
+
+            var primaryHttpClient = CreateHttpClient(currentPrimaryHostname);
 
             // Retrieve token and add to headers if available
             var token = await _jwtStorageService.GetTokenAsync();
@@ -114,37 +131,36 @@ namespace SmartHome.App.Services
 
             try
             {
-                if (string.IsNullOrEmpty(_currentHostname))
-                {
-                    _logger.LogWarning("Primary hostname not configured, or already tried.");
-
-                    throw new HttpRequestException();
-                }
-
+                // Attempt request to primary host with retry policy.
                 HttpResponseMessage? response = await _retryPolicy.ExecuteAsync(() => requestFunc(primaryHttpClient) ?? Task.FromResult<HttpResponseMessage?>(null));
                 if (response != null)
                 {
-                    //response.EnsureSuccessStatusCode();
-                    //string jsonResponse = await response.Content.ReadAsStringAsync();
-                    //return JsonSerializer.Deserialize<TResponse>(jsonResponse, _jsonOptions);
+                    // If the response is successful, clear any host error state
+                    if (response.IsSuccessStatusCode)
+                    {
+                        _hostStatusService.SetHostConfigurationError(false); // Clear host config error
+                    }
                     return response;
                 }
 
-                _logger.LogError("Request returned null HttpResponseMessage unexpectedly.");
-                return default;
+                _logger.LogError("Request returned null HttpResponseMessage unexpectedly from primary host.");
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    ReasonPhrase = "Unexpected null response from primary host."
+                };
             }
             catch (HttpRequestException exPrimary)
             {
-                _logger.LogError(exPrimary, "Request to primary host ({PrimaryHost}) failed: {ErrorMessage}. Attempting secondary host.", _currentHostname, exPrimary.Message);
+                _logger.LogError(exPrimary, "Request to primary host ({PrimaryHost}) failed: {ErrorMessage}. Attempting secondary host.", currentPrimaryHostname, exPrimary.Message);
 
-                if (!string.IsNullOrEmpty(_secondaryHostname) && _currentHostname != _secondaryHostname)
+                // Attempt fallback to secondary host
+                if (!string.IsNullOrEmpty(currentSecondaryHostname) && currentPrimaryHostname != currentSecondaryHostname)
                 {
-                    _logger.LogInformation("Switching to secondary host: {SecondaryHostname}", _secondaryHostname);
+                    _logger.LogInformation("Switching to secondary host: {SecondaryHostname}", currentSecondaryHostname);
 
                     var secondaryHttpClient = _httpClientFactory.CreateClient();
-                    secondaryHttpClient.BaseAddress = new Uri(_secondaryHostname); // Secondary uses normal SSL validation
+                    secondaryHttpClient.BaseAddress = new Uri(currentSecondaryHostname);
 
-                    // Retrieve token and add to headers if available for secondary host as well (optional, depending on requirements)
                     if (!string.IsNullOrEmpty(token))
                     {
                         secondaryHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -155,39 +171,60 @@ namespace SmartHome.App.Services
                         HttpResponseMessage? responseSecondary = await _retryPolicy.ExecuteAsync(() => requestFunc(secondaryHttpClient) ?? Task.FromResult<HttpResponseMessage?>(null));
                         if (responseSecondary != null)
                         {
-                            //responseSecondary.EnsureSuccessStatusCode();
-                            //string jsonResponseSecondary = await responseSecondary.Content.ReadAsStringAsync();
-                            //return JsonSerializer.Deserialize<TResponse>(jsonResponseSecondary, _jsonOptions);
+                            if (responseSecondary.IsSuccessStatusCode)
+                            {
+                                _hostStatusService.SetHostConfigurationError(false); // Clear host config error if successful
+                            }
                             return responseSecondary;
                         }
 
                         _logger.LogError("Request to secondary host failed, but no HttpResponseMessage was returned.");
-                        return default;
+                        return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                        {
+                            ReasonPhrase = "Unexpected null response from secondary host."
+                        };
                     }
                     catch (HttpRequestException exSecondary)
                     {
-                        _logger.LogError(exSecondary, "Request to secondary host ({SecondaryHost}) failed: {ErrorMessage}. Both hosts failed.", _secondaryHostname, exSecondary.Message);
-                        return default;
+                        _logger.LogError(exSecondary, "Request to secondary host ({SecondaryHost}) failed: {ErrorMessage}. Both hosts failed.", currentSecondaryHostname, exSecondary.Message);
+                        _hostStatusService.SetHostConfigurationError(true); // Signal error as both hosts failed
+                        return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                        {
+                            ReasonPhrase = "Both primary and secondary hosts failed."
+                        };
                     }
                 }
-                else
+                else // No secondary host, or secondary is same as primary, or already tried.
                 {
                     _logger.LogWarning("Secondary hostname not configured, same as primary, or already tried. Fallback failed.");
-                    return default;
+                    _hostStatusService.SetHostConfigurationError(true); // Signal error as fallback failed
+                    return new HttpResponseMessage(HttpStatusCode.ServiceUnavailable)
+                    {
+                        ReasonPhrase = "Primary host failed, no valid secondary host or fallback failed."
+                    };
                 }
             }
             catch (JsonException exJson)
             {
-                _logger.LogError(exJson, "JSON Deserialization Error for host ({CurrentHost}): {ErrorMessage}", _currentHostname, exJson.Message);
-                return default;
+                _logger.LogError(exJson, "JSON Deserialization Error for host ({CurrentHost}): {ErrorMessage}", currentPrimaryHostname, exJson.Message);
+                _hostStatusService.SetHostConfigurationError(true); // Signal error for deserialization issues too
+                return new HttpResponseMessage(HttpStatusCode.BadRequest)
+                {
+                    ReasonPhrase = "JSON deserialization error."
+                };
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected API Error for host ({CurrentHost}): {ErrorMessage}", _currentHostname, ex.Message);
-                return default;
+                _logger.LogError(ex, "Unexpected API Error for host ({CurrentHost}): {ErrorMessage}", currentPrimaryHostname, ex.Message);
+                _hostStatusService.SetHostConfigurationError(true); // Signal error for unexpected exceptions
+                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
+                {
+                    ReasonPhrase = "An unexpected API error occurred."
+                };
             }
         }
 
+        // Public methods remain the same, as they call ExecuteRequestWithFallbackAsync
         public async Task<HttpResponseMessage> SendAsync<TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default)
         {
             var result = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
@@ -202,13 +239,13 @@ namespace SmartHome.App.Services
                     _ => throw new ArgumentException($"Unsupported HTTP method: {method}", nameof(method))
                 };
             });
-            return result!;
+            return result;
         }
 
         public async Task<HttpResponseMessage> GetAsync(string endpointPath)
         {
-            var result = await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath)! ?? Task.FromResult<HttpResponseMessage>(null)!);
-            return result!;
+            var result = await ExecuteRequestWithFallbackAsync(httpClient => httpClient.GetAsync(endpointPath));
+            return result;
         }
 
         public async Task<HttpResponseMessage> PostAsync<TRequest>(string endpointPath, TRequest requestPayload)
@@ -217,10 +254,23 @@ namespace SmartHome.App.Services
             {
                 var response = await httpClient.PostAsJsonAsync(endpointPath, requestPayload, _jsonOptions);
                 return response;
-
             });
+            return result;
+        }
 
-           return result!;
+        public async Task<HttpResponseMessage> PostAsync(string endpointPath, MultipartFormDataContent content)
+        {
+            var result = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
+            {
+                var response = await httpClient.PostAsync(endpointPath, content);
+                return response;
+            });
+            return result;
+        }
+
+        public Task RefreshHostnamesAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -32,10 +32,20 @@
   <ItemGroup>
     <None Include="wwwroot\ProfilePictures\fa22d8b9-23e1-4a54-b6e1-4eaf27aa658a.jpg" />
   </ItemGroup>
+	
+	
 
   <ItemGroup>
     <ProjectReference Include="..\SmartHome.Application\SmartHome.Application.csproj" />
     <ProjectReference Include="..\SmartHome.Infrastructure\SmartHome.Infrastructure.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+	  <None Include="..\SmartHome.Application\EmailTemplates\**\*.*">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		  <Link>EmailTemplates\%(RecursiveDir)%(Filename)%(Extension)</Link>
+	  </None>
+  </ItemGroup>
+
 
 </Project>

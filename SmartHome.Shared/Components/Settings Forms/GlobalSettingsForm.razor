@@ -1,0 +1,348 @@
+﻿@using SmartHome.Dto.Settings
+@using System.Net.Http.Json
+@using System.Threading
+@using TimeZoneConverter
+@implements IDisposable
+
+<div class="bg-white rounded-xl shadow p-6 mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Global Settings</h2>
+
+    @if (isLoadingSettings)
+    {
+        <p><em>Loading settings...</em></p>
+    }
+    else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
+    {
+        <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+            <span class="font-medium">Error loading settings:</span> @settingsLoadErrorMessage
+        </div>
+    }
+    else
+    {
+        <EditForm Model="@this" OnValidSubmit="SaveSettingsAsync">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-red-600 list-disc ml-4 mb-3" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1" for="systemTimeZone">System Time Zone</label>
+                    @if (isLoadingTimeZones)
+                    {
+                        <InputSelect id="systemTimeZone" class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" @bind-Value="SystemTimeZoneId" disabled>
+                            <option value="">Loading timezones...</option>
+                        </InputSelect>
+                    }
+                    else
+                    {
+                        <InputSelect id="systemTimeZone" class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" @bind-Value="SystemTimeZoneId">
+                            @if (DisplayableTimeZones.Count == 0 && !string.IsNullOrEmpty(timeZoneLoadErrorMessage))
+                            {
+                                <option value="">@timeZoneLoadErrorMessage</option>
+                            }
+                            else if (DisplayableTimeZones.Count == 0)
+                            {
+                                <option value="">No timezones found</option>
+                            }
+                            @foreach (var tzItem in DisplayableTimeZones)
+                            {
+                                <option value="@tzItem.IanaId">@tzItem.DisplayText</option>
+                            }
+                        </InputSelect>
+                    }
+                    @if (!isLoadingTimeZones && !string.IsNullOrEmpty(timeZoneLoadErrorMessage) && DisplayableTimeZones.Any())
+                    {
+                        <p class="text-red-500 text-xs mt-1">@timeZoneLoadErrorMessage</p>
+                    }
+                </div>
+
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1" for="globalTheme">Global Theme</label>
+                    <InputSelect id="globalTheme" class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" @bind-Value="GlobalTheme">
+                        <option value="Light">Light</option>
+                        <option value="Dark">Dark</option>
+                    </InputSelect>
+                </div>
+            </div>
+
+            <div class="flex justify-start items-center mt-6">
+                <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 transition" disabled="@isSaving">
+                    @if (isSaving)
+                    {
+                        <span class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+                        <span class="ml-2">Saving...</span>
+                    }
+                    else
+                    {
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>Save</span>
+                    }
+                </button>
+                @if (!string.IsNullOrEmpty(SaveStatusMessage))
+                {
+                    <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") ml-4">
+                        @SaveStatusMessage
+                    </div>
+                }
+            </div>
+        </EditForm>
+    }
+</div>
+
+@code {
+    // Helper class for the dropdown
+    public class TimeZoneDisplayItem
+    {
+        public string IanaId { get; set; }
+        public string DisplayText { get; set; }
+        public TimeSpan BaseUtcOffset { get; set; }
+    }
+
+    // SystemTimeZoneId will store the selected IANA ID.
+    // Default to a universally recognized IANA ID.
+    public string SystemTimeZoneId { get; set; } = "Etc/UTC";
+    public string GlobalTheme { get; set; } = "Light";
+
+    private List<TimeZoneDisplayItem> DisplayableTimeZones { get; set; } = new();
+    private bool isLoadingSettings = true;
+    private bool isLoadingTimeZones = true;
+    private string? settingsLoadErrorMessage;
+    private string? timeZoneLoadErrorMessage;
+
+    private string? SaveStatusMessage;
+    private bool isSaving = false;
+    private bool IsSaveSuccess;
+    private Timer _statusMessageTimer;
+
+    private string FormatTimeZoneDisplay(TimeZoneInfo timeZone, string ianaIdForDisplay)
+    {
+        var offset = timeZone.BaseUtcOffset;
+        var sign = offset.TotalMinutes >= 0 ? "+" : "-";
+        var hours = Math.Abs(offset.Hours).ToString("D2");
+        var minutes = Math.Abs(offset.Minutes).ToString("D2");
+        // Use timeZone.DisplayName for better readability, and ianaIdForDisplay if DisplayName is too generic
+        return $"{timeZone.DisplayName} ({ianaIdForDisplay})";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        isLoadingSettings = true;
+        isLoadingTimeZones = true; // Will be set to false in LoadTimeZones
+        settingsLoadErrorMessage = null;
+        timeZoneLoadErrorMessage = null;
+
+        LoadTimeZones(); // Synchronous part for populating DisplayableTimeZones and setting initial SystemTimeZoneId
+
+        try
+        {
+            var allSettingsResponse = await ApiService.GetAsync("api/settings/get/all");
+
+            if (allSettingsResponse.IsSuccessStatusCode)
+            {
+                var allSettingsContent = await allSettingsResponse.Content.ReadFromJsonAsync<List<SettingsDto>>();
+                if (allSettingsContent != null)
+                {
+                    var timeZoneSetting = allSettingsContent.FirstOrDefault(s => s.Key == "SystemTimeZone");
+                    if (timeZoneSetting != null && !string.IsNullOrEmpty(timeZoneSetting.Value))
+                    {
+                        string storedTzValue = timeZoneSetting.Value;
+                        // Try to match the stored value directly as an IANA ID
+                        if (DisplayableTimeZones.Any(tz => tz.IanaId.Equals(storedTzValue, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            SystemTimeZoneId = DisplayableTimeZones.First(tz => tz.IanaId.Equals(storedTzValue, StringComparison.OrdinalIgnoreCase)).IanaId;
+                        }
+                        // If not a direct IANA match, try converting it from a Windows ID (if it is one)
+                        else if (TZConvert.TryWindowsToIana(storedTzValue, out string convertedIanaId))
+                        {
+                            if (DisplayableTimeZones.Any(tz => tz.IanaId.Equals(convertedIanaId, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                SystemTimeZoneId = DisplayableTimeZones.First(tz => tz.IanaId.Equals(convertedIanaId, StringComparison.OrdinalIgnoreCase)).IanaId;
+                                Console.WriteLine($"Converted stored Windows TimeZone ID '{storedTzValue}' to IANA '{SystemTimeZoneId}'.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Warning: Stored TimeZoneValue '{storedTzValue}' (Windows) converted to IANA '{convertedIanaId}', but not found in system list. Using component default '{SystemTimeZoneId}'.");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Warning: Loaded SystemTimeZoneValue '{storedTzValue}' is not a known IANA ID and could not be converted from a Windows ID. Using component default '{SystemTimeZoneId}'. The original error from logs ('ypt Standard Time') looks like a corrupted Windows ID.");
+                        }
+                    }
+
+                    var themeSetting = allSettingsContent.FirstOrDefault(s => s.Key == "GlobalTheme");
+                    if (themeSetting != null && !string.IsNullOrEmpty(themeSetting.Value))
+                    {
+                        GlobalTheme = themeSetting.Value;
+                    }
+                }
+            }
+            else
+            {
+                settingsLoadErrorMessage = $"Failed to load settings. Status: {allSettingsResponse.StatusCode}. Reason: {allSettingsResponse.ReasonPhrase}";
+                Console.WriteLine(settingsLoadErrorMessage);
+            }
+        }
+        catch (HttpRequestException httpEx)
+        {
+            settingsLoadErrorMessage = $"Network error loading settings: {httpEx.Message}";
+            Console.WriteLine($"HTTP Error loading settings: {httpEx.Message}");
+        }
+        catch (System.Text.Json.JsonException jsonEx)
+        {
+            settingsLoadErrorMessage = $"Error parsing settings data: {jsonEx.Message}";
+            Console.WriteLine($"JSON parsing error: {jsonEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            settingsLoadErrorMessage = $"An unexpected error occurred while loading settings: {ex.Message}";
+            Console.WriteLine($"Error loading settings: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingSettings = false;
+        }
+    }
+
+    private void LoadTimeZones()
+    {
+        isLoadingTimeZones = true;
+        timeZoneLoadErrorMessage = null;
+        var tempTimeZoneList = new List<TimeZoneDisplayItem>();
+
+        try
+        {
+            IReadOnlyCollection<TimeZoneInfo> systemTimeZones = TimeZoneInfo.GetSystemTimeZones();
+            foreach (var tzInfo in systemTimeZones)
+            {
+                // Try to get IANA ID. On non-Windows, tzInfo.Id is usually already IANA.
+                // On Windows, tzInfo.Id is a Windows ID.
+                // TZConvert.TryGetIanaId handles both cases.
+                if (TZConvert.TryGetTimeZoneInfo(tzInfo.Id, out TimeZoneInfo tz) && !string.IsNullOrEmpty(tz.Id))
+                {
+                    // Avoid adding duplicates if multiple system IDs map to the same IANA ID
+                    if (!tempTimeZoneList.Any(x => x.IanaId == tz.Id))
+                    {
+                        tempTimeZoneList.Add(new TimeZoneDisplayItem
+                            {
+                                IanaId = tz.Id,
+                                DisplayText = FormatTimeZoneDisplay(tzInfo, tz.Id),
+                                BaseUtcOffset = tzInfo.BaseUtcOffset
+                            });
+                    }
+                }
+                else
+                {
+                    // Fallback for systems where TZConvert might not map (rare) or if tzInfo.Id is problematic
+                    // This path is less likely with modern .NET and TZConvert
+                    if (!OperatingSystem.IsWindows() && !tempTimeZoneList.Any(x => x.IanaId == tzInfo.Id)) // Assume tzInfo.Id is IANA on non-Windows
+                    {
+                        tempTimeZoneList.Add(new TimeZoneDisplayItem
+                            {
+                                IanaId = tzInfo.Id, // Use as is
+                                DisplayText = FormatTimeZoneDisplay(tzInfo, tzInfo.Id),
+                                BaseUtcOffset = tzInfo.BaseUtcOffset
+                            });
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Could not determine a stable IANA ID for system timezone: {tzInfo.Id} ({tzInfo.DisplayName}). Skipping.");
+                    }
+                }
+            }
+
+            DisplayableTimeZones = tempTimeZoneList
+                                    .OrderBy(tz => tz.BaseUtcOffset)
+                                    .ThenBy(tz => tz.DisplayText)
+                                    .ToList();
+
+            // Ensure the current SystemTimeZoneId (default or loaded) is valid and exists in our list.
+            // If not, set a new default.
+            if (!DisplayableTimeZones.Any(tz => tz.IanaId.Equals(SystemTimeZoneId, StringComparison.OrdinalIgnoreCase)))
+            {
+                var preferredDefault = DisplayableTimeZones.FirstOrDefault(tz => tz.IanaId.Equals("Africa/Cairo", StringComparison.OrdinalIgnoreCase))
+                                  ?? DisplayableTimeZones.FirstOrDefault(tz => tz.IanaId.Equals("Etc/UTC", StringComparison.OrdinalIgnoreCase))
+                                  ?? DisplayableTimeZones.FirstOrDefault();
+
+                if (preferredDefault != null)
+                {
+                    SystemTimeZoneId = preferredDefault.IanaId;
+                    Console.WriteLine($"SystemTimeZoneId was invalid or not found in DisplayableTimeZones, defaulted to: {SystemTimeZoneId}");
+                }
+                else if (!DisplayableTimeZones.Any()) // No timezones loaded at all
+                {
+                    timeZoneLoadErrorMessage = "No time zones could be loaded.";
+                    SystemTimeZoneId = "Etc/UTC"; // Absolute fallback IANA ID
+                    DisplayableTimeZones.Add(new TimeZoneDisplayItem { IanaId = "Etc/UTC", DisplayText = "UTC", BaseUtcOffset = TimeSpan.Zero });
+                    Console.WriteLine("No timezones loaded, defaulting SystemTimeZoneId to Etc/UTC.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            timeZoneLoadErrorMessage = "Error loading system time zones.";
+            Console.WriteLine($"Error in LoadTimeZones: {ex.Message}");
+            DisplayableTimeZones = new List<TimeZoneDisplayItem> {
+                new TimeZoneDisplayItem { IanaId = "Etc/UTC", DisplayText = "UTC (Error loading others)", BaseUtcOffset = TimeSpan.Zero }
+            };
+            SystemTimeZoneId = "Etc/UTC"; // Fallback
+        }
+        finally
+        {
+            isLoadingTimeZones = false;
+        }
+    }
+
+    private async Task SaveSettingsAsync()
+    {
+        SaveStatusMessage = null;
+        IsSaveSuccess = false;
+        isSaving = true;
+        _statusMessageTimer?.Dispose();
+
+        try
+        {
+            // SystemTimeZoneId now correctly holds an IANA ID
+            var settingsToSave = new List<SettingsDto>
+            {
+                new SettingsDto { Key = "SystemTimeZone", Value = SystemTimeZoneId },
+                new SettingsDto { Key = "GlobalTheme", Value = GlobalTheme }
+            };
+            var saveSettingDto = new SaveSettingsDto { Settings = settingsToSave };
+
+            var saveResult = await ApiService.PostAsync("api/settings/update", saveSettingDto);
+            saveResult.EnsureSuccessStatusCode();
+
+            SaveStatusMessage = "Global Settings Saved Successfully.";
+            IsSaveSuccess = true;
+        }
+        catch (HttpRequestException httpEx)
+        {
+            SaveStatusMessage = $"Error saving settings: {httpEx.Message} (Status: {httpEx.StatusCode})";
+            IsSaveSuccess = false;
+            Console.WriteLine($"HTTP Error saving settings: {httpEx.Message}");
+        }
+        catch (Exception ex)
+        {
+            SaveStatusMessage = $"An unexpected error occurred: {ex.Message}";
+            IsSaveSuccess = false;
+            Console.WriteLine($"Unexpected Error saving settings: {ex.Message}");
+        }
+        finally
+        {
+            isSaving = false;
+            _statusMessageTimer = new System.Threading.Timer(_ =>
+            {
+                SaveStatusMessage = null;
+                InvokeAsync(StateHasChanged);
+                _statusMessageTimer?.Dispose();
+            }, null, 3000, System.Threading.Timeout.Infinite);
+        }
+    }
+
+    public void Dispose()
+    {
+        _statusMessageTimer?.Dispose();
+    }
+}

@@ -6,7 +6,7 @@
              x:Class="SmartHome.App.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <RefreshView x:Name="RefreshContainer" Refreshing="RefreshContainer_Refreshing">
+    <RefreshView x:Name="RefreshContainer" Refreshing="RefreshContainer_Refreshing" RefreshColor="Indigo">
         <BlazorWebView x:Name="blazorWebView" HostPage="wwwroot/index.html">
             <BlazorWebView.RootComponents>
                 <RootComponent Selector="#app" ComponentType="{x:Type shared:Routes}" />

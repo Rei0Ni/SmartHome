@@ -87,6 +87,25 @@ namespace SmartHome.Web.Services
             return response!;
         }
 
+        // --- NEW METHOD FOR SENDING ARBITRARY HTTPCONTENT (like MultipartFormDataContent) ---
+        /// <summary>
+        /// Sends a POST request with arbitrary HttpContent (e.g., MultipartFormDataContent).
+        /// </summary>
+        /// <param name="endpointPath">The API endpoint path.</param>
+        /// <param name="content">The HttpContent to send (e.g., MultipartFormDataContent).</param>
+        /// <returns>The HttpResponseMessage.</returns>
+        public async Task<HttpResponseMessage> PostAsync(string endpointPath, MultipartFormDataContent content)
+        {
+            var result = await ExecuteRequestWithFallbackAsync(async (httpClient) =>
+            {
+                // Use the standard PostAsync overload that takes HttpContent
+                return await httpClient.PostAsync(endpointPath, content);
+            });
+
+            // Ensure result is not null before returning
+            return result ?? new HttpResponseMessage(System.Net.HttpStatusCode.InternalServerError);
+        }
+
         public Task RefreshHostnamesAsync()
         {
             throw new NotImplementedException();

@@ -1,36 +1,49 @@
 ﻿@page "/"
+@using System.Net.NetworkInformation
+@using SmartHome.Shared.Services
 @layout AuthLayout
-@inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthProvider
 @inject IHostConfigurationCheckService HostConfigService
+@inject IHostStatusService hostStatusService
+<PageTitle>Home</PageTitle>
 
 
-<div class="d-flex justify-content-center align-items-center h-full">
-    <div class="align-items-center">
-        <div class="d-flex justify-content-center">
-            <span class="loader"></span>
-        </div>
-        <div class="mt-3 d-flex justify-content-center">
-            <span class="fw-bold fs-3">Smart Home</span>
-        </div>
+
+<div class="flex flex-col justify-center items-center h-full">
+    <div class="flex justify-center">
+        <span class="loader"></span>
+    </div>
+    <div class="mt-3 flex justify-center">
+        <span class="fw-bold fs-3">Smart Home</span>
     </div>
 </div>
 
 @code {
     protected override async Task OnInitializedAsync()
     {
-        // 1. Check host configuration first
-        if (await HostConfigService.ShouldNavigateToConfigurationPageAsync())
+
+        // 1. check device connection in mobile devices
+        NetworkMonitor.ForceUpdateStatus();
+        if (PlatformDetectionService.IsMobile())
         {
-            Navigation.NavigateTo("/hostconfiguration");
+            if (NetworkMonitor.CurrentStatus != NetworkStatus.Internet){
+                hostStatusService.SetNetworkConnectionError(true);
+                navigationManager.NavigateTo("/connectionerror", true);
+            }
+        }
+
+        // 2. Check host configuration first
+        if (await HostConfigService.ShouldNavigateToConfigurationPageAsync() || HostStatusService.HasHostConfigurationError)
+        {
+            navigationManager.NavigateTo("/hostconfiguration", true);
             return;
         }
 
-        // 2. Get auth state through provider
+        // 3. Get auth state through provider
         var authState = await AuthProvider.GetAuthenticationStateAsync();
 
-        // 3. Immediate navigation
-        Navigation.NavigateTo(authState.User.Identity?.IsAuthenticated == true
+        // 4. Immediate navigation
+        navigationManager.NavigateTo(authState.User.Identity?.IsAuthenticated == true
             ? "/overview"
             : "/login");
     }

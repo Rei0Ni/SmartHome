@@ -12,10 +12,13 @@ namespace SmartHome.App
 
             MainPage = new MainPage(httpClientFactory, refreshService);
 
-            Current.On<Microsoft.Maui.Controls.PlatformConfiguration.Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
+            Current!.UserAppTheme = AppTheme.Light;
+            Application.Current.RequestedThemeChanged += (s, e) => { return; };
+
+            Current!.On<Microsoft.Maui.Controls.PlatformConfiguration.Android>().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Resize);
 
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException!;
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)

@@ -59,9 +59,9 @@ namespace SmartHome.Application.Services
             await _logsRepository.AddLogAsync(log);
         }
 
-        public async Task<List<LogDto>> GetLogsAsync(int pageNumber, int pageSize)
+        public async Task<List<LogDto>> GetLogsAsync()
         {
-            var logs = await _logsRepository.GetLogsAsync(pageNumber, pageSize);
+            var logs = await _logsRepository.GetLogsAsync();
             return _mapper.Map<List<LogDto>>(logs);
         }
 
@@ -83,9 +83,9 @@ namespace SmartHome.Application.Services
             return _mapper.Map<List<LogDto>>(logs);
         }
 
-        public async Task<List<LogDto>> GetLogsByUserAsync(Guid userId, int pageNumber, int pageSize)
+        public async Task<List<LogDto>> GetLogsByUserAsync(Guid userId)
         {
-            var logs = await _logsRepository.GetLogsByUserAsync(userId, pageNumber, pageSize);
+            var logs = await _logsRepository.GetLogsByUserAsync(userId);
             return _mapper.Map<List<LogDto>>(logs);
         }
     }

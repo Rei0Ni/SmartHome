@@ -47,5 +47,11 @@ namespace SmartHome.Domain.Contexts
                 _database.GetCollection<Weather>("Weather");
         public IMongoCollection<Log> Logs =>
                 _database.GetCollection<Log>("Logs");
+
+        public IMongoCollection<Setting> Settings =>
+                _database.GetCollection<Setting>("Settings");
+
+        public IMongoCollection<EmailSetting> EmailSettings =>
+                _database.GetCollection<EmailSetting>("EmailSettings");
     }
 }

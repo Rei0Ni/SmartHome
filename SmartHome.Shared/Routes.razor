@@ -1,9 +1,18 @@
-@using SmartHome.Shared.Pages
+﻿@using SmartHome.Shared.Pages
+@using SmartHome.Shared.Pages.Mobile_Specific
+@using SmartHome.Shared.Services
 
 <CascadingAuthenticationState>
     <ErrorBoundary>
         <Router AppAssembly="typeof(AuthLayout).Assembly">
             <Found Context="routeData">
+                @if (HostStatusService.HasHostConfigurationError)
+                {
+                    navigationManager.NavigateTo("/hostconfigerror");
+                }
+                @if (HostStatusService.HasNoNetworkConnectionError){
+                    navigationManager.NavigateTo("/connectionerror");
+                }
                 @if (routeData.PageType == typeof(Pages.Entry))
                 {
                     <RouteView RouteData="@routeData" />
@@ -12,14 +21,12 @@
                 {
                     <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(AuthLayout)">
                         <Authorizing>
-                            <div class="d-flex justify-content-center align-items-center h-full">
-                                <div class="align-items-center">
-                                    <div class="d-flex justify-content-center">
-                                        <span class="loader"></span>
-                                    </div>
-                                    <div class="mt-3 d-flex justify-content-center">
-                                        <span class="fw-bold fs-3">Smart Home</span>
-                                    </div>
+                            <div class="flex flex-col justify-center items-center h-full">
+                                <div class="flex justify-center">
+                                    <span class="loader"></span>
+                                </div>
+                                <div class="mt-3 flex justify-center">
+                                    <span class="fw-bold fs-3">Smart Home</span>
                                 </div>
                             </div>
                         </Authorizing>
@@ -49,3 +56,12 @@
         </Router>
     </ErrorBoundary>
 </CascadingAuthenticationState>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SettingsService.LoadSettingsAsync();
+        await base.OnInitializedAsync();
+    }
+}

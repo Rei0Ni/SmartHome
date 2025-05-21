@@ -15,5 +15,6 @@ namespace SmartHome.Shared.Interfaces
         Task<HttpResponseMessage> SendAsync<TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default);
         Task<HttpResponseMessage> GetAsync(string endpointPath);
         Task<HttpResponseMessage> PostAsync<TRequest>(string endpointPath, TRequest requestPayload);
+        Task<HttpResponseMessage> PostAsync(string endpointPath, MultipartFormDataContent content);
     }
 }

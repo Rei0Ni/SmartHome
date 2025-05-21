@@ -8,6 +8,6 @@ namespace SmartHome.Shared.Interfaces
 {
     public interface IPlatformDetectionService
     {
-        Task<bool> IsMobileAsync();
+        bool IsMobile();
     }
 }

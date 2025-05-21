@@ -14,9 +14,22 @@ namespace SmartHome.Shared.Pages
         public OverviewDto OverviewData { get; set; } = new();
         public OverviewDeviceDto TempratureSensor { get; set; } = new();
         public string CurrentDate { get; set; }
+
+        private bool isLoading = false;
         protected override async Task OnInitializedAsync()
         {
-            CurrentDate = DateTime.Now.ToString("D");
+            isLoading = true;
+
+            await SettingsService.LoadSettingsAsync();
+
+            var SystemTimeZone = await SettingsService.GetSystemTimeZone();
+            UpdateCurrentDate(SystemTimeZone); // Initialize the date
+
+            // Start a timer to update the date every minute
+            var timer = new System.Timers.Timer(10000); // 60 seconds
+            timer.Elapsed += (sender, e) => UpdateCurrentDate(SystemTimeZone);
+            timer.AutoReset = true;
+            timer.Start();
 
             var result = await ApiService.GetAsync("/api/dashboard/overview");
 
@@ -24,8 +37,7 @@ namespace SmartHome.Shared.Pages
 
             OverviewData = response;
 
-
-            await HubService.StartAsync("/wss/overview");
+            await HubService.StartAsync("wss/overview");
 
             HubService.On<OverviewDto>("ReceiveOverviewData", async (data) =>
             {
@@ -56,6 +68,14 @@ namespace SmartHome.Shared.Pages
                     }
                 }
             }
+
+            isLoading = false;
+        }
+
+        private void UpdateCurrentDate(TimeZoneInfo timeZone)
+        {
+            CurrentDate = TimeZoneInfo.ConvertTime(DateTime.UtcNow, timeZone).ToString("f");
+            InvokeAsync(StateHasChanged); // Ensure UI updates
         }
 
         private void HandleRefreshRequested()

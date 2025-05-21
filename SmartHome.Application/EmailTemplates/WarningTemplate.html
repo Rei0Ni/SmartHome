@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+   <meta charset="UTF-8">  
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+   <title>Warning Email</title>  
+   <style>
+       body {
+           font-family: Arial, sans-serif;
+           line-height: 1.6;
+           color: #333;
+           background-color: #fff26a53;
+           margin: 0;
+           padding: 0;
+       }
+
+       .email-container {
+           max-width: 600px;
+           margin: 20px auto;
+           background: #fff;
+           border: 1px solid #E9D502;
+           border-radius: 8px;
+           padding: 20px;
+           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+       }  
+
+       .header {  
+           text-align: center;  
+           margin-bottom: 20px;  
+       }
+
+           .header h1 {
+               margin: 0;
+               font-size: 24px;
+               color: #E9D502;
+           }  
+
+       .content {  
+           font-size: 16px;  
+           color: #000000;  
+       }  
+
+       .footer {  
+           margin-top: 20px;  
+           text-align: center;  
+           font-size: 12px;  
+           color: #888;  
+       }  
+   </style>  
+</head>  
+<body>  
+   <div class="email-container">  
+       <div class="header">  
+           <h1>Warning Notification</h1>  
+       </div>  
+       <div class="content">
+           <!-- Replace this placeholder with the full warning message dynamically -->
+           {{MessageContent}}
+       </div>  
+       <div class="footer">  
+           <p>&copy; 2023 SmartHome. All rights reserved.</p>  
+       </div>  
+   </div>  
+</body>  
+</html>

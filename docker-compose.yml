@@ -6,7 +6,8 @@ services:
       network: host # Use host networking for the API service
       # This is important for the API to bind to the host's network stack
       context: .
-      dockerfile: Dockerfile
+      # Specify the Dockerfile to use for building the API
+      dockerfile: Dockerfile_API
       target: api-final
     restart: unless-stopped # Restart policy
     network_mode: host # to allow direct access to the host network
@@ -44,7 +45,8 @@ services:
     container_name: smarthome-web
     build:
       context: .
-      dockerfile: Dockerfile
+      # Specify the Dockerfile to use for building the Web App
+      dockerfile: Dockerfile_WEB
       target: web-final # Specify the target runtime stage for the Web App
     restart: unless-stopped
     environment:

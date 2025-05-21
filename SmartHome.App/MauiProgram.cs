@@ -41,6 +41,11 @@ namespace SmartHome.App
             builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
             builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
             builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
+            builder.Services.AddScoped<ISettingsService, SettingsService>();
+
+            builder.Services.AddSingleton<IHostStatusService, HostStatusService>();
+            builder.Services.AddSingleton<INetworkMonitor, NetworkMonitor>();
+            builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
 
             builder.Services.AddBlazorBootstrap();
 

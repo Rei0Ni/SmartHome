@@ -144,7 +144,7 @@
         // Assuming the API runs on port 62061 (as in your example)
         // If your API port is different or comes from configuration, adjust this line.
         var apiPort = 62061; // Or get this from configuration: config["ApiSettings:Port"]
-        var builder = new UriBuilder(baseUri.Scheme, baseUri.Host, apiPort, relativeApiPath);
+        var builder = new UriBuilder("https", baseUri.Host, apiPort, relativeApiPath);
         StreamUrl = builder.ToString();
 
         streamError = false; // Reset error state when opening the modal

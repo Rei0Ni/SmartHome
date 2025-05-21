@@ -10,7 +10,7 @@ namespace SmartHome.Dto.User
 {
     public class UpdateProfilePictureDto
     {
-        [Required(ErrorMessage = "The Profile Picture Is Required")]
+        //[Required(ErrorMessage = "The Profile Picture Is Required")]
         public IFormFile ProfilePicture { get; set; }
     }
 }

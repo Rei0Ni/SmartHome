@@ -11,6 +11,10 @@
         "Path": "SmartHome.Web\\SmartHome.Web.csproj",
         "Action": "Start",
         "DebugTarget": "http"
+      },
+      {
+        "Path": "SmartHome.App\\SmartHome.App.csproj",
+        "Action": "Start"
       }
     ]
   }

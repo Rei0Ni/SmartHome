@@ -1,0 +1,115 @@
+﻿@page "/connectionerror"
+@layout ErrorLayout
+@using System.Net.NetworkInformation
+
+<div class="flex flex-col items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" height="60px" viewBox="0 -960 960 960" width="60px" fill="#ef4444">
+        <path d="M800-64.67 412-453.33q-51.67 12.33-95.5 39-43.83 26.66-77.17 61l-70-70.67q35.34-35.33 74-62 38.67-26.67 89.34-47.33l-104-104q-45 22.33-84.84 51.83Q104-556 70-522.67L0-593.33q34.67-35.34 73.5-65.17t80.5-52.83l-89.33-89.34L112-848l736 736-48 47.33Zm-320-60q-38 0-65.67-27.83-27.66-27.83-27.66-65.5 0-38 27.66-65.67Q442-311.33 480-311.33t65.67 27.66Q573.33-256 573.33-218q0 37.67-27.66 65.5Q518-124.67 480-124.67Zm244-232.66q-27.67-27-49.67-44t-55.66-35.34L495.33-560q90.34 4 162.17 39.67 71.83 35.66 133.17 96.33L724-357.33Zm166-165.34q-84.33-81.66-187.83-129.5Q598.67-700 480-700q-31.67 0-60.83 3.5Q390-693 368-686.67l-82.67-82.66q44-14.67 93.5-22.67 49.5-8 101.17-8 140.67 0 264 56.33 123.33 56.34 216 150.34l-70 70.66Z" />
+    </svg>
+
+    <span class="mt-4 text-2xl font-semibold text-gray-800">No Network Connection Available</span>
+
+    <span class="text-sm text-gray-500 mt-2">Please recheck your internet connection.</span>
+
+    <button class="inline-flex items-center mt-6 px-6 py-3 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    style="background-color:var(--primary)"
+            @onclick="CheckNetwork">
+        Retry
+    </button>
+
+    @if (errorMessage != null)
+    {
+        <div class="mt-2 text-red-500">
+            @errorMessage
+        </div>
+    }
+
+    @if (PlatformDetectionService.IsMobile())
+    {
+        <span class="text-sm text-gray-500 mt-4">You can also try to restart the app.</span>
+    }
+</div>
+
+@code {
+    private string errorMessage = "";
+
+    /// <summary>
+    /// Called when the component is initialized.
+    /// Subscribes to network status changes and performs an initial check.
+    /// </summary>
+    protected override void OnInitialized()
+    {
+        // Subscribe to the NetworkStatusChanged event from the injected service.
+        // This allows the component to re-render when the network status changes.
+        NetworkMonitor.NetworkStatusChanged += OnNetworkStatusChanged;
+
+        // Force an initial update of the network status to ensure the UI is correct on load.
+        NetworkMonitor.ForceUpdateStatus();
+    }
+
+    /// <summary>
+    /// Event handler for when the network status changes.
+    /// </summary>
+    /// <param name="sender">The source of the event.</param>
+    /// <param name="e">The new network status.</param>
+    private void OnNetworkStatusChanged(object sender, NetworkStatus e)
+    {
+        // InvokeAsync ensures that the StateHasChanged call happens on the UI thread,
+        // which is necessary for Blazor to re-render the component.
+        InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Handles the click event for the "Retry" button.
+    /// Requests the NetworkMonitor service to re-check the network status.
+    /// </summary>
+    private void CheckNetwork()
+    {
+        NetworkMonitor.ForceUpdateStatus();
+        if (PlatformDetectionService.IsMobile())
+        {
+            if (NetworkMonitor.CurrentStatus == NetworkStatus.Internet) 
+            {
+                navigationManager.NavigateTo("/", false);
+            }
+            else
+            {
+                errorMessage = GetStatusMessage(NetworkMonitor.CurrentStatus);
+            }
+        }
+        else
+        {
+            toastService.Notify(new(ToastType.Danger, IconName.Bug, "Platform Mismatch", "This Functionality is not designed for this Platform"));
+        }
+    }
+
+    /// <summary>
+    /// Returns a user-friendly message based on the given network status.
+    /// </summary>
+    /// <param name="status">The current network status.</param>
+    /// <returns>A string message describing the network status.</returns>
+    private string GetStatusMessage(NetworkStatus status)
+    {
+        return status switch
+        {
+            NetworkStatus.Internet => "Network Connected!",
+            NetworkStatus.LimitedInternet => "Limited Internet Access",
+            NetworkStatus.LocalOnly => "Local Network Only",
+            NetworkStatus.NoConnection => "No Network Connection Available",
+            _ => "Checking Network Status..." // Default for Unknown status
+        };
+    }
+
+    /// <summary>
+    /// Disposes of the component's resources, specifically unsubscribing from the
+    /// NetworkStatusChanged event to prevent memory leaks.
+    /// </summary>
+    public void Dispose()
+    {
+        // Ensure the NetworkMonitor is not null before attempting to unsubscribe.
+        if (NetworkMonitor != null)
+        {
+            NetworkMonitor.NetworkStatusChanged -= OnNetworkStatusChanged;
+        }
+    }
+}

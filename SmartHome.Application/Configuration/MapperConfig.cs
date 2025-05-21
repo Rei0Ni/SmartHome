@@ -14,6 +14,8 @@ using SmartHome.Dto.Device;
 using SmartHome.Dto.Dashboard;
 using SmartHome.Dto.Log;
 using SmartHome.Dto.IPCamera;
+using SmartHome.Dto.Settings;
+using SmartHome.Dto.Email;
 
 namespace SmartHome.Application.Configuration
 {
@@ -64,6 +66,11 @@ namespace SmartHome.Application.Configuration
             
 
             CreateMap<Log, LogDto>().ReverseMap();
+
+            CreateMap<Setting, SettingsDto>().ReverseMap();
+            CreateMap<Setting, SaveSettingsDto>().ReverseMap();
+
+            CreateMap<EmailSetting, EmailSettingsDto>().ReverseMap();
 
             CreateMap<DeviceDto, OverviewDeviceDto>().ReverseMap();
             CreateMap<IPCameraDto, OverviewCameraDto>().ReverseMap();

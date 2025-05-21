@@ -5,30 +5,17 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.JSInterop;
 using SmartHome.Shared.Interfaces;
+using Xamarin.Essentials;
 
 namespace SmartHome.Shared.Services
 {
     public class PlatformDetectionService : IPlatformDetectionService
     {
-        private readonly IJSRuntime _jsRuntime;
+        private DevicePlatform devicePlatform = DeviceInfo.Platform;
 
-        public PlatformDetectionService(IJSRuntime jsRuntime)
+        public bool IsMobile()
         {
-            _jsRuntime = jsRuntime;
-        }
-
-        public async Task<bool> IsMobileAsync()
-        {
-            try
-            {
-                var module = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/platformDetection.js");
-                return await module.InvokeAsync<bool>("isMobile");
-            }
-            catch (Exception ex)
-            {
-                // Log exception if needed
-                return false;
-            }
+            return devicePlatform == DevicePlatform.Android || devicePlatform == DevicePlatform.iOS; // (just for testinmng in windows) || devicePlatform == DevicePlatform.Unknown;
         }
     }
 }

@@ -11,10 +11,10 @@ namespace SmartHome.Application.Interfaces.Logs
     public interface ILogsRepository
     {
         Task AddLogAsync(Log log);
-        Task<List<Log>> GetLogsAsync(int pageNumber, int pageSize);
+        Task<List<Log>> GetLogsAsync();
         Task<List<Log>> GetLogsAsync(Guid userId, Guid areaId, int pageNumber, int pageSize);
         Task<List<Log>> GetLogsByDateRangeAsync(DateTime startDate, DateTime endDate, int pageNumber, int pageSize);
-        Task<List<Log>> GetLogsByUserAsync(Guid userId, int pageNumber, int pageSize);
+        Task<List<Log>> GetLogsByUserAsync(Guid userId);
         Task<List<Log>> GetLogsByDeviceAsync(string deviceId, int pageNumber, int pageSize);
     }
 }

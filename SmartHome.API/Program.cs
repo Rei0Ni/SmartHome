@@ -53,6 +53,9 @@ using Log = Serilog.Log;
 using SmartHome.Application.Interfaces.IPCameras;
 using SmartHome.Application.Interfaces.Weather;
 using SmartHome.Application.Interfaces.ESPConfig;
+using SmartHome.Application.Interfaces.Settings;
+using SmartHome.Infrastructure;
+using SmartHome.Application.Interfaces.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 var config = builder.Configuration;
@@ -172,6 +175,7 @@ builder.Services.AddScoped<IDeviceRepository, DeviceRepository>();
 builder.Services.AddScoped<IIPCamerasRepository, IPCameraRepository>();
 builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<ILogsRepository, LogsRepository>();
+builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 
 // registering services
 builder.Services.Configure<TotpSettings>(builder.Configuration.GetSection("TotpSettings"));
@@ -193,6 +197,8 @@ builder.Services.AddScoped<IOpenWeatherMapService, OpenWeatherMapService>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.AddScoped<ILogsService, LogsService>();
 builder.Services.AddScoped<IESPConfigService, ESPConfigService>();
+builder.Services.AddScoped<ISettingsService, SettingsService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddSingleton<IHubState, HubState>();
 

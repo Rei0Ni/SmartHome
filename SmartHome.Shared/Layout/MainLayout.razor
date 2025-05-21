@@ -75,145 +75,120 @@
                         </nav>
                     </div>
                 </div>
-
-                <!-- Settings at Bottom -->
-                <div class="absolute p-3 bottom-0 left-0 right-0 hover:bg-gray-700 ">
-                    <NavLink href="/Settings" class="@GetNavItemClass("/Settings")">
-                        <i class="fas fa-cog text-xl w-8 @(isCollapsed ? "mx-auto" : "")"></i>
-                        <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Settings</span>
-                    </NavLink>
-                </div>
+                @if (context.User.IsInRole("Admin"))
+                {
+                    <!-- Settings at Bottom -->
+                    <div class="absolute p-2 bottom-0 mb-4 left-0 right-0">
+                        <NavLink href="/settings" class="@GetNavItemClass("/settings")" style="height: 44px;">
+                            <i class="fas fa-cog text-xl @(isCollapsed ? "mx-auto" : "px-1")"></i>
+                            <span class="ml-3 @(isCollapsed ? "hidden" : "block") text-white">Settings</span>
+                        </NavLink>
+                    </div>
+                }
             </aside>
             <!-- Main Content -->
             <main class="flex-grow @mainContentClass md-ml-0 transition-all duration-200" style="background-color:#F0F4F8;">
                 <!-- Horizontal Navbar -->
                 <nav class="navbar-horizontal sticky top-0 z-50" style="">
-                   <div class="mx-auto px-4">
-                       <div class="flex justify-between items-center h-16">
-                           <!-- Left Section (Weather on Desktop) -->
-                           <div class="hidden md:flex items-center space-x-2">
-                               @* <i class="temperature-icon fas fa-cloud-sun text-xl" style=""></i> *@
-                               @* <span class="">28°C</span> *@
-                           </div>
+                    <div class="mx-auto px-4">
+                        <div class="flex justify-between items-center h-16">
+                            <!-- Left Section (Weather on Desktop) -->
+                            <div class="hidden md:flex items-center space-x-2">
+                            @*     @* <i class="temperature-icon fas fa-cloud-sun text-xl" style=""></i> *@
+                            @*     @* <span class="">28°C</span> *@
+                            </div>
 
-                           <!-- Mobile Menu Button -->
-                           <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
-                               <i class="fas fa-bars text-xl"></i>
-                           </button>
+                            <!-- Mobile Menu Button -->
+                            <button @onclick="ToggleMobileMenu" class="md:hidden text-gray-600">
+                                <i class="fas fa-bars text-xl"></i>
+                            </button>
 
-                           <!-- Center Logo -->
-                           @* <span class="text-xl font-bold text-gray-800">Smart Home</span> *@
+                            <!-- Right Section (User & Notifications) -->
+                            <div class="flex items-center space-x-4 relative">
 
-                           <!-- Right Section (User & Notifications) -->
-                           <div class="flex items-center space-x-4 relative">
-                               <!-- زر الإشعارات -->
-                               <div class="relative">
-                                   <button class="text-gray-600 relative top-1" @onclick="ToggleNotifications">
-                                       <i class="notification-icon fas fa-bell text-xl" style=""></i>
-                                       <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-                                   </button>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                        @if (profilePictureStream != null)
+                                        {
+                                            <img src="data:image/png;base64,@Convert.ToBase64String(profilePictureStream)"
+                                            class="w-8 h-8 rounded-full cursor-pointer"
+                                            alt="User Avatar"
+                                            @onclick="ToggleUserMenu">
+                                        }
+                                        else
+                                        {
+                                            <div class="w-8 h-8 rounded-full cursor-pointer" @onclick="ToggleUserMenu">
+                                                <svg class="w-8 h-8 " style="color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                </svg>
+                                            </div>
+                                            
+                                        }
+                                    </div>
+                                </div>
 
-                                   <!-- Notifications list -->
-                                   @if (showNotifications)
-                                   {
-                                       <!-- start Notification pop -->
-                                       <div class="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
-                                           <div class="p-4 border-b">
-                                               <h6 class="font-semibold text-gray-800">Notification</h6>
-                                           </div>
-                                           <div class="max-h-64 overflow-y-auto">
-                                               <!--  Notification pop menu -->
-                                               <div class="p-3 hover:bg-gray-50 cursor-pointer border-b">
-                                                   <div class="text-sm text-gray-800">Lamp in bathroom turned on</div>
-                                                   <div class="text-xs text-gray-500 mt-1">An 5 minutes ago</div>
-                                               </div>
-                                               <div class="p-3 hover:bg-gray-50 cursor-pointer">
-                                                   <div class="text-sm text-gray-800">The temperature is high</div>
-                                                   <div class="text-xs text-gray-500 mt-1">An hour ago</div>
-                                               </div>
-                                           </div>
+                                <!-- w-8 h-8 deafult for user prof -->
+                                <!-- User Menu Popup -->
+                                @if (showUserMenu)
+                                {
+                                    <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
+                                    <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
+                                        <!-- User Info Section -->
+                                        <div class="flex flex-col items-center px-4 py-3 border-b">
+                                            <div class="rounded-full bg-gray-200 flex flex-col items-center">
+                                                @if (profilePictureStream != null)
+                                                {
+                                                    <img src="data:image/png;base64,@Convert.ToBase64String(profilePictureStream)"
+                                                         class="w-12 h-12 rounded-full cursor-pointer"
+                                                         alt="User Avatar">
+                                                }
+                                                else
+                                                {
+                                                    <div class="w-13 h-13 rounded-full cursor-pointer m-2">
+                                                        <svg class="w-12 h-12 " style="color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                                        </svg>
+                                                    </div>
 
-                                           <div class="p-2 border-t text-center">
-                                               <a href="#" class="text-blue-500 text-sm hover:underline">Show More</a>
-                                           </div>
-                                       </div>
-                                       <!-- end notification pop-->
-                                       <!-- close menu when you clicked out of Area -->
-                                       <div class="fixed inset-0 z-40" @onclick="ToggleNotifications"></div>
-                                   }
-                               </div>
+                                                }
+                                            </div>
+                                            <span class="text-sm font-semibold text-gray-800">Hey, @context.User.Identity.Name</span>
+                                        </div>
 
-                               <div class="flex items-center space-x-2">
-                                   @if (!string.IsNullOrEmpty(context.User.FindFirst("profilepicture").Value))
-                                   {
-                                       var profilepicture = context.User.FindFirst("profilepicture").Value;
-                                       <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
-                                       class="w-8 h-8 rounded-full cursor-pointer"
-                                       alt="User Avatar"
-                                       @onclick="ToggleUserMenu">
-                                   }else{
-                                       <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                       class="w-8 h-8 rounded-full cursor-pointer"
-                                       alt="User Avatar"
-                                       @onclick="ToggleUserMenu">
-                                   }
-                               </div>
+                                       
 
-                               <!-- w-8 h-8 deafult for user prof -->
-                               <!-- User Menu Popup -->
-                               @if (showUserMenu)
-                               {
-                                   <div class="fixed inset-0 z-50" @onclick="ToggleUserMenu"></div>
-                                   <div class="absolute top-8 right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
-                                       <!-- User Info Section -->
-                                       <div class="flex flex-col items-center px-4 py-3 border-b">
-                                           @if (!string.IsNullOrEmpty(context.User.FindFirst("profilepicture").Value))
-                                           {
-                                               var profilepicture = context.User.FindFirst("profilepicture").Value;
-                                               <img src="@(navigationManager.BaseUri.TrimEnd('/') + ":62061" + profilepicture)"
-                                               class="w-12 h-12 rounded-full cursor-pointer"
-                                               alt="User Avatar"
-                                               @onclick="ToggleUserMenu">
-                                           }
-                                           else
-                                           {
-                                               <img src="_content/SmartHome.Shared/imgs/user-profile.svg"
-                                               class="w-12 h-12 rounded-full cursor-pointer"
-                                               alt="User Avatar"
-                                               @onclick="ToggleUserMenu">
-                                           }
-                                           <span class="text-sm font-semibold text-gray-800">Hey, @context.User.Identity.Name</span>
-                                       </div>
+                                        <!-- Menu Items -->
+                                        <div class="px-2 py-2">
+                                            <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                                <div class="flex items-center space-x-3" @onclick="@(x => navigationManager.NavigateTo("/profile"))">
+                                                    <i class="fa-solid fa-circle-user text-black text-sm"></i>
+                                                    <span class="text-gray-700 text-sm">Profile</span>
+                                                </div>
+                                            </div>
 
-                                       <!-- Menu Items -->
-                                       <div class="px-2 py-2">
-                                           <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                               <div class="flex items-center space-x-3" @onclick="@(x => navigationManager.NavigateTo("/profile"))">
-                                                   <i class="fa-solid fa-circle-user text-black text-sm"></i>
-                                                   <span class="text-gray-700 text-sm">Profile</span>
-                                               </div>
-                                           </div>
+                                            @if (context.User.IsInRole("Admin"))
+                                            {
+                                                <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                                    <div class="flex items-center space-x-3" @onclick="@(x => navigationManager.NavigateTo("/settings"))">
+                                                        <i class="fa-solid fa-gear text-black text-sm"></i>
+                                                        <span class="text-gray-700 text-sm">Settings</span>
+                                                    </div>
+                                                </div>
+                                            }
 
-                                           <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                               <div class="flex items-center space-x-3">
-                                                   <i class="fa-solid fa-gear text-black text-sm"></i>
-                                                   <span class="text-gray-700 text-sm">Settings</span>
-                                               </div>
-                                           </div>
-
-                                           <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
-                                               <div class="flex items-center space-x-3" @onclick="logout">
-                                                   <i class="fa-solid fa-arrow-right-from-bracket text-black text-sm"></i>
-                                                   <span class="text-gray-700 text-sm">Logout</span>
-                                               </div>
-                                           </div>
-                                       </div>
-                                   </div>
-                               }
-                               <!-- end User Menu Popup -->
-                           </div>
-                       </div>
-                   </div>
+                                            <div class="px-2 py-2 hover:bg-gray-100 rounded cursor-pointer" @onclick:stopPropagation>
+                                                <div class="flex items-center space-x-3" @onclick="logout">
+                                                    <i class="fa-solid fa-arrow-right-from-bracket text-black text-sm"></i>
+                                                    <span class="text-gray-700 text-sm">Logout</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                <!-- end User Menu Popup -->
+                            </div>
+                        </div>
+                    </div>
                 </nav>
                 <article class="content px-3  md:px-3 lg:px-4">
                     @Body
@@ -242,42 +217,52 @@
 
                     <!-- Menu Items -->
                     <nav class="space-y-4">
-                        <NavLink href="/overview" class="block p-2 hover:bg-purple-300 border-b border-gray-100" style="color: var(--menubar-color)">
+                        <NavLink href="/overview" class="block p-2 hover:bg-purple-300 border-b border-gray-100 rounded-md" style="color: var(--menubar-color)">
                             <i class="bi bi-columns-gap text-xl text-black pe-2"></i>
                             OverView
                         </NavLink>
 
-                        <NavLink href="/logs" class="block p-2 hover:bg-purple-300 border-b border-gray-100" style="color: var(--menubar-color)">
+                        <NavLink href="/logs" class="block p-2 hover:bg-purple-300 border-b border-gray-100 rounded-md" style="color: var(--menubar-color)">
                             <i class="fas fa-list text-xl text-black pe-2"></i>
                             Logs
                         </NavLink>
 
                         @if(context.User.IsInRole("Admin")){
-                            <NavLink href="/manage-users" class="block p-2 hover:bg-purple-300 border-b border-gray-100" style="color: var(--menubar-color)">
+                            <NavLink href="/manage-users" class="block p-2 hover:bg-purple-300 border-b border-gray-100 rounded-md" style="color: var(--menubar-color)">
                                 <i class="bi bi-people text-xl text-black pe-2"></i>
                                 Manage Users
                             </NavLink>
 
-                            <NavLink href="/manage-controllers" class="block p-2 hover:bg-purple-300 border-b border-gray-100" style="color: var(--menubar-color)">
+                            <NavLink href="/manage-controllers" class="block p-2 hover:bg-purple-300 border-b border-gray-100 rounded-md" style="color: var(--menubar-color)">
                                 <i class="bi bi-motherboard text-xl text-black pe-2"></i>
                                 Manage Controllers
                             </NavLink>
 
-                            <NavLink href="/manage-areas" class="block p-2 hover:bg-purple-300 border-b border-gray-100" style="color: var(--menubar-color)">
+                            <NavLink href="/manage-areas" class="block p-2 hover:bg-purple-300 border-b border-gray-100 rounded-md" style="color: var(--menubar-color)">
                                 <i class="bi bi-geo-alt-fill text-xl text-black pe-2"></i>
                                 Manage Areas
                             </NavLink>
 
-                            <NavLink href="/manage-devices" class="block p-2 hover:bg-purple-300 border-b border-gray-100" style="color: var(--menubar-color)">
+                            <NavLink href="/manage-devices" class="block p-2 hover:bg-purple-300 border-b border-gray-100 rounded-md" style="color: var(--menubar-color)">
                                 <i class="bi bi-lightbulb text-xl text-black pe-2"></i>
                                 Manage Devcies
                             </NavLink>
                         }
 
-                        <NavLink href="/Settings" class="position-absolute bottom-0 block p-2 hover:bg-purple-300 border-b border-gray-100" style="width: 85%;     var(--menubar-color);">
-                            <i class="fas fa-cog text-xl w-8 text-black pe-2"></i>
-                            Settings
-                        </NavLink>
+                        @if (context.User.IsInRole("Admin"))
+                        {
+                            <NavLink href="/Settings" class="position-absolute bottom-0 mb-4 block p-2 hover:bg-purple-300  rounded-md" style="width: 85%; color: var(--menubar-color);">
+                                <i class="fas fa-cog text-xl w-8 text-black pe-2"></i>
+                                Settings
+                            </NavLink>
+                        }
+                        @if (PlatformDetectionService.IsMobile() && context.User.IsInRole("Normal_User"))
+                        {
+                            <NavLink href="/Settings" class="position-absolute bottom-0 mb-4 block p-2 hover:bg-purple-300 rounded-md" style="width: 85%; color: var(--menubar-color);">
+                                <i class="fas fa-cog text-xl w-8 text-black pe-2"></i>
+                                Settings
+                            </NavLink>
+                        }
                     </nav>
                 </div>
             </div>
@@ -307,7 +292,7 @@
     private void ToggleSidebar() => isCollapsed = !isCollapsed;
     private void ToggleMobileMenu() => showMobileMenu = !showMobileMenu;
 
-
+    private byte[]? profilePictureStream;
 
     private string GetNavItemClass(string page)
     {
@@ -331,7 +316,7 @@
     // }
 
     // to close other menu
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         navigationManager.LocationChanged += (sender, args) =>
         {
@@ -339,6 +324,29 @@
             showMobileMenu = false;
             StateHasChanged();
         };
+
+        await FetchProfilePicture();
+    }
+
+    private async Task FetchProfilePicture()
+    {
+        try
+        {
+            var response = await ApiService.GetAsync("/api/user/get/profile-picture");
+
+            if (response.IsSuccessStatusCode)
+            {
+                profilePictureStream = await response.Content.ReadAsByteArrayAsync();
+            }
+            else
+            {
+                profilePictureStream = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            profilePictureStream = null;
+        }
     }
 
     // logout
