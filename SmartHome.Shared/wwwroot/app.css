@@ -1,38 +1,91 @@
 @import url('https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,100..900&family=Cairo:wght@200..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
-    /* Material 3 Palette */
     --primary: #6750A4;
     --on-primary: #FFFFFF;
     --secondary: #625B71;
     --on-secondary: #FFFFFF;
     --background: #FFFBFE;
     --surface: #FFFFFF;
-    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1) );
+    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1));
     --on-surface: #1C1B1E;
     --error: #B3261E;
     --on-error: #FFFFFF;
     --body-light: #F3F2FD;
-    /* Menu on mobile */
     --menu-bg: #F3F2FD;
     --menubar-color: #625871;
-    /* Fan-specific Colors */
-    --fan-card-bg-on: #F9FFF4; /* Card background when fan is on */
-    --fan-card-bg-off: #fbfbfb; /* Card background when fan is off */
-    --fan-on-stroke: #808080; /* Fan stroke color when on */
-    --fan-off-stroke: var(--fan-indicator-on); /* Fan stroke color when off */
-    --fan-slider-thumb-color: var(--fan-indicator-on); /* Slider thumb color */
-    --fan-indicator-on: #059212; /* Indicator circle color when on */
-    --fan-indicator-off: rgb(128,128,128); /* Indicator circle color when off */
-    /* Lamp-specific Colors */
-    --lamp-card-bg-on: #FFFDEB; /* Card background when lamp is on */
-    --lamp-card-bg-off: #FBFBFB; /* Card background when lamp is off */
-    --lamp-indicator-on: #FBB03B; /* Indicator circle color when lamp is on */
-    --lamp-indicator-off: rgb(128,128,128); /* Indicator circle color when lamp is off */
-    /* IPCamera-specific Colors */
-    --ipcamera-card-bg-on: #ECF8F5; /* Card background when IPCamera is on */
-    --ipcamera-card-bg-off: #FBFBFB; /* Card background when IPCamera is off */
+    --fan-card-bg-on: #F9FFF4;
+    --fan-card-bg-off: #fbfbfb;
+    --fan-on-stroke: #808080;
+    --fan-off-stroke: #059212;
+    --fan-slider-thumb-color: #059212;
+    --fan-indicator-on: #059212;
+    --fan-indicator-off: #808080;
+    --lamp-card-bg-on: #FFFDEB;
+    --lamp-card-bg-off: #FBFBFB;
+    --lamp-indicator-on: #FBB03B;
+    --lamp-indicator-off: #808080;
+    --ipcamera-card-bg-on: #ECF8F5;
+    --ipcamera-card-bg-off: #FBFBFB;
+}
+
+.dark {
+    --primary: #D0BCFF;
+    --on-primary: #381E72;
+    --secondary: #CCC2DC;
+    --on-secondary: #332D41;
+    --background: #1C1B1F;
+    --surface: #1C1B1F;
+    --surface-variant: linear-gradient(168deg, rgba(208,188,255,1), rgba(238,185,245,1));
+    --on-surface: #E6E1E5;
+    --error: #F2B8B5;
+    --on-error: #601410;
+    --body-light: #2B2930;
+    --menu-bg: #2B2930;
+    --menubar-color: #CAC2DD;
+    --fan-card-bg-on: #1A2B17;
+    --fan-card-bg-off: #252525;
+    --fan-on-stroke: #A5D6A7;
+    --fan-off-stroke: #65C466;
+    --fan-slider-thumb-color: #65C466;
+    --fan-indicator-on: #65C466;
+    --fan-indicator-off: #8D8D8D;
+    --lamp-card-bg-on: #2E2A10;
+    --lamp-card-bg-off: #252525;
+    --lamp-indicator-on: #FFD85C;
+    --lamp-indicator-off: #8D8D8D;
+    --ipcamera-card-bg-on: #143833;
+    --ipcamera-card-bg-off: #252525;
+}
+
+.bg-primary {
+    background-color: var(--primary);
+}
+
+.text-on-primary {
+    color: var(--on-primary);
+}
+
+.bg-surface {
+    background-color: var(--surface);
+}
+
+.text-on-surface {
+    color: var(--on-surface);
+}
+
+.bg-fan-on {
+    background-color: var(--fan-card-bg-on);
+}
+
+.bg-lamp-on {
+    background-color: var(--lamp-card-bg-on);
 }
 
 html, body {

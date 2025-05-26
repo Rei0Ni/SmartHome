@@ -7,7 +7,7 @@
 {
     <div class="bg-white rounded-xl shadow p-6 mb-6">
         <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Host Settings</h2>
-        <p><em>Loading host settings...</em></p>
+        <p class="dark:text-gray-50"><em>Loading host settings...</em></p>
     </div>
 }
 else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
@@ -39,7 +39,7 @@ else
             </div>
         </div>
         <div class="flex justify-start items-center mt-6">
-            <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 me-4 transition" disabled="@isSaving">
+            <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 me-4 transition cursor-pointer" disabled="@isSaving">
                 @if (isSaving)
                 {
                     <span class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
@@ -159,18 +159,28 @@ else
 
     private void EnsureHttps(ref string hostname)
     {
-        if (!hostname.StartsWith("https://"))
+        if (Uri.TryCreate(hostname, UriKind.Absolute, out var uri))
         {
-            if (hostname.StartsWith("http://"))
+            if (uri.Scheme != Uri.UriSchemeHttps)
             {
-                hostname = "https://" + hostname.Substring(7);
+                var builder = new UriBuilder(uri)
+                    {
+                        Scheme = Uri.UriSchemeHttps,
+                        Port = uri.Port // Ensure the port is preserved
+                    };
+                hostname = builder.ToString().TrimEnd('/');
             }
             else
             {
-                hostname = "https://" + hostname;
+                hostname = uri.ToString().TrimEnd('/');
             }
         }
+        else if (Uri.TryCreate("https://" + hostname, UriKind.Absolute, out var fallbackUri))
+        {
+            hostname = fallbackUri.ToString().TrimEnd('/');
+        }
     }
+
 
     public void Dispose()
     {

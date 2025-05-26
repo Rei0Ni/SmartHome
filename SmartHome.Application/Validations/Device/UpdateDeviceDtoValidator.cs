@@ -26,8 +26,8 @@ namespace SmartHome.Application.Validations.Device
                 .MaximumLength(50).WithMessage("Model must not exceed 50 characters.");
             RuleFor(x => x.SerialNumber)
                 .MaximumLength(50).WithMessage("SerialNumber must not exceed 50 characters.");
-            RuleFor(x => x.Pins)
-                .NotEmpty().WithMessage("Pins is required.");
+            RuleFor(x => x.Pin)
+                .NotEmpty().WithMessage("Pin is required.");
             RuleFor(x => x.AreaId)
                 .NotEmpty().WithMessage("AreaId is required.");
             RuleFor(x => x.DeviceTypeId)

@@ -11,6 +11,6 @@ namespace SmartHome.Dto.DeviceType
     {
         public string Name { get; set; }
         public DeviceTypes Type { get; set; }
-        public ICollection<Guid> Functions { get; set; } = new List<Guid>();
+        //public ICollection<Guid> Functions { get; set; } = new List<Guid>();
     }
 }

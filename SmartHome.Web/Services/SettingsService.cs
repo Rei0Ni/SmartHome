@@ -7,15 +7,17 @@ namespace SmartHome.Web.Services
     public class SettingsService : ISettingsService
     {
         private readonly IApiService _apiService;
+        private readonly IThemeService _themeService;
 
         public string? SystemTimeZone { get; private set; }
         public string? GlobalTheme { get; private set; }
 
         public event Action? OnSettingsChanged;
 
-        public SettingsService(IApiService apiService)
+        public SettingsService(IApiService apiService, IThemeService themeService)
         {
             _apiService = apiService;
+            _themeService = themeService;
         }
 
         public async Task LoadSettingsAsync()
@@ -40,7 +42,10 @@ namespace SmartHome.Web.Services
                 }
             }; 
 
+            await _themeService.SetThemeAsync(theme.ToLower()); // Update the theme in local storage
+
             var response = await _apiService.PostAsync("api/settings/update", dto);
+            response.EnsureSuccessStatusCode();
             if (response.IsSuccessStatusCode)
             {
                 SystemTimeZone = timeZone;

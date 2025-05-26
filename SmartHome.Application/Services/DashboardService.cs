@@ -13,13 +13,11 @@ using SmartHome.Application.Hubs;
 using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Device;
-using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Application.Interfaces.Hubs;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.Area;
 using SmartHome.Dto.Dashboard;
-using SmartHome.Dto.DeviceFunction;
 using Log = Serilog.Log;
 
 namespace SmartHome.Application.Services
@@ -29,21 +27,21 @@ namespace SmartHome.Application.Services
         private readonly IAreaService _areaService;
         private readonly IDeviceDataService _deviceDataService;
         private readonly IDeviceTypeService _deviceTypeService;
-        private readonly IDeviceFunctionService _deviceFunctionService;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        //private readonly IDeviceFunctionService _deviceFunctionService;
+        //private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHubState _hubState;
         private readonly IHubContext<OverviewHub> _overviewHubContext;
         private IMapper _mapper;
 
-        public DashboardService(IAreaService areaService, IDeviceDataService deviceDataService, IDeviceTypeService deviceTypeService, IDeviceFunctionService deviceFunctionService, IMapper mapper, IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, IHubState hubState, IHubContext<OverviewHub> overviewHubContext)
+        public DashboardService(IAreaService areaService, IDeviceDataService deviceDataService, IDeviceTypeService deviceTypeService, IMapper mapper, UserManager<ApplicationUser> userManager, IHubState hubState, IHubContext<OverviewHub> overviewHubContext)
         {
             _areaService = areaService;
             _deviceDataService = deviceDataService; // Inject DeviceDataService
             _deviceTypeService = deviceTypeService;
-            _deviceFunctionService = deviceFunctionService;
+            //_deviceFunctionService = deviceFunctionService;
             _mapper = mapper;
-            _httpContextAccessor = httpContextAccessor;
+            //_httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _hubState = hubState;
             _overviewHubContext = overviewHubContext;
@@ -69,15 +67,12 @@ namespace SmartHome.Application.Services
 
             // Optimize device loading
             var areaIds = areas.Select(a => a.Id).ToList();
-            //var allDevices = await _deviceService.GetDevicesForAreas(areaIds); // No longer use DeviceService directly
             var allDevices = await _deviceDataService.GetDevicesForAreas(areaIds); //Use DeviceDataService
             var allIPCameras = await _deviceDataService.GetIPCamerasForAreas(areaIds); // Use DeviceDataService for IPCameras
             var deviceTypeIds = allDevices.Select(d => d.DeviceTypeId).Distinct().ToList();
 
             // Bulk load device types and functions
             var deviceTypes = await _deviceTypeService.GetDeviceTypes();
-            var allFunctionIds = deviceTypes.SelectMany(dt => dt.Functions).Distinct().ToList();
-            var allDeviceFunctions = await _deviceFunctionService.GetDeviceFunctions();
 
             foreach (var area in areas)
             {
@@ -96,9 +91,6 @@ namespace SmartHome.Application.Services
                     }
 
                     overviewDevice.DeviceType = deviceType;
-                    overviewDevice.DeviceFunctions = allDeviceFunctions
-                        .Where(df => deviceType.Functions.Contains(df.Id))
-                        .ToList();
 
                     overviewArea.AreaDevices.Add(overviewDevice);
                 }

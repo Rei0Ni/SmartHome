@@ -8,7 +8,7 @@ namespace SmartHome.Application.Interfaces.Jwt
 {
     public interface IJwtTokenService
     {
-        string GenerateJwtToken(string userId, string username, string email, string profilepictureurl, IList<string> roles);
+        string GenerateJwtToken(string userId, string username, string email, IList<string> roles);
         void ValidateJwtToken(string token);
     }
 }

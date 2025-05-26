@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
-using SmartHome.Dto.Weather;
+using SmartHome.Domain.Necessities.Weather;
 
 namespace SmartHome.Domain.Entities
 {

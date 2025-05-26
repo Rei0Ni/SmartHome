@@ -15,7 +15,7 @@
 		@{
 			IsAdmin = context.User.IsInRole("Admin");
 		}
-		<div class="mx-auto bg-white rounded-xl shadow-md overflow-hidden">
+		<div class="mx-auto bg-surface rounded-xl shadow-md overflow-hidden">
 			<div class="p-6">
 				<div class="w-full flex justify-between items-center mb-4">
 					<!-- Avatar, Name & Email Section -->
@@ -40,7 +40,7 @@
 								</div>
 
 								<!-- Pencil Icon (Label) -->
-								<label for="file-upload" class="absolute bottom-0 z-50 right-0 bg-purple-800 text-white rounded-full p-1 cursor-pointer hover:bg-purple-700 transition-colors">
+								<label for="file-upload" class="absolute bottom-0 z-50 right-0 bg-primary text-white rounded-full p-1 cursor-pointer">
 									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
 										<path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828zM5 12.828V15h2.172l7.586-7.586-2.172-2.172L5 12.828z" />
 									</svg>
@@ -56,19 +56,19 @@
 							<div class="flex flex-col items-center ms-3">
 								@if (IsAdmin)
 								{
-									<h2 class="text-xl sm:text-2xl font-bold text-gray-900 text-center">@adminUser.FirstName @adminUser.LastName</h2>
-									<p class="text-sm sm:text-base text-gray-600 text-center">@adminUser.Email</p>
+									<h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-50 text-center">@adminUser.FirstName @adminUser.LastName</h2>
+									<p class="text-sm sm:text-base text-gray-600 dark:text-gray-200 text-center">@adminUser.Email</p>
 								}
 								else
 								{
-									<h2 class="text-xl sm:text-2xl font-bold text-gray-900 text-center">@user.FirstName @user.LastName</h2>
+									<h2 class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-50 text-center">@user.FirstName @user.LastName</h2>
 								}
 							</div>
 						</div>
 
 						<!-- Edit Button -->
 						<button @onclick="ToggleEdit"
-						class="w-full sm:w-auto px-4 py-2 bg-purple-800 text-white rounded-lg hover:bg-purple-700 transition-colors text-center">
+						class="w-full sm:w-auto px-4 py-2 bg-primary text-white rounded-lg hover:bg-purple-700 transition-colors text-center">
 							@(isEditing ? "Cancel" : "Edit Profile")
 						</button>
 					</div>
@@ -85,50 +85,50 @@
 							@if (IsAdmin)
 							{
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-50 mb-1">First Name</label>
 									<InputText @bind-Value="newAdminProfile.FirstName"
-									disabled="@(!isEditing)"
-									class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500" />
+										disabled="@(!isEditing)"
+										class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 dark:bg-white" />
 								</div>
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-50 mb-1">Last Name</label>
 									<InputText @bind-Value="newAdminProfile.LastName"
-									disabled="@(!isEditing)"
-									class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500" />
+										disabled="@(!isEditing)"
+										class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 dark:bg-white" />
 								</div>
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-50 mb-1">Email</label>
 									<InputText @bind-Value="newAdminProfile.Email"
-									disabled="@(!isEditing)"
-									class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500" />
+										disabled="@(!isEditing)"
+										class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 dark:bg-white" />
 								</div>
 							}
 							else
 							{
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-50 mb-1">First Name</label>
 									<InputText @bind-Value="newUserProfile.FirstName"
-									disabled="@(!isEditing)"
-									class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500" />
+										disabled="@(!isEditing)"
+										class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 dark:bg-white" />
 								</div>
 								<div>
-									<label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+									<label class="block text-sm font-medium text-gray-700 dark:text-gray-50 mb-1">Last Name</label>
 									<InputText @bind-Value="newUserProfile.LastName"
-									disabled="@(!isEditing)"
-									class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500" />
+										disabled="@(!isEditing)"
+										class="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 dark:bg-white" />
 								</div>
 							}
 						</div>
 
 						@if (isEditing)
 						{
-							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8">
 								<button type="button" @onclick="CancelEdit"
-								class="w-full px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+								class="w-full px-4 py-2 text-gray-700 bg-gray-100 dark:bg-gray-600 dark:text-gray-50 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors cursor-pointer">
 									Cancel
 								</button>
 								<button type="submit"
-								class="w-full px-4 py-2 bg-purple-800 text-white rounded-lg hover:bg-purple-700 transition-colors">
+								class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-purple-700 transition-colors cursor-pointer">
 									Save Changes
 								</button>
 							</div>
@@ -137,7 +137,7 @@
 				</div>
 
 				<!-- TOTP Section -->
-				<div class="mt-6 bg-gray-100 rounded-lg shadow-md">
+				<div class="mt-6 bg-gray-100 dark:bg-gray-300 rounded-lg shadow-md">
 					<h3 class="text-base font-semibold text-gray-800 p-6 m-0 flex items-center justify-between cursor-pointer" @onclick="ToggleTotpSection">
 						<span>Two-Factor Authentication (TOTP)</span>  
 						<svg class="w-5 h-5 text-gray-600 transform transition-transform duration-200" style="transform: rotate(@(isTotpSectionCollapsed ? 0 : 180)deg);" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
@@ -334,14 +334,14 @@
 
 		if (response.IsSuccessStatusCode)
 		{
-			toastService.Notify(new(ToastType.Success, IconName.HandThumbsUp, "Profile updated successfully.", "User profile has been updated successfully"));
+			toastService.ShowSuccess("User profile has been updated successfully");
 			// navigationManager.NavigateTo("/manage-users");
 			navigationManager.NavigateTo(navigationManager.Uri, true, false);
 		}
 		else
 		{
 			var responseContent = response.Content.ReadAsStringAsync();
-			toastService.Notify(new(ToastType.Danger, IconName.Bug, "Failed to update user profile.", "Couldn't update user profile"));
+			toastService.ShowError("Couldn't update user profile");
 		}
 	}
 
@@ -366,7 +366,7 @@
 		// Validate file
 		if (!file.ContentType.Contains("image/"))
 		{
-			toastService.Notify(new(ToastType.Warning, "Invalid file type", "Please select an image file"));
+			toastService.ShowWarning("Please select an image file");
 			return;
 		}
 
@@ -374,7 +374,7 @@
 		const int maxFileSize = 5 * 1024 * 1024;
 		if (file.Size > maxFileSize)
 		{
-			toastService.Notify(new(ToastType.Warning, "File too large", "Maximum file size is 5MB"));
+			toastService.ShowWarning("Maximum file size is 5MB");
 			return;
 		}
 
@@ -409,21 +409,21 @@
 			if (response.IsSuccessStatusCode)
 			{
 				var result = await response.Content.ReadFromJsonAsync<ApiResponse<object>>();
-				toastService.Notify(new(ToastType.Success, IconName.HandThumbsUpFill, "Update Successful", "Profile picture updated"));
+				toastService.ShowSuccess("Profile picture updated");
 				navigationManager.Refresh(true);
 			}
 			else
 			{
 				var error = await response.Content.ReadAsStringAsync();
 				Console.WriteLine(error);
-				toastService.Notify(new(ToastType.Danger, "Update failed", error));
+				toastService.ShowError(error);
 			}
 		}
 		catch (Exception ex)
 		{
 			// Handle exceptions during the HTTP request
 			Console.WriteLine(ex.Message);
-			toastService.Notify(new(ToastType.Danger, "Update failed", ex.Message));
+			toastService.ShowError(ex.Message);
 		}
 	}
 }

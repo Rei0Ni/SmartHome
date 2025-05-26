@@ -16,7 +16,7 @@ namespace SmartHome.Dto.Device
         public string? Manufacturer { get; set; } = "Unknown";
         public string? SerialNumber { get; set; } = "Unknown";
 
-        public ICollection<DevicePin> Pins { get; set; } = new List<DevicePin>();
+        public int Pin { get; set; }
         public Dictionary<string, object> State { get; set; } = new();
 
         public Guid DeviceTypeId { get; set; }

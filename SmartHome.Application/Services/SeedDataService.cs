@@ -11,6 +11,7 @@ using SmartHome.Domain.Entities;
 using SmartHome.Application.Interfaces.Settings;
 using SmartHome.Dto.Settings;
 using SmartHome.Dto.Email;
+using SmartHome.Application.Interfaces.DeviceType;
 
 namespace SmartHome.Application.Services
 {
@@ -20,6 +21,7 @@ namespace SmartHome.Application.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITotpService _totpService;
         private readonly ISettingsRepository _settingsRepository;
+        private readonly IDeviceTypeRepository _deviceTypeRepository;
         private readonly IConfiguration _configuration;
 
         public SeedDataService(
@@ -27,13 +29,15 @@ namespace SmartHome.Application.Services
             UserManager<ApplicationUser> userManager,
             IConfiguration configuration,
             ITotpService totpService,
-            ISettingsRepository settingsRepository)
+            ISettingsRepository settingsRepository,
+            IDeviceTypeRepository deviceTypeRepository)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _configuration = configuration;
             _totpService = totpService;
             _settingsRepository = settingsRepository;
+            _deviceTypeRepository = deviceTypeRepository;
         }
 
         public async Task SeedDefaultSettingsAsync()
@@ -74,6 +78,34 @@ namespace SmartHome.Application.Services
             }
         }
 
+        public async Task SeedDeviceTypesAsync()
+        {
+            var DeviceTypes = await _deviceTypeRepository.GetDeviceTypes();
+
+            var DeviceTypesToSeed = new Dictionary<string, int>();
+
+            DeviceTypesToSeed.Add("Lamp", 0);
+            DeviceTypesToSeed.Add("Temperature Sensor", 1);
+            DeviceTypesToSeed.Add("Fan", 2);
+            DeviceTypesToSeed.Add("PIR Motion Sensor", 3);
+
+            // Loop through the predefined device types to seed
+            foreach (var deviceTypeToSeed in DeviceTypesToSeed)
+            {
+                // Check if the device type already exists
+                if (!DeviceTypes.Any(dt => dt.Name == deviceTypeToSeed.Key))
+                {
+                    // If it doesn't exist, create a new DeviceType entity
+                    var newDeviceType = new DeviceType
+                    {
+                        Name = deviceTypeToSeed.Key,
+                        Type = (DeviceTypes)deviceTypeToSeed.Value
+                    };
+                    await _deviceTypeRepository.CreateDeviceType(newDeviceType);
+                }
+            }
+        }
+
         public async Task InitializeAsync(CancellationToken cancellationToken = default)
         {
             var roles = System.Enum.GetNames(typeof(Role)).ToList();
@@ -89,7 +121,7 @@ namespace SmartHome.Application.Services
             string email = "Administrator@smarthome.com";
             string password = _configuration["DefaultAdminPassword"] ?? "Administrator@2024";
 
-            if (await _userManager!.FindByEmailAsync(email) == null)
+            if (await _userManager!.FindByNameAsync("Administrator") == null)
             {
                 ApplicationUser default_administrator = new()
                 {
@@ -105,6 +137,8 @@ namespace SmartHome.Application.Services
                 default_administrator.TOTPSecret = secretKey;
                 await _userManager.UpdateAsync(default_administrator);
             }
+
+            await SeedDeviceTypesAsync();
 
             await SeedDefaultSettingsAsync();
 

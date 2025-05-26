@@ -4,10 +4,10 @@
 
 
 <!-- Start Area -->
-<div class="bg-white rounded-xl shadow-md p-2">
+<div class="bg-surface rounded-xl shadow-md p-2">
     <!-- Sensor & Name Header -->
-    <div class="flex flex-col flex-row justify-between items-center mb-8 gap-2" style="height: 40px;">
-        <h1 class=" sm:text-l md:text-l lg:text-xl font-bold text-gray-800">@AreaModel.Name</h1>
+    <div class="flex flex-col flex-row justify-between items-center mb-4 gap-2" style="height: 40px;">
+        <span class=" sm:text-l md:text-l lg:text-xl font-bold text-gray-800 dark:text-gray-50">@AreaModel.Name</span>
 
         @{
             bool shouldRenderContainer = Sensors?.Any() == true;
@@ -59,8 +59,8 @@
 
     @if (AreaModel.AreaDevices.Count <= 0)
     {
-        <div class="flex items-center justify-center">
-            <span>No Devicecs Here Yet.</span>
+        <div class="flex items-center justify-center my-20">
+            <span class="dark:text-gray-50">No Devicecs Here Yet.</span>
         </div>
     }
     else

@@ -1,34 +1,62 @@
 ﻿@inherits LayoutComponentBase
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+@* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"> *@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
-<!-- link tailwind -->
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+@* <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" /> *@
 
-<Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" />
+<div class="@(toggleDark ? "dark" : "")">
 
-<AuthorizeView>
-	<Authorizing>
-        <div class="h-screen flex items-center justify-center">
-            <div class="flex place-content-center">
-                @Body
+    @* <Toasts class="p-3" AutoHide="true" Delay="4000" Placement="ToastsPlacement.TopRight" /> *@
+    <TailBlazorToasts Timeout="10" Position="ToastPosition.TopRight" IconStyle="IconStyle.Solid" />
+
+    <AuthorizeView>
+        <Authorizing>
+            <div class="h-screen bg-background flex items-center justify-center">
+                <div class="">
+                    @Body
+                </div>
             </div>
-        </div>
-	</Authorizing>
-    <NotAuthorized>
-        <div class="flex items-center justify-center my-6"> 
-            <div class="w-5/6 bg-white shadow-xl sm:w-3/4 md:w-3/4 lg:w-1/3 xl:w-1/4 rounded-3xl p-6">
-                @Body
+        </Authorizing>
+        <NotAuthorized>
+            <div class="bg-background">
+                <div class="flex h-screen justify-center">
+                    <div class="w-5/6 h-fit bg-surface shadow-xl sm:w-3/4 md:w-3/4 lg:w-1/3 xl:w-1/4 rounded-3xl mt-4 p-6">
+                        @Body
+                    </div>
+                </div>
             </div>
-        </div>
-    </NotAuthorized>
-</AuthorizeView>
+        </NotAuthorized>
+    </AuthorizeView>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script> *@
 
-<!-- Add sortable.js reference if SortableList component is used in your application. -->
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-<script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+    <!-- Add sortable.js reference if SortableList component is used in your application. -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    @* <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script> *@
+</div>
+
+
+@code{
+    private bool toggleDark = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        GetCurrentTheme();
+        await base.OnInitializedAsync();
+    }
+
+    private async void GetCurrentTheme()
+    {
+        var currentTheme = await ThemeService.GetThemeAsync();
+        if (currentTheme!.ToLower() == "dark")
+        {
+            toggleDark = true;
+        }
+        else
+        {
+            toggleDark = false;
+        }
+        StateHasChanged();
+    }
+}

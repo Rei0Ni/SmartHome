@@ -24,7 +24,7 @@ namespace SmartHome.Dto.Device
         public string? Manufacturer { get; set; } = "Unknown";
         [MaxLength(50, ErrorMessage = "Serial Number must not exceed 50 characters.")]
         public string? SerialNumber { get; set; } = "Unknown";
-        [Required(ErrorMessage = "Pins are Required")]
-        public List<DevicePin> Pins { get; set; } = new List<DevicePin>();
+        [Required(ErrorMessage = "Pin is Required")]
+        public int Pin { get; set; }
     }
 }

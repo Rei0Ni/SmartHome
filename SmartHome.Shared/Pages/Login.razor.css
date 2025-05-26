@@ -3,7 +3,7 @@
 }
 
 .logoSmartHome {
-    display:flex;
+    display: flex;
     text-align: center;
     justify-content: center;
 }
@@ -12,25 +12,24 @@
     font-size: 20px;
     font-weight: 900;
     text-align: center;
-    color: #2E0163;
 }
 
-form  {
+form {
     margin-top: -20px;
     color: #fff;
 }
 
-form .data  {
-    height: 45px;
-    width: 100%;
-    margin: 40px 0;
-}
+    form .data {
+        height: 45px;
+        width: 100%;
+        margin: 40px 0;
+    }
 
-form .data label  {
-    font-size: 14px;
-}
+        form .data label {
+            font-size: 14px;
+        }
 
-/*form .data input {
+    /*form .data input {
     height: 100%;
     width: 100%;
     padding-left: 10px;
@@ -45,124 +44,118 @@ form .data label  {
         outline-width: 0px;
     }*/
 
-form .forgot-pass  {
-    margin-top: 0px;
-}
-
-form .forgot-pass a  {
-    color: #3498db;
-    text-decoration: none;
-}
-
-form .forgot-pass a:hover  {
-    text-decoration: underline;
-}
-
-form .LoginBtn  {
-    margin-bottom: 10%;
-    margin-top: 7%; 
-}
-
-    form .LoginBtn button {
-        height: 100%;
-        width: 100%;
-        background-color: #2E0163;
-        border: none;
-        color: #fff;
-        font-size: 18px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        cursor: pointer;
-        border-radius: 8px;
-/*        box-shadow: 0px 5px #D4EFFF;*/
-        padding: 8px 0%;
+    form .forgot-pass {
+        margin-top: 0px;
     }
 
-    form .LoginBtn button:hover {
-            box-shadow: 0 0 5pt 2pt #D4EFFF;
-            outline-width: 0px;
+        form .forgot-pass a {
+            color: #3498db;
+            text-decoration: none;
         }
 
-.error-message  {
+            form .forgot-pass a:hover {
+                text-decoration: underline;
+            }
+
+    form .LoginBtn {
+        margin-bottom: 10%;
+        margin-top: 7%;
+    }
+
+        form .LoginBtn button {
+            height: 100%;
+            width: 100%;
+            background-color: #2E0163;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 8px;
+            /*        box-shadow: 0px 5px #D4EFFF;*/
+            padding: 8px 0%;
+        }
+
+            form .LoginBtn button:hover {
+                box-shadow: 0 0 5pt 2pt #D4EFFF;
+                outline-width: 0px;
+            }
+
+.error-message {
     color: red;
     text-align: start;
 }
 
 @media (min-width: 300px) {
-     form  {
+    form {
         color: #000;
     }
 
-     .text {
+    .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
-        color: #2E0163;
     }
 }
 
 @media (min-width: 576px) {
-     form  {
+    form {
         color: #000;
     }
 
-     .text {
+    .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
-        color: #2E0163;
     }
 }
 
 @media (min-width: 768px) {
-     form  {
+    form {
         color: #000;
     }
 
-     .text {
+    .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
-        color: #2E0163;
     }
 }
 
 @media (min-width: 992px) {
-     form  {
+    form {
         color: #fff;
     }
 
-     .text {
+    .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
-        color: #2E0163;
     }
 }
 
 @media (min-width: 1200px) {
-     form  {
+    form {
         color: #fff;
     }
 
-     .text {
+    .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
-        color: #2E0163;
     }
 }
 
 @media (min-width: 1400px) {
-     form  {
+    form {
         color: #fff;
     }
 
-     .text {
+    .text {
         font-size: 20px;
         font-weight: 900;
         text-align: center;
-        color: #2E0163;
     }
 }

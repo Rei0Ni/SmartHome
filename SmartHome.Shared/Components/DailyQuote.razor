@@ -5,7 +5,7 @@
     @if (!string.IsNullOrEmpty(dailyQuote))
     {
         <!-- Daily Quote -->
-        <h2 class="text-xl font-semibold text-yellow-800">💡 Daily Quote</h2>
+        <span class="text-2xl font-semibold text-yellow-800">💡 Daily Quote</span>
         <blockquote class="mt-2 w-full h-3/4 flex items-center">
             @* Added margin-top and width to blockquote *@
             <p class="text-sm text-yellow-700">
@@ -15,7 +15,6 @@
     }
     else
     {
-        <!-- Skeleton Loader for Daily Quote -->
         <h2 class="text-xl font-semibold text-yellow-800">💡 Daily Quote</h2>
         <div class="w-full mt-2 space-y-2">
             @* Container for placeholder lines *@

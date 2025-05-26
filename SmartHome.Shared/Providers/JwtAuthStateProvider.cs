@@ -38,9 +38,47 @@ namespace SmartHome.Shared.Providers
                 var userInfo = await GetCurrentUserAuthenticationState();
                 if (userInfo.IsAuthenticated)
                 {
-                    var claims = new[] { new Claim(ClaimTypes.Name, _currentUserAuthenticationState.UserName) }.Concat(_currentUserAuthenticationState.Claims.Select(c => new Claim(c.Key, c.Value)));
-                    identity = new ClaimsIdentity(claims, "jwt");
-                    Console.WriteLine("[JwtAuthenticationProvider] User is Authenticated");
+                    var claimsList = new List<Claim>();
+
+                    // Add the username claim (or NameIdentifier if more appropriate)
+                    if (!string.IsNullOrEmpty(_currentUserAuthenticationState.UserName))
+                    {
+                        claimsList.Add(new Claim(ClaimTypes.Name, _currentUserAuthenticationState.UserName));
+                        // Consider adding NameIdentifier if your user ID is different from UserName
+                        // claimsList.Add(new Claim(ClaimTypes.NameIdentifier, _currentUserAuthenticationState.UserId)); // Assuming UserId property exists
+                    }
+
+                    if (_currentUserAuthenticationState.Claims != null)
+                    {
+                        foreach (var claimPair in _currentUserAuthenticationState.Claims)
+                        {
+                            // This is the crucial part for roles:
+                            // Check if the key from your backend signifies a role.
+                            // Common keys are "role" or the full URI ClaimTypes.Role.
+                            // Adjust "role" if your backend uses a different key (e.g., "userRole", "roles").
+                            if (claimPair.Key.Equals("role", StringComparison.OrdinalIgnoreCase) ||
+                                claimPair.Key.Equals(ClaimTypes.Role, StringComparison.OrdinalIgnoreCase))
+                            {
+                                // If the role value might contain multiple roles (e.g., "Admin,Editor"),
+                                // you'll need to split claimPair.Value and add a ClaimTypes.Role for each.
+                                // Example for comma-separated roles:
+                                var roles = claimPair.Value.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries);
+                                foreach (var role in roles)
+                                {
+                                    claimsList.Add(new Claim(ClaimTypes.Role, role.Trim()));
+                                    Console.WriteLine($"[JwtAuthenticationProvider] Added Role Claim: {role.Trim()}");
+                                }
+                            }
+                            else
+                            {
+                                // For other claims, add them with their original key
+                                claimsList.Add(new Claim(claimPair.Key, claimPair.Value));
+                            }
+                        }
+                    }
+
+                    identity = new ClaimsIdentity(claimsList, "jwt"); // "jwt" is the authenticationType
+                    Console.WriteLine($"[JwtAuthenticationProvider] User is Authenticated. Claims count: {claimsList.Count}");
                 }
             }
             catch (HttpRequestException ex)

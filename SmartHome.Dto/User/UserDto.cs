@@ -12,6 +12,6 @@ namespace SmartHome.Dto.User
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public List<Guid> AllowedAreas { get; set; } = new List<Guid>();
-        public string? ProfilePictureUrl { get; set; }
+        //public string? ProfilePictureUrl { get; set; }
     }
 }

@@ -8,16 +8,17 @@
 
 <PageTitle>Create New User</PageTitle>
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <Authorized>
         @{
             IsAdmin = context.User.IsInRole("Admin");
         }
 
         <div class="min-h-screen p-4 sm:p-6 lg:p-8">
-            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">
-                <div class="px-6 py-5 border-b border-gray-200">
-                    <h3 class="text-xl font-semibold text-gray-900">Create New User</h3>
+            <div class="max-w-4xl mx-auto bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+                    <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-50">Create New User</h3>
+                    <p class="text-gray-600 mt-2 text-sm sm:text-base dark:text-gray-50">Fill in the details below to add a new user</p>
                 </div>
 
                 <EditForm Context="userCreationContext" Model="@(SelectedRole == "Admin" ? NewAdmin : NewUser)"
@@ -29,7 +30,7 @@
                         @if (IsAdmin)
                         {
                             <div class="space-y-2">
-                                <label class="block text-sm font-medium text-gray-700">Role:</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Role:</label>
                                 <select @bind="SelectedRole" class="mt-1 block w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
                                     <option value="Admin">Admin</option>
                                     <option value="User">Normal User</option>
@@ -41,59 +42,59 @@
                             @if (SelectedRole == "Admin")
                             {
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Username</label>
                                     <InputText @bind-Value="NewAdmin.Username"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">First Name</label>
                                     <InputText @bind-Value="NewAdmin.FirstName"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Last Name</label>
                                     <InputText @bind-Value="NewAdmin.LastName"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Email</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Email</label>
                                     <InputText @bind-Value="NewAdmin.Email" type="email"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Password</label>
                                     <InputText @bind-Value="NewAdmin.Password" type="password"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
                             }
                             else
                             {
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Username</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Username</label>
                                     <InputText @bind-Value="NewUser.Username"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">First Name</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">First Name</label>
                                     <InputText @bind-Value="NewUser.FirstName"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Last Name</label>
                                     <InputText @bind-Value="NewUser.LastName"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
 
                                 <div class="space-y-2">
-                                    <label class="block text-sm font-medium text-gray-700">Password</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-50">Password</label>
                                     <InputText @bind-Value="NewUser.Password" type="password"
-                                               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                                               class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                                 </div>
                             }
                         </div>
@@ -102,9 +103,9 @@
                         {
                             <div class="space-y-4">
                                 <div class="flex justify-between items-center">
-                                    <h5 class="text-lg font-medium text-gray-900">Allowed Areas</h5>
+                                    <h5 class="text-lg font-medium text-gray-900 dark:text-gray-50">Allowed Areas</h5>
                                     <button type="button"
-                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer"
                                             style="background-color:var(--primary)"
                                             onmouseover="this.style.opacity='0.85'"
                                             onmouseout="this.style.opacity='1'"
@@ -113,24 +114,24 @@
                                     </button>
                                 </div>
 
-                                <div class="overflow-x-auto border border-gray-200 rounded-lg">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
+                                <div class="overflow-x-auto border border-gray-200 dark:border-gray-700 rounded-md">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-[#927FBF]">
                                             <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Area Name</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-50 uppercase tracking-wider">Area Name</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-50 uppercase tracking-wider">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
+                                        <tbody class="bg-white dark:bg-[#393E46] divide-y divide-gray-200 dark:divide-gray-700">
                                             @foreach (var area in areas)
                                             {
                                                 if (NewUser.AllowedAreas.Contains(area.Id))
                                                 {
                                                     <tr>
-                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">@area.Name</td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-50">@area.Name</td>
                                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                                             <button type="button"
-                                                                    class="text-red-600 hover:text-red-900 font-medium"
+                                                                    class="bg-red-600 rounded-md px-4 py-2 text-gray-50 hover:bg-red-700 font-medium cursor-pointer"
                                                                     @onclick="() => RemoveArea(area.Id)">
                                                                 Remove
                                                             </button>
@@ -160,9 +161,9 @@
                             </div>
                         }
 
-                        <div class="pt-4 border-t border-gray-200">
+                        <div class="pt-4 sm:pt-6">
                             <button type="submit"
-                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer"
                                     style="background-color:var(--primary)"
                                     onmouseover="this.style.opacity='0.85'"
                                     onmouseout="this.style.opacity='1'">
@@ -179,17 +180,19 @@
 
         @if (!string.IsNullOrEmpty(TotpQRUri))
         {
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-                <div class="bg-white p-8 rounded-lg max-w-md w-full mx-4">
+            <div class="fixed inset-0 z-50 flex items-center justify-center">
+                <div class="absolute inset-0 bg-black opacity-75"></div>
+                <div class="relative bg-surface p-8 rounded-lg max-w-md w-full mx-4">
                     <div class="text-center space-y-4">
-                        <h3 class="text-lg font-medium">2FA Setup Required</h3>
+                        <h3 class="text-lg font-medium dark:text-gray-50">2FA Setup Required</h3>
                         <img id="qrcodeImage" src="@TotpQRUri" alt="TOTP QR Code" class="mx-auto w-48 h-48" />
-                        <p class="text-sm text-gray-600">Scan this QR code with your authenticator app</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Scan this QR code with your authenticator app</p>
                         <div class="mt-2 bg-gray-100 p-3 rounded-md">
                             <code class="text-sm break-all select-text">@SecretKey</code>
                         </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Or use this Code to configure your authenticator app</p>
                         <button @onclick="@(x => navigationManager.NavigateTo("/manage-users"))"
-                                class="mt-4 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white"
+                                class="mt-4 w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 text-base font-medium text-white cursor-pointer"
                                 style="background-color:var(--primary)"
                                 onmouseover="this.style.opacity='0.85'"
                                 onmouseout="this.style.opacity='1'">
@@ -201,12 +204,13 @@
         }
     </Authorized>
     <NotAuthorized>
-        <div class="max-w-4xl mx-auto mt-8 p-4 bg-red-50 border border-red-200 rounded-md">
-            <div class="flex items-center text-red-700">
-                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+        <div class="text-center p-6 sm:p-8">
+            <div class="mx-auto max-w-md">
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                 </svg>
-                <span class="text-sm font-medium">You are not authorized to create users.</span>
+                <h3 class="mt-2 text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-50 mb-2">Unauthorized Access</h3>
+                <p class="text-gray-600 dark:text-gray-200 text-sm sm:text-base">You don't have permission to create users.</p>
             </div>
         </div>
     </NotAuthorized>
@@ -215,18 +219,16 @@
 @if (IsModalVisible)
 {
     <div class="fixed inset-0 z-50 overflow-y-auto">
-        <div class="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
+        <div class="flex min-h-screen items-center justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="absolute inset-0 bg-black opacity-75" @onclick="CloseModal"></div>
 
             <span class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</span>
 
-            <div class="inline-block align-middle bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full max-w-lg mx-4 my-8">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="relative bg-surface rounded-xl shadow-xl inline-block align-middle text-left overflow-hidden transform transition-all w-full max-w-lg mx-4 my-8 z-10">
+                <div class="bg-surface px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium leading-6 text-gray-900">Select Area</h3>
-                        <button @onclick="CloseModal" class="text-gray-400 hover:text-gray-500">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-50">Select Area</h3>
+                        <button @onclick="CloseModal" class="text-gray-400 hover:text-gray-500 cursor-pointer">
                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -235,11 +237,10 @@
                     <ul class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
                         @foreach (var area in areas.Where(a => !NewUser.AllowedAreas.Contains(a.Id)))
                         {
-                            <li class="flex justify-between items-center py-3 px-4 hover:bg-gray-50">
-                                <span class="text-sm text-gray-900">@area.Name</span>
+                            <li class="flex justify-between items-center py-3 px-4 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                <span class="text-sm text-gray-900 dark:text-gray-50">@area.Name</span>
                                 <button @onclick="() => AddArea(area.Id)"
-                                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
-                                        style="background-color:var(--primary)"
+                                        class="inline-flex items-center bg-primary px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer"
                                         onmouseover="this.style.opacity='0.85'"
                                         onmouseout="this.style.opacity='1'">
                                     Add
@@ -319,7 +320,7 @@
                     var errors = JsonSerializer.Deserialize<List<string>>(jsonElement.GetRawText());
                     foreach (var error in errors)
                     {
-                        toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Error", error));
+                        toastService.ShowError(error);
                     }
                 }
                 else
@@ -329,7 +330,7 @@
             }
             else
             {
-                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "User Created Successfully", "The User was Created Successfully"));
+                toastService.ShowSuccess("The User was Created Successfully");
                 var response = await result.Content.ReadFromJsonAsync<ApiResponse<Dictionary<string, string>>>();//Changed to Dictionary
                 if (response != null && response.Data != null)
                 {

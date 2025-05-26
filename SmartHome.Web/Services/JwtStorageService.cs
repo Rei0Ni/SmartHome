@@ -19,7 +19,7 @@ namespace SmartHome.Web.Services
         {
             var result = await _sessionStorage.GetAsync<string>(_jwtTokenRecordName);
 
-            if (!String.IsNullOrEmpty(result.Value))
+            if (!string.IsNullOrEmpty(result.Value))
             {
                 return result.Value;
             }

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="115" height="115" viewBox="0 0 115 115">
+<defs>
+    <radialGradient id="glow" cx="50%" cy="80%" r="30%">
+      <stop offset="0%" stop-color="purple" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="purple" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g transform="translate(55, 20)">
+    <g>
+      	<!-- Animate swinging -->
+      	<animateTransform attributeName="transform" attributeType="XML" type="rotate" from="-15 0 0" to="15 0 0" dur="2s" repeatCount="indefinite" begin="0s" fill="freeze" values="-15 0 0;15 0 0;-15 0 0" keyTimes="0;0.5;1"/>
+      	<!-- Lamp rod -->
+      	<rect x="-2" y="0" width="2" height="50" fill="#ccc"/>
+	<!-- purble light curve -->	
+	<path d="M 80 50 C 70 70, 110 70, 100 50" stroke="#5502b8" fill="transparent" transform="translate(-90, 10)" stroke-width="5"/>
+      	<!-- Lamp shade -->
+      	<path d="M 25 40 Q 0 0 -25 40 Z" transform="translate(0, 25)" fill="#ddd"/>
+      
+    </g>
+  </g>
+</svg>

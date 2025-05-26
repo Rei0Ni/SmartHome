@@ -8,16 +8,16 @@
 
 <PageTitle>Create New Area</PageTitle>
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <Authorized Context="authContext"> @* Renamed context to avoid conflict *@
         @{
             IsAdmin = authContext.User.IsInRole("Admin");
         }
 
-        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200 ">
-            <div class="px-6 py-5 border-b border-gray-200">
-                <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Create New Area</h3>
-                <p class="text-gray-600 mt-2 text-sm sm:text-base">Fill in the details below to add a new area</p>
+        <div class="max-w-4xl mx-auto bg-surface rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-50">Create New Area</h3>
+                <p class="text-gray-600 dark:text-gray-50 mt-2 text-sm sm:text-base">Fill in the details below to add a new area</p>
             </div>
 
             <EditForm Context="areaCreationContext" Model="NewArea" OnValidSubmit="SubmitCreateAreaForm" class=" p-6 md:p-8">
@@ -27,23 +27,23 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <!-- Name -->
                         <div>
-                            <label for="areaName" class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Area Name</label>
+                            <label for="areaName" class="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Area Name</label>
                             <div class="mt-1">
                                 <InputText id="areaName" @bind-Value="NewArea.Name"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                       placeholder="Enter area name" />
+                                class="w-full px-3 py-2 dark:bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="Enter area name" />
                                 <ValidationMessage For="@(() => NewArea.Name)"
-                                       class="text-red-600 text-sm mt-1" />
+                                class="text-red-600 text-sm mt-1" />
                             </div>
                         </div>
 
 
                         <!-- Controller Selection -->
                         <div>
-                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Select Controller</label>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Select Controller</label>
                             @if (!Controllers.Any())
                             {
-                                <p class="text-sm text-gray-500 italic mt-1">No controllers available to select.</p>
+                                <p class="text-sm text-gray-500  dark:text-gray-50 italic mt-1">No controllers available to select.</p>
                             }
                             else
                             {
@@ -64,18 +64,18 @@
 
                                 @* --- Option 2: Dropdown (InputSelect) - Uncomment to use --- *@
                                 <div class="mt-1">
-                                    <InputSelect @bind-Value="NewArea.ControllerId" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                    <InputSelect @bind-Value="NewArea.ControllerId" class="w-full px-3 py-2 dark:bg-white border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                                         <option value="@Guid.Empty.ToString()">-- Select a Controller --</option>
                                         @foreach (var controller in Controllers)
                                         {
-                                            <option value="@controller.Id">@controller.Name (@controller.MACAddress)</option>
+                                            <option value="@controller.Id">@controller.Name</option>
                                         }
                                     </InputSelect>
                                     <ValidationMessage For="@(() => NewArea.ControllerId)" class="text-red-600 text-sm mt-1" />
                                 </div>
                             }
                         </div>
-					</div>
+                    </div>
 
                     <!-- Error Message -->
                     @if (!string.IsNullOrEmpty(ErrorMessage))
@@ -98,10 +98,10 @@
                     <!-- Submit Button -->
                     <div class="pt-4 sm:pt-6">
                         <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                style="background-color:var(--primary)"
-                                onmouseover="this.style.opacity='0.85'"
-                                onmouseout="this.style.opacity='1'">
+                        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
+                        style="background-color:var(--primary)"
+                        onmouseover="this.style.opacity='0.85'"
+                        onmouseout="this.style.opacity='1'">
                             <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                             </svg>
@@ -115,11 +115,11 @@
     <NotAuthorized>
         <div class="text-center p-6 sm:p-8">
             <div class="mx-auto max-w-md">
-                 <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                 </svg>
-                <h3 class="mt-2 text-lg sm:text-xl font-semibold text-gray-800 mb-2">Unauthorized Access</h3>
-                <p class="text-gray-600 text-sm sm:text-base">You don't have permission to create areas.</p>
+                <h3 class="mt-2 text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-50 mb-2">Unauthorized Access</h3>
+                <p class="text-gray-600 dark:text-gray-200 text-sm sm:text-base">You don't have permission to create areas.</p>
             </div>
         </div>
     </NotAuthorized>
@@ -155,9 +155,9 @@
         }
         catch (Exception ex)
         {
-             Console.WriteLine($"Exception loading controllers: {ex}"); // Log detailed exception
-             ErrorMessage = "An error occurred while loading controller data. Please try again later.";
-             Controllers = new List<ControllerDto>(); // Ensure controllers list is empty on exception
+            Console.WriteLine($"Exception loading controllers: {ex}"); // Log detailed exception
+            ErrorMessage = "An error occurred while loading controller data. Please try again later.";
+            Controllers = new List<ControllerDto>(); // Ensure controllers list is empty on exception
         }
     }
 
@@ -181,7 +181,7 @@
                 string errorDetails = "An unknown error occurred.";
                 try
                 {
-                     // Try reading as standard API response first
+                    // Try reading as standard API response first
                     var response = await result.Content.ReadFromJsonAsync<ApiResponse<object>>();
                     if (response?.Data is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
                     {
@@ -189,33 +189,33 @@
                         errorDetails = string.Join(" ", errors ?? new List<string>());
                         // Display individual errors as toasts
                         (errors ?? new List<string>()).ForEach(error =>
-                            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Validation Error", error))
-                        );
+                            toastService.ShowError(error));
+
                     }
-                     else if (response?.Data != null)
+                    else if (response?.Data != null)
                     {
-                         errorDetails = response.Data.ToString() ?? "Error details unavailable.";
+                        errorDetails = response.Data.ToString() ?? "Error details unavailable.";
                     }
-                     else {
-                         // Fallback if JSON parsing fails or structure is unexpected
-                         errorDetails = await result.Content.ReadAsStringAsync();
-                         if (string.IsNullOrWhiteSpace(errorDetails)) {
+                    else {
+                        // Fallback if JSON parsing fails or structure is unexpected
+                        errorDetails = await result.Content.ReadAsStringAsync();
+                        if (string.IsNullOrWhiteSpace(errorDetails)) {
                             errorDetails = $"Request failed with status code {result.StatusCode}.";
-                         }
-                     }
+                        }
+                    }
                 } catch (JsonException jsonEx) {
                     // Handle cases where response is not JSON or doesn't match ApiResponse structure
                     errorDetails = await result.Content.ReadAsStringAsync();
-                     if (string.IsNullOrWhiteSpace(errorDetails)) {
-                         errorDetails = $"Request failed with status code {result.StatusCode}. Invalid JSON response.";
-                     }
+                    if (string.IsNullOrWhiteSpace(errorDetails)) {
+                        errorDetails = $"Request failed with status code {result.StatusCode}. Invalid JSON response.";
+                    }
                     Console.WriteLine($"JSON parsing error: {jsonEx.Message}");
                 }
-                 catch (Exception readEx) {
-                     // Catch other potential exceptions during error reading
-                     errorDetails = $"Request failed with status code {result.StatusCode}. Could not read error details.";
-                     Console.WriteLine($"Error reading response content: {readEx.Message}");
-                 }
+                catch (Exception readEx) {
+                    // Catch other potential exceptions during error reading
+                    errorDetails = $"Request failed with status code {result.StatusCode}. Could not read error details.";
+                    Console.WriteLine($"Error reading response content: {readEx.Message}");
+                }
 
                 ErrorMessage = $"Area creation failed: {errorDetails}";
                 // Optionally show a generic toast as well
@@ -223,8 +223,8 @@
             }
             else
             {
-                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Area Created", "The new area was created successfully."));
-
+                // toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Area Created", "The new area was created successfully."));
+                toastService.ShowSuccess("The new area was created successfully.");
                 // Reset form and navigate
                 NewArea = new CreateAreaDto(); // Reset the model
                 // Controllers list remains loaded, no need to reload unless necessary
@@ -236,7 +236,8 @@
         {
              Console.WriteLine($"Exception during area creation submission: {ex}"); // Log detailed exception
             ErrorMessage = "An unexpected error occurred while submitting the form: " + ex.Message;
-            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.ExclamationTriangle, "Error", ErrorMessage));
+            // toastService.Notify(new ToastMessage(ToastType.Danger, IconName.ExclamationTriangle, "Error", ErrorMessage));
+            toastService.ShowError(ErrorMessage);
         }
     }
 }

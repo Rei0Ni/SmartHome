@@ -4,17 +4,17 @@
 
 <PageTitle>Manage Users</PageTitle>
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <Authorized>
         @if (!context.User.IsInRole("Admin"))
         {
-            toastService.Notify(new(ToastType.Warning, IconName.ExclamationTriangle, "Not Authorized", "You are NOT Authorized to be Here"));
+            toastService.ShowWarning("You are NOT Authorized to be Here");
         }
 
         <!-- Header Section -->
         <div class="flex justify-between items-center mb-6 px-4">
-            <h3 class="text-2xl font-semibold text-gray-800">Manage Users</h3>
-            <button class="px-4 py-2  text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2" style="background-color:var(--primary)"
+            <h3 class="text-2xl font-semibold text-gray-800 dark:text-gray-50">Manage Users</h3>
+            <button class="px-4 py-2  text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 cursor-pointer" style="background-color:var(--primary)"
             @onclick="NavigateToUserCreation">
                 <i class="bi bi-person-plus"></i>
                 New User
@@ -22,10 +22,10 @@
         </div>
 
         <!-- Users Table -->
-        <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-            <div class="overflow-x-auto rounded-lg shadow-sm border border-gray-200">
+        <div class="bg-background shadow-sm overflow-hidden">
+            <div class="overflow-x-auto rounded-md shadow-sm border border-gray-200 dark:border-gray-700">
                 @if (isLoading){
-                    <div class="text-center py-12">
+                    <div class="text-center bg-gray-50 dark:text-gray-50 dark:bg-[#393E46] py-12">
                         <p>Loading Users</p>
                         <div class="flex justify-center align-center mt-2" role="status">
                             <svg aria-hidden="true" class="inline w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -39,48 +39,48 @@
                 else{
                     @if (users.Count == 0)
                     {
-                        <div class="text-center py-12">
-                            <p>There are no users here yet.</p>
-                            <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                        <div class="text-center p-8 bg-gray-50 dark:bg-[#393E46] flex flex-col justify-center items-center rounded-md">
+                            <span class="dark:text-gray-50 mb-6">There are no Users here yet.</span>
+                            <button class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer"
                                     style="background-color:var(--primary)"
                                     onmouseover="this.style.opacity='0.85'"
                                     onmouseout="this.style.opacity='1'"
                                     @onclick="NavigateToUserCreation">
-                                Create a New User
+                                Create New Device
                             </button>
                         </div>
                     }
                     else
                     {
                         <table class="w-full min-w-[800px]">
-                            <thead class="bg-gray-50">
+                            <thead class="bg-gray-50 dark:bg-[#927FBF]">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Username</th>
-                                    <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700">First Name</th>
-                                    <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700">Last Name</th>
-                                    <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700 break-all">Email</th>
-                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Last Login</th>
-                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Role</th>
-                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Username</th>
+                                    <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">First Name</th>
+                                    <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Last Name</th>
+                                    <th class="hidden sm:table-cell px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200 break-all">Email</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Last Login</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Role</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 dark:text-gray-200">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
+                            <tbody class="bg-white dark:bg-[#393E46] divide-y divide-gray-200">
                                 @foreach (var user in users)
                                 {
-                                    <tr class="hover:bg-gray-50 transition-colors">
-                                        <td class="px-4 py-3 text-sm text-gray-700">@user.Username</td>
-                                        <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700">@user.FirstName</td>
-                                        <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700">@user.LastName</td>
-                                        <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700 break-all">@user.Email</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">@user.LastLogin</td>
-                                        <td class="px-4 py-3 text-sm text-gray-700">@user.Role.Replace("_", " ")</td>
+                                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-500 transition-colors">
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@user.Username</td>
+                                        <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@user.FirstName</td>
+                                        <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@user.LastName</td>
+                                        <td class="hidden sm:table-cell px-4 py-3 text-sm text-gray-700 dark:text-gray-200 break-all">@(!string.IsNullOrEmpty(user.Email) ? user.Email : "N/A")</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@user.LastLogin</td>
+                                        <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-200">@user.Role.Replace("_", " ")</td>
                                         <td class="px-4 py-3">
                                             <div class="flex items-center gap-2">
-                                                <button class="px-3 py-1.5  text-white rounded-md hover:bg-blue-700 transition-colors text-sm" style="background-color:var(--primary)"
+                                                <button class="bg-primary px-3 py-1.5  text-white rounded-md hover:bg-blue-700 transition-colors text-sm cursor-pointer"
                                                         @onclick="@(() => navigationManager.NavigateTo($"/edit-user/{user.UserId.ToString()}"))">
                                                     Edit
                                                 </button>
-                                                <button class="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
+                                                <button class="px-3 py-1.5 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm cursor-pointer"
                                                         @onclick="() => ConfirmDelete(user)">
                                                     Delete
                                                 </button>
@@ -96,34 +96,49 @@
         </div>
     </Authorized>
     <NotAuthorized>
-        @{
-            navigationManager.NavigateTo("/");
-        }
+        <div class="text-center p-6 sm:p-8">
+            <div class="mx-auto max-w-md">
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <h3 class="mt-2 text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-50 mb-2">Unauthorized Access</h3>
+                <p class="text-gray-600 dark:text-gray-200 text-sm sm:text-base">You don't have permission to manage users.</p>
+            </div>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
 
 <!-- Delete Modal -->
 @if (showDeleteModal)
 {
-    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white rounded-lg p-6 max-w-xs w-full mx-4">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold m-0">Confirm Deletion</h3>
-                <button class="text-gray-500 hover:text-gray-700 flex items-center gap-2"
-                @onclick="CloseDeleteModal">
-                    <i class="fas fa-x text-md text-black pe-2"></i>
-                </button>
+    <div class="fixed inset-0 z-50">
+        <div class="flex items-center justify-center min-h-screen px-4 text-center">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 dark:bg-black opacity-75"></div>
             </div>
-            <p class="mb-6 text-gray-600">Are you sure you want to delete @selectedUser?.Username?</p>
-            <div class="flex justify-end gap-3">
-                <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
-                @onclick="CloseDeleteModal">
-                    Cancel
-                </button>
-                <button class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                @onclick="DeleteUser">
-                    Delete
-                </button>
+            <div class="inline-block align-middle bg-white dark:bg-[#393E46] rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full max-w-lg mx-4 my-8 z-10">
+                <div class="bg-white dark:bg-[#393E46] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">Confirm Deletion</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-200">Are you sure you want to delete @selectedUser?.Username?</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-800 px-4 py-3 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                    <button type="button"
+                            class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-600 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-50 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none sm:text-sm cursor-pointer"
+                            @onclick="CloseDeleteModal">
+                        Cancel
+                    </button>
+                    <button type="button"
+                            class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none sm:text-sm cursor-pointer"
+                            @onclick="DeleteUser">
+                        Delete
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -191,12 +206,12 @@
             if (result.IsSuccessStatusCode)
             {
                 users.Remove(selectedUser);
-				toastService.Notify(new(ToastType.Success, IconName.CheckCircle, "Success", $"{selectedUser.Username} has been deleted successfully"));
+				toastService.ShowSuccess($"{selectedUser.Username} has been deleted successfully");
             }
             else
             {
                 // Show error message in toast
-				toastService.Notify(new(ToastType.Danger, IconName.Bug, "Error", $"Failed to delete {selectedUser.Username}"));
+				toastService.ShowError($"Failed to delete {selectedUser.Username}");
             }
             showDeleteModal = false;
             selectedUser = null;

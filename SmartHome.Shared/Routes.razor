@@ -14,19 +14,18 @@
                     navigationManager.NavigateTo("/connectionerror");
                 }
                 @if (routeData.PageType == typeof(Pages.Entry))
-                {
-                    <RouteView RouteData="@routeData" />
+                { 
+                    <RouteView RouteData="@routeData" DefaultLayout="typeof(AuthLayout)" />
                 }
                 else
                 {
                     <AuthorizeRouteView RouteData="@routeData" DefaultLayout="typeof(AuthLayout)">
                         <Authorizing>
                             <div class="flex flex-col justify-center items-center h-full">
-                                <div class="flex justify-center">
-                                    <span class="loader"></span>
-                                </div>
+                                <img src="_content/SmartHome.Shared/imgs/Loading_Lamp.svg" />
+
                                 <div class="mt-3 flex justify-center">
-                                    <span class="fw-bold fs-3">Smart Home</span>
+                                    <span class="text-2xl font-semibold dark:text-gray-50">Smart Home</span>
                                 </div>
                             </div>
                         </Authorizing>
@@ -62,6 +61,19 @@
     protected override async Task OnInitializedAsync()
     {
         await SettingsService.LoadSettingsAsync();
+        refreshService.OnRefreshRequested += HandleRefreshRequested;
         await base.OnInitializedAsync();
+    }
+
+    private void HandleRefreshRequested()
+    {
+        // Reload the page using NavigationManager.
+        navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        // Unsubscribe to avoid memory leaks.
+        refreshService.OnRefreshRequested += HandleRefreshRequested;
     }
 }

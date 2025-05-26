@@ -67,7 +67,7 @@ namespace SmartHome.Application.Services
                             var type when type == DeviceTypes.PIR_MOTION_SENSOR => "PIR",
                             _ => throw new InvalidOperationException($"Unknown device type {device.DeviceTypeId}")
                         },
-                        pin = device.Pins.First().PinNumber,
+                        pin = device.Pin,
                         mode = device.DeviceType.Type switch
                         {
                             var type when type == DeviceTypes.Lamp => "OUTPUT",

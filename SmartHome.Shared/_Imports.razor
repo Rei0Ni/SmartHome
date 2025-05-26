@@ -17,11 +17,19 @@
 @using SmartHome.Shared.Models
 
 @using SmartHome.Dto.User
+@* @using TailBlazor.Toast.Services *@
+@* @using TailBlazor.Toast.Configuration *@
+@* @using TailBlazor.Toast *@
+@* @using TailBlazor.HeroIcons *@
 
-@using BlazorBootstrap
+@using Blazored.Toast
+@using Blazored.Toast.Configuration
+@using Blazored.Toast.Services
+
+@* @using BlazorBootstrap *@
 
 @* @inject IAuthService authService *@
-@inject ToastService toastService
+@inject IToastService toastService
 @inject RefreshService refreshService
 @inject JwtAuthStateProvider authStateProvider
 @inject NavigationManager navigationManager
@@ -33,3 +41,4 @@
 @inject IPlatformDetectionService PlatformDetectionService
 @inject INetworkMonitor NetworkMonitor
 @inject ISettingsService SettingsService
+@inject IThemeService ThemeService

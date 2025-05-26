@@ -15,8 +15,6 @@ namespace SmartHome.Domain.Entities
 
         public string? TOTPSecret { get; set; }
 
-        public string? ProfilePictureUrl { get; set; }
-
         public virtual DateTime? LastLogin { get; set; } = null;
         public virtual DateTime? CreationDate { get; set; } = DateTime.Now;
     }

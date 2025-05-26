@@ -1,0 +1,95 @@
+﻿@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    --primary: #6750A4;
+    --on-primary: #FFFFFF;
+    --secondary: #625B71;
+    --on-secondary: #FFFFFF;
+    --background: #FFFBFE;
+    --surface: #FFFFFF;
+    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1));
+    --on-surface: #1C1B1E;
+    --error: #B3261E;
+    --on-error: #FFFFFF;
+    --body-light: #F3F2FD;
+    --menu-bg: #F3F2FD;
+    --menubar-color: #625871;
+    --fan-card-bg-on: #F9FFF4;
+    --fan-card-bg-off: #fbfbfb;
+    --fan-on-stroke: #808080;
+    --fan-off-stroke: #059212;
+    --fan-slider-thumb-color: #059212;
+    --fan-indicator-on: #059212;
+    --fan-indicator-off: #808080;
+    --lamp-card-bg-on: #FFFDEB;
+    --lamp-card-bg-off: #FBFBFB;
+    --lamp-indicator-on: #FBB03B;
+    --lamp-indicator-off: #808080;
+    --ipcamera-card-bg-on: #ECF8F5;
+    --ipcamera-card-bg-off: #FBFBFB;
+    --auth-title: #2E0163;
+}
+
+.dark {
+    --primary: #6750A4;
+    --on-primary: #381E72;
+    --secondary: #CCC2DC;
+    --on-secondary: #332D41;
+    --background: #1e1e1e;
+    --surface: #282828;
+    --surface-variant: linear-gradient(168deg, rgba(83,67,124,1), rgba(96,60,84,1));
+    --on-surface: #E6E1E5;
+    --error: #F2B8B5;
+    --on-error: #601410;
+    --body-light: #2B2930;
+    --menu-bg: #2B2930;
+    --menubar-color: #CAC2DD;
+    --fan-card-bg-on: #1A2B17;
+    --fan-card-bg-off: #252525;
+    --fan-on-stroke: #808080;
+    --fan-off-stroke: #059212;
+    --fan-slider-thumb-color: #059212;
+    --fan-indicator-on: #059212;
+    --fan-indicator-off: #808080;
+    --lamp-card-bg-on: #2E2A10;
+    --lamp-card-bg-off: #252525;
+    --lamp-indicator-on: #FBB03B;
+    --lamp-indicator-off: #808080;
+    --ipcamera-card-bg-on: #143833;
+    --ipcamera-card-bg-off: #252525;
+    --auth-title: oklch(87.2% 0.01 258.338);
+}
+
+.bg-primary {
+    background-color: var(--primary);
+}
+
+.text-on-primary {
+    color: var(--on-primary);
+}
+
+.bg-surface {
+    background-color: var(--surface);
+}
+
+.bg-background {
+    background-color: var(--background);
+}
+
+.text-on-surface {
+    color: var(--on-surface);
+}
+
+.bg-fan-on {
+    background-color: var(--fan-card-bg-on);
+}
+
+.bg-lamp-on {
+    background-color: var(--lamp-card-bg-on);
+}
+
+.auth-title{
+    color: var(--auth-title);
+}

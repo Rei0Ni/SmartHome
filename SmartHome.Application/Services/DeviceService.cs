@@ -15,13 +15,11 @@ using SmartHome.Application.Interfaces;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Interfaces.Device;
-using SmartHome.Application.Interfaces.DeviceFunction;
 using SmartHome.Application.Interfaces.DeviceType;
 using SmartHome.Application.Interfaces.Hubs;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.Command;
 using SmartHome.Dto.Device;
-using SmartHome.Dto.DeviceFunction;
 using SmartHome.Dto.DeviceType;
 using SmartHome.Dto.Sensors;
 using SmartHome.Enum;
@@ -34,7 +32,7 @@ namespace SmartHome.Application.Services
         private readonly IDeviceRepository _deviceRepository;
         private readonly IDeviceTypeService _deviceTypeService;
         private readonly IDeviceTypeRepository _deviceTypeRepository;
-        private readonly IDeviceFunctionService _deviceFunctionService;
+        //private readonly IDeviceFunctionService _deviceFunctionService;
         private readonly IAreaRepository _areaRepository;
         private readonly IControllerRepository _controllerRepository;
         private readonly IHubContext<OverviewHub> _overviewHubContext;
@@ -53,7 +51,7 @@ namespace SmartHome.Application.Services
             IValidator<DeleteDeviceDto> deleteDeviceDtoValidator,
             IMapper mapper,
             IDeviceTypeService deviceTypeService,
-            IDeviceFunctionService deviceFunctionService,
+            //IDeviceFunctionService deviceFunctionService,
             IDeviceTypeRepository deviceTypeRepository,
             IAreaRepository areaRepository,
             IHubContext<OverviewHub> overviewHubContext,
@@ -68,7 +66,7 @@ namespace SmartHome.Application.Services
             _deleteDeviceDtoValidator = deleteDeviceDtoValidator;
             _mapper = mapper;
             _deviceTypeService = deviceTypeService;
-            _deviceFunctionService = deviceFunctionService;
+            //_deviceFunctionService = deviceFunctionService;
             _deviceTypeRepository = deviceTypeRepository;
             _areaRepository = areaRepository;
             _overviewHubContext = overviewHubContext;
@@ -163,21 +161,8 @@ namespace SmartHome.Application.Services
                 throw new KeyNotFoundException("Device Type Not Found found");
             }
 
-            var deviceFunctions = new List<DeviceFunctionDto>();
-
-            foreach (var deviceFunctionId in deviceType.Functions)
-            {
-                var deviceFunction = await _deviceFunctionService.GetDeviceFunction(deviceFunctionId);
-                if (deviceFunction == null)
-                {
-                    throw new Exception("one or more Device Functions not found");
-                }
-                deviceFunctions.Add(deviceFunction);
-            }
-
             var dto = _mapper.Map<DeviceDto>(device);
             dto.DeviceType = deviceType;
-            dto.DeviceFunctions = deviceFunctions;
 
             return dto;
         }

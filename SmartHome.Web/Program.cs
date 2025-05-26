@@ -7,6 +7,8 @@ using SmartHome.Shared.Providers;
 using SmartHome.Shared.Services;
 using SmartHome.Web.Components;
 using SmartHome.Web.Services;
+using TailBlazor.Toast;
+using Blazored.Toast;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,12 +41,16 @@ builder.Services.AddScoped<IHubService, HubService>();
 builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
 builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
 builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
+builder.Services.AddScoped<IThemeService, ThemeService>();
+
 builder.Services.AddSingleton<INetworkMonitor, NetworkMonitor>();
 builder.Services.AddSingleton<IHostStatusService, HostStatusService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();
 
 
-builder.Services.AddBlazorBootstrap();
+//builder.Services.AddBlazorBootstrap();
+//builder.Services.AddTailBlazorToast();
+builder.Services.AddBlazoredToast();
 builder.Services.AddSingleton<RefreshService>();
 
 // Configure global JSON options

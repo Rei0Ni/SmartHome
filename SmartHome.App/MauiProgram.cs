@@ -8,6 +8,8 @@ using SmartHome.Shared.Services;
 using Serilog;
 using Serilog.Sinks.File;
 using Serilog.Extensions.Logging;
+using TailBlazor.Toast;
+using Blazored.Toast;
 
 namespace SmartHome.App
 {
@@ -41,13 +43,17 @@ namespace SmartHome.App
             builder.Services.AddScoped<ISecureStorageService, SecureStorageService>();
             builder.Services.AddScoped<IPlatformDetectionService, PlatformDetectionService>();
             builder.Services.AddScoped<IHostConfigurationCheckService, HostConfigurationCheckService>();
-            builder.Services.AddScoped<ISettingsService, SettingsService>();
+            builder.Services.AddScoped<IThemeService, ThemeService>();
+
 
             builder.Services.AddSingleton<IHostStatusService, HostStatusService>();
+            builder.Services.AddSingleton<ISettingsService, SettingsService>();
             builder.Services.AddSingleton<INetworkMonitor, NetworkMonitor>();
             builder.Services.AddSingleton<IConnectivity>(Connectivity.Current);
 
-            builder.Services.AddBlazorBootstrap();
+            //builder.Services.AddBlazorBootstrap();
+            //builder.Services.AddTailBlazorToast();
+            builder.Services.AddBlazoredToast();
 
             // Configure global JSON options
             builder.Services.Configure<JsonSerializerOptions>(options =>

@@ -13,7 +13,6 @@ namespace SmartHome.Domain.Entities
         public string Name { get; set; } // e.g., "Lamp", "Temperature Sensor"
         public DeviceTypes Type { get; set; }
 
-        public ICollection<Guid> Functions { get; set; } = new List<Guid>();
         public ICollection<Guid> Devices { get; set; } = new List<Guid>();
     }
 }

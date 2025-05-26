@@ -248,7 +248,7 @@ namespace SmartHome.Application.Services.User
 
             var userRoles = await _userManager.GetRolesAsync(user);
 
-            var token = _jwtTokenService.GenerateJwtToken(user.Id.ToString(), user.UserName!, user.Email!, user.ProfilePictureUrl!, userRoles);
+            var token = _jwtTokenService.GenerateJwtToken(user.Id.ToString(), user.UserName!, user.Email!, userRoles);
 
             user.LastLogin = DateTime.UtcNow;
 
@@ -385,7 +385,6 @@ namespace SmartHome.Application.Services.User
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Email = user.Email,
-                    ProfilePictureUrl = user.ProfilePictureUrl
                 };
                 return new ApiResponse<object>
                 {
@@ -403,7 +402,6 @@ namespace SmartHome.Application.Services.User
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     AllowedAreas = allowedAreas.AllowedAreaIds,
-                    ProfilePictureUrl = user.ProfilePictureUrl
                 };
                 return new ApiResponse<object>
                 {
@@ -453,11 +451,6 @@ namespace SmartHome.Application.Services.User
             if (user == null)
             {
                 throw new Exception("User not found");
-            }
-
-            if (string.IsNullOrEmpty(user.ProfilePictureUrl))
-            {
-                throw new Exception("Profile picture not found");
             }
 
             var files = Directory.EnumerateFiles(ProfilePicturesPath, user.Id + ".*");
@@ -513,19 +506,6 @@ namespace SmartHome.Application.Services.User
                 {
                     Status = ApiResponseStatus.Error.ToString(),
                     Message = "Failed to save profile picture"
-                };
-            }
-
-            // Update user's profile picture URL
-            user.ProfilePictureUrl = relativeUrl; // store the relative URL
-            var result = await _userManager.UpdateAsync(user);
-
-            if (!result.Succeeded)
-            {
-                return new ApiResponse<object>
-                {
-                    Status = ApiResponseStatus.Error.ToString(),
-                    Message = "Failed to update user profile"
                 };
             }
 

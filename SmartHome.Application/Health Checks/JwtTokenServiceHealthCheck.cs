@@ -23,7 +23,7 @@ namespace SmartHome.Application.Health_Checks
         {
             try
             {
-                var token = _jwtTokenService.GenerateJwtToken("033ff606-a778-41a5-aa48-fc97437bc59b", "test", "test@test.com", null, ["ADMIN"]);
+                var token = _jwtTokenService.GenerateJwtToken("033ff606-a778-41a5-aa48-fc97437bc59b", "test", "test@test.com", ["ADMIN"]);
                 _jwtTokenService.ValidateJwtToken(token);
 
                 return new ComponentHealthCheckDto()

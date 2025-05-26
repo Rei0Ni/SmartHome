@@ -7,16 +7,16 @@
 
 <PageTitle>Edit Controller</PageTitle>
 
-<AuthorizeView>
+<AuthorizeView Roles="Admin">
     <Authorized>
         @{
             IsAdmin = context.User.IsInRole("Admin");
         }
 
-        <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-sm border border-gray-200">
-            <div class="px-6 py-5 border-b border-gray-200">
-                <h3 class="text-xl sm:text-2xl font-bold text-gray-800">Edit Controller</h3>
-                <p class="text-gray-600 mt-2 text-sm sm:text-base">Fill in the details below to update the controller</p>
+        <div class="max-w-4xl mx-auto bg-surface rounded-lg shadow-sm mb-3 border border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-50">Edit Controller</h3>
+                <p class="text-gray-600 dark:text-gray-50 mt-2 text-sm sm:text-base">Fill in the details below to update the controller</p>
             </div>
 
             <EditForm Context="controllerEditContext"
@@ -30,10 +30,10 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                         <!-- Name Field -->
                         <div>
-                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">Controller Name</label>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-50 mb-1">Controller Name</label>
                             <div class="mt-1">
                                 <InputText @bind-Value="NewController.Name"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                            placeholder="Enter controller name" />
                                 <ValidationMessage For="@(() => NewController.Name)"
                                                    class="text-red-600 text-sm mt-1" />
@@ -42,10 +42,10 @@
 
                         <!-- MAC Address Field -->
                         <div>
-                            <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">MAC Address</label>
+                            <label class="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-50 mb-1">MAC Address</label>
                             <div class="mt-1">
                                 <InputText @bind-Value="NewController.MACAddress"
-                                           class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                           class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                            placeholder="00:1A:2B:3C:4D:5E" />
                                 <ValidationMessage For="@(() => NewController.MACAddress)"
                                                    class="text-red-600 text-sm mt-1" />
@@ -55,10 +55,10 @@
 
                     <!-- IP Address Field -->
                     <div>
-                        <label class="block text-sm sm:text-base font-medium text-gray-700 mb-1">IP Address</label>
+                        <label class="block text-sm sm:text-base font-medium text-gray-700 dark:text-gray-50 mb-1">IP Address</label>
                         <div class="mt-1">
                             <InputText @bind-Value="NewController.IPAddress"
-                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                       class="w-full px-3 py-2 border border-gray-300 dark:bg-white rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                        placeholder="192.168.1.1" />
                             <ValidationMessage For="@(() => NewController.IPAddress)"
                                                class="text-red-600 text-sm mt-1" />
@@ -83,12 +83,14 @@
                     <!-- Submit Button -->
                     <div class="pt-4 sm:pt-6">
                         <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white cursor-pointer"
                                 style="background-color:var(--primary)"
                                 onmouseover="this.style.opacity='0.85'"
                                 onmouseout="this.style.opacity='1'">
-                            <i class="bi bi-pencil-square"></i>
-                            Update Controller
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                            </svg>
+                            Save Changes
                         </button>
                     </div>
                 </div>
@@ -98,10 +100,11 @@
     <NotAuthorized>
         <div class="text-center p-6 sm:p-8">
             <div class="mx-auto max-w-md">
-                <i class="fas fa-ban text-red-500 text-3xl sm:text-4xl mb-4"></i>
-                <h3 class="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Unauthorized Access</h3>
-                <p class="text-gray-600 text-sm sm:text-base">You don't have permission to edit controllers</p>
-                <p class="text-gray-600 text-sm sm:text-base">You don't have permission to edit controllers</p>
+                <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <h3 class="mt-2 text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-50 mb-2">Unauthorized Access</h3>
+                <p class="text-gray-600 dark:text-gray-200 text-sm sm:text-base">You don't have permission to edit controllers.</p>
             </div>
         </div>
     </NotAuthorized>
@@ -130,12 +133,12 @@
             }
             else
             {
-                toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Failed to load Controller data.", "Couldn't load the Controller Data"));
+                toastService.ShowError("Couldn't load the Controller Data");
             }
         }
         else
         {
-            toastService.Notify(new ToastMessage(ToastType.Danger, IconName.Bug, "Failed to load Controller data.", "Couldn't load the Controller Data"));
+            toastService.ShowError("Couldn't load the Controller Data");
         }
     }
 
@@ -148,7 +151,7 @@
 
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
-                toastService.Notify(new ToastMessage(ToastType.Success, IconName.HandThumbsUp, "Controller Updated Successfully", "The Controller was Updated Successfully"));
+                toastService.ShowSuccess("The Controller was Updated Successfully");
                 NewController = new UpdateControllerDto();
                 StateHasChanged();
                 navigationManager.NavigateTo("/manage-controllers", false, false);

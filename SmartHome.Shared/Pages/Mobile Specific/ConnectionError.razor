@@ -79,7 +79,7 @@
         }
         else
         {
-            toastService.Notify(new(ToastType.Danger, IconName.Bug, "Platform Mismatch", "This Functionality is not designed for this Platform"));
+            toastService.ShowError("This Functionality is not designed for this Platform");
         }
     }
 

@@ -29,8 +29,8 @@ namespace SmartHome.Application.Validations.Device
                 .NotEmpty().WithMessage("AreaId is required.");
             RuleFor(x => x.DeviceTypeId)
                 .NotEmpty().WithMessage("DeviceType is required.");
-            RuleFor(x => x.Pins)
-                .NotEmpty().WithMessage("Pins is required.");
+            RuleFor(x => x.Pin)
+                .NotEmpty().WithMessage("Pin is required.");
         }
     }
 }

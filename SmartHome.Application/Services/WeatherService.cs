@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Serilog;
 using SmartHome.Application.Interfaces.Weather;
 using SmartHome.Domain.Entities;
@@ -15,12 +16,14 @@ namespace SmartHome.Application.Services
     {
         private readonly IOpenWeatherMapService _openWeatherMapService;
         private readonly IWeatherRepository _weatherRepository;
+        public IMapper _mapper;
         private readonly TimeSpan _cacheDuration = TimeSpan.FromMinutes(15);
 
-        public WeatherService(IOpenWeatherMapService openWeatherMapService, IWeatherRepository weatherRepository)
+        public WeatherService(IOpenWeatherMapService openWeatherMapService, IWeatherRepository weatherRepository, IMapper mapper)
         {
             _openWeatherMapService = openWeatherMapService;
             _weatherRepository = weatherRepository;
+            _mapper = mapper;
         }
         public async Task<WeatherResponse> GetWeatherAsync()
         {
@@ -52,7 +55,8 @@ namespace SmartHome.Application.Services
 
             if (isCacheValid)
             {
-                return Weather!.WeatherDataJson;
+                var WeatherResponse = _mapper.Map<WeatherResponse>(Weather!.WeatherDataJson);
+                return WeatherResponse;
             }
 
 
@@ -62,7 +66,8 @@ namespace SmartHome.Application.Services
             try
             {
                 // Your IOpenWeatherMapService needs to handle fetching by different identifiers
-                var WeatherResponse = await _openWeatherMapService.GetCurrentWeatherJsonAsync();
+                var weatherData = await _openWeatherMapService.GetCurrentWeatherJsonAsync();
+                var WeatherResponse = _mapper.Map<SmartHome.Domain.Necessities.Weather.WeatherResponse>(weatherData);
 
                 // 3. Save to Cache (overwriting the single cached item)
                 var newWeather = new Weather
@@ -74,7 +79,7 @@ namespace SmartHome.Application.Services
                 await _weatherRepository.SaveOrUpdateWeatherAsync(newWeather);
 
                 Log.Information($"Fetched and cached new weather for {CityKey}");
-                return WeatherResponse;
+                return weatherData;
             }
             catch (HttpRequestException ex)
             {
@@ -83,7 +88,7 @@ namespace SmartHome.Application.Services
                 if (Weather != null)
                 {
                     Log.Error($"API error, serving expired cache for {CityKey} as fallback");
-                    return Weather.WeatherDataJson;
+                    return _mapper.Map<WeatherResponse>(Weather!.WeatherDataJson);
                 }
                 throw; // Re-throw if no cache is available
             }

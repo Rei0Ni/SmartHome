@@ -38,7 +38,7 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
 
         <div class="flex items-center justify-between w-full">
             <div>
-                <h3 class="text-gray-600 text-sm font-normal">@DeviceModel.Name</h3>
+                <span class="text-gray-600 dark:text-gray-50 text-md font-normal">@DeviceModel.Name</span>
             </div>
             @if (!isPowerOn)
             {
@@ -61,23 +61,33 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
 {
     <div class="fixed inset-0 flex items-center justify-center z-50">
         <!-- transparent background -->
-        <div class="absolute inset-0 bg-black bg-opacity-50" @onclick="() => showModal = false"></div>
+        <div class="absolute inset-0 bg-black opacity-75" @onclick="() => showModal = false"></div>
 
         <!--  start Modal -->
-        <div class="relative bg-white rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
+        <div class="relative bg-surface rounded-xl shadow-2xl w-11/12 sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 z-50 flex flex-col gap-4">
             <!-- close button -->
-            <button class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" @onclick="() => showModal = false">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+            @* <button class="absolute top-3 right-3 text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400 cursor-pointer" @onclick="() => showModal = false"> *@
+            @*     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" *@
+            @*     viewBox="0 0 24 24" stroke="currentColor"> *@
+            @*         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" *@
+            @*         d="M6 18L18 6M6 6l12 12" /> *@
+            @*     </svg> *@
+            @* </button> *@
 
-            <h2 class="text-xl font-semibold text-gray-700 text-center">@DeviceModel.Name</h2>
+            @* <span class="text-xl font-semibold text-gray-700 dark:text-gray-50 text-center">@DeviceModel.Name</span> *@
+
+            <div class="flex items-center justify-between">
+                <div class="h-6 w-6"></div>
+                <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-50 text-center">@DeviceModel.Name</h2>
+                <button class="text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400 z-10 cursor-pointer" @onclick="() => showModal = false">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
             <!-- state lamp toggle on / off -->
-            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 press-effect origin-center">
+            <div class="flex items-center justify-between p-2 rounded-xl shadow-md bg-gray-50 dark:bg-gray-700 press-effect origin-center">
                 <div class="flex items-center gap-2">
                     @if (isPowerOn)
                     {
@@ -87,14 +97,14 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
                     else
                     {
                         <img src="_content/SmartHome.Shared/imgs/Lamp_Off.svg" alt="Lamp off" class="w-8 h-8 object-contain">
-                        <span class="text-sm text-gray-600 font-medium">Lamp Off</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-50 font-medium">Lamp Off</span>
                     }
                 </div>
 
                 @* @if (isPowerOn) *@
                 @* { *@
                 <!-- Toggle switch enabled -->
-                
+
                 @* <input id="checkboxInput" type="checkbox" checked="@isPowerOn" @onchange="ToggleDevicePower" /> *@
                 @* <label class="toggleSwitch" for="checkboxInput"> *@
                 @*     <svg class="slider" *@
@@ -107,12 +117,12 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
                 @* </label> *@
                 <div class="flex items-center justify-center">
                     <div @onclick="ToggleDevicePower"
-                         class="relative inline-flex items-center h-7 rounded-full w-12 cursor-pointer
+                    class="relative inline-flex items-center h-7 rounded-full w-12 cursor-pointer
                             transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                         style="background-color: @(!isPowerOn ? "var(--lamp-indicator-off)" : $"var(--lamp-indicator-on)");">
+                    style="background-color: @(!isPowerOn ? "var(--lamp-indicator-off)" : $"var(--lamp-indicator-on)");">
 
                         <span aria-hidden="true"
-                              class="inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0
+                        class="inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0
                                  transition duration-200 ease-in-out
                                  @(isPowerOn ? "translate-x-6" : "translate-x-1")">
                         </span>
@@ -122,27 +132,32 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
             </div>
 
             <!-- Range Slider -->
-            <div class="flex flex-col items-center gap-4">
+            <div class="flex flex-col items-center gap-4 mt-4">
                 <div class="form-element">
-                    <div id="rangeValue">@brightnessValue%</div>
-                    <input type="range"
-                    id="brightnessRange"
-                    min="5"
-                    max="100"
-                    @bind="brightnessValue"
-                    @bind:event="oninput"
-                    @onchange="SetBrightnessAsync" />
+                    <div class="text-2xl font-medium text-center @(isPowerOn ? "dark:text-gray-50" : "dark:text-gray-500") mb-3">@brightnessValue%</div>
+                    @if (isPowerOn)
+                    {
+                        <input type="range"
+                               id="brightnessRange"
+                               min="5"
+                               max="100"
+                               @bind="brightnessValue"
+                               @bind:event="oninput"
+                               @onchange="SetBrightnessAsync" />
+                    }
+                    else
+                    {
+                        <input type="range"
+                               id="brightnessRange"
+                               min="5"
+                               max="100"
+                               @bind="brightnessValue"
+                               @bind:event="oninput"
+                               @onchange="SetBrightnessAsync" disabled/>
+                    }
                 </div>
 
                 <style>
-                    .form-element #rangeValue {
-                    margin-bottom: 20px;
-                    font-size: 20px;
-                    font-family: "Raleway";
-                    text-align: center;
-                    color: #ddd;
-                    }
-
                     .form-element input[type="range"] {
                     -webkit-appearance: none;
                     width: 300px;
@@ -157,7 +172,7 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
                     -webkit-appearance: none;
                     width: 40px;
                     height: 40px;
-                    background: #fbb03b;
+                    background: var(--lamp-indicator-on);
                     border-radius: 10px;
                     box-shadow: -350px 0px 0px 340px #fbb03b;
                     cursor: pointer;
@@ -246,28 +261,31 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
                     {
                         DeviceModel.State["power_state"] = desiredState ? "on" : "off";
                     }
-                    StateHasChanged();
                 }
                 else
                 {
                     Console.WriteLine($"Command failed: {commandResponse?.Devices?[0]?.Message ?? "Unknown error"}");
+                    toastService.ShowError(commandResponse?.Devices?[0]?.Message ?? "Unknown Error");
                 }
             }
             else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
             {
                 Console.WriteLine("Controller Unavailable. Please try again later.");
-                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+                // toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+                toastService.ShowError("Controller Unavailable. Please try again later.");
             }
             else if (result.StatusCode == HttpStatusCode.RequestTimeout)
             {
                 Console.WriteLine("Controller Unavailable. Please try again later.");
-                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+                // toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+                toastService.ShowError("Controller Couldn't Respond in Time or is Unavailable. Please try again later.");
             }
             else
             {
                 Console.WriteLine("Internal Server Error");
-                StateHasChanged();
+                toastService.ShowError("Controller Couldn't Respond in Time or is Unavailable. Please try again later.");
             }
+            StateHasChanged();
         }
         catch (Exception ex)
         {
@@ -326,12 +344,14 @@ style="@(!isPowerOn ? "background-color: var(--lamp-card-bg-off);" : "background
             else if (result.StatusCode == HttpStatusCode.ServiceUnavailable || result.StatusCode == HttpStatusCode.GatewayTimeout)
             {
                 Console.WriteLine("Controller Unavailable. Please try again later.");
-                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+                // toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Unavailable. Please try again later."));
+                toastService.ShowError("Controller Unavailable. Please try again later.");
             }
             else if (result.StatusCode == HttpStatusCode.RequestTimeout)
             {
                 Console.WriteLine("Controller Unavailable. Please try again later.");
-                toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+                // toastService.Notify(new(ToastType.Danger, IconName.ExclamationTriangle, "An Error Occured", "Controller Couldn't Respond in Time or is Unavailable. Please try again later."));
+                toastService.ShowError("Controller Couldn't Respond in Time or is Unavailable. Please try again later.");
             }
             else
             {

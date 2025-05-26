@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SmartHome.Dto.DeviceFunction;
 using SmartHome.Dto.DeviceType;
 
 namespace SmartHome.Dto.Device
@@ -18,12 +17,12 @@ namespace SmartHome.Dto.Device
         public string Manufacturer { get; set; } = "Unknown";
         public string SerialNumber { get; set; } = "Unknown";
 
-        public ICollection<DevicePin> Pins { get; set; } = new List<DevicePin>();
+        public int Pin { get; set; }
         public Dictionary<string, object> State { get; set; } = new();
 
         public Guid DeviceTypeId { get; set; }
         public DeviceTypeDto DeviceType { get; set; }
-        public List<DeviceFunctionDto> DeviceFunctions { get; set; }
+        //public List<DeviceFunctionDto> DeviceFunctions { get; set; }
 
         public DateTime LastUpdated { get; set; }
         public Guid AreaId { get; set; }

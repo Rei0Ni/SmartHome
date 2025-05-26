@@ -5,15 +5,15 @@
 
 @if (isLoadingSettings)
 {
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Email Settings</h2>
-        <p><em>Loading email settings...</em></p>
+    <div class="bg-surface rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-50 mb-4 underline underline-offset-2">Email Settings</h2>
+        <p class="dark:text-gray-50"><em>Loading email settings...</em></p>
     </div>
 }
 else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
 {
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Email Settings</h2>
+    <div class="bg-surface rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-50 mb-4 underline underline-offset-2">Email Settings</h2>
         <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
             <span class="font-medium">Error loading email settings:</span> @settingsLoadErrorMessage
         </div>
@@ -21,49 +21,49 @@ else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
 }
 else
 {
-    <EditForm Model="EmailSettings" OnValidSubmit="SaveEmailSettingsAsync" class="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Email Settings</h2>
+    <EditForm Model="EmailSettings" OnValidSubmit="SaveEmailSettingsAsync" class="bg-surface rounded-xl shadow p-6 mb-6">
+        <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-50 mb-4 underline underline-offset-2">Email Settings</h2>
         <DataAnnotationsValidator />
         <ValidationSummary class="text-red-600 list-disc ml-4 mb-3" />
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <label class="block text-sm text-gray-700 mb-1">SMTP Server</label>
-                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.SmtpServer" />
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1">SMTP Server</label>
+                <InputText class="w-full p-2 border border-gray-300 dark:bg-white rounded-md" @bind-Value="EmailSettings.SmtpServer" />
                 <ValidationMessage For="@(() => EmailSettings.SmtpServer)" class="text-red-600 text-sm mt-1" />
             </div>
             <div>
-                <label class="block text-sm text-gray-700 mb-1">Port</label>
-                <InputNumber class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.Port" />
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1">Port</label>
+                <InputNumber class="w-full p-2 border border-gray-300 dark:bg-white rounded-md" @bind-Value="EmailSettings.Port" />
                 <ValidationMessage For="@(() => EmailSettings.Port)" class="text-red-600 text-sm mt-1" />
             </div>
             <div>
-                <label class="block text-sm text-gray-700 mb-1">Sender Email</label>
-                <InputText type="email" class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.SenderEmail" />
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1">Sender Email</label>
+                <InputText type="email" class="w-full p-2 border border-gray-300 dark:bg-white rounded-md" @bind-Value="EmailSettings.SenderEmail" />
                 <ValidationMessage For="@(() => EmailSettings.SenderEmail)" class="text-red-600 text-sm mt-1" />
             </div>
             <div>
-                <label class="block text-sm text-gray-700 mb-1">Sender Name</label>
-                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.SenderName" />
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1">Sender Name</label>
+                <InputText class="w-full p-2 border border-gray-300 dark:bg-white rounded-md" @bind-Value="EmailSettings.SenderName" />
                 <ValidationMessage For="@(() => EmailSettings.SenderName)" class="text-red-600 text-sm mt-1" />
             </div>
             <div>
-                <label class="block text-sm text-gray-700 mb-1">Username</label>
-                <InputText class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.Username" />
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1">Username</label>
+                <InputText class="w-full p-2 border border-gray-300 dark:bg-white rounded-md" @bind-Value="EmailSettings.Username" />
                 <ValidationMessage For="@(() => EmailSettings.Username)" class="text-red-600 text-sm mt-1" />
             </div>
             <div>
-                <label class="block text-sm text-gray-700 mb-1">Password</label>
-                <InputText type="password" class="w-full p-2 border border-gray-300 rounded-md" @bind-Value="EmailSettings.Password" />
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1">Password</label>
+                <InputText type="password" class="w-full p-2 border border-gray-300 dark:bg-white rounded-md" @bind-Value="EmailSettings.Password" />
                 <ValidationMessage For="@(() => EmailSettings.Password)" class="text-red-600 text-sm mt-1" />
             </div>
             <div class="flex items-center">
                 <InputCheckbox @bind-Value="EmailSettings.UseSsl" />
-                <label class="block text-sm text-gray-700 mb-1 ms-2">Use SSL</label>
+                <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1 ms-2">Use SSL</label>
             </div>
         </div>
-        <div class="flex justify-start items-center mt-6">
-            <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 me-4 transition" disabled="@isSaving">
+        <div class="flex flex-col justify-start items-start mt-6">
+            <button type="submit" class="bg-primary text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 me-4 transition cursor-pointer" disabled="@isSaving">
                 @if (isSaving)
                 {
                     <span class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
@@ -79,7 +79,7 @@ else
             </button>
             @if (!string.IsNullOrEmpty(SaveStatusMessage))
             {
-                <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") ml-4">
+                <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") mt-2">
                     @SaveStatusMessage
                 </div>
             }

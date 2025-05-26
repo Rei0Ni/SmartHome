@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SmartHome.Dto.Device;
-using SmartHome.Dto.DeviceFunction;
 using SmartHome.Dto.DeviceType;
 
 namespace SmartHome.Dto.Dashboard
@@ -19,6 +18,6 @@ namespace SmartHome.Dto.Dashboard
 
         public Guid AreaId { get; set; }
         public DeviceTypeDto DeviceType { get; set; }
-        public List<DeviceFunctionDto> DeviceFunctions { get; set; }
+        //public List<DeviceFunctionDto> DeviceFunctions { get; set; }
     }
 }

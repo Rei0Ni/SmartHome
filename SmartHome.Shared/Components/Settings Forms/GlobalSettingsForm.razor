@@ -4,12 +4,12 @@
 @using TimeZoneConverter
 @implements IDisposable
 
-<div class="bg-white rounded-xl shadow p-6 mb-6">
-    <h2 class="text-sm font-semibold text-gray-700 mb-4 underline underline-offset-2">Global Settings</h2>
+<div class="bg-surface rounded-xl shadow p-6 mb-6">
+    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-50 mb-4 underline underline-offset-2">Global Settings</h2>
 
     @if (isLoadingSettings)
     {
-        <p><em>Loading settings...</em></p>
+        <p class="dark:text-gray-50"><em>Loading settings...</em></p>
     }
     else if (!string.IsNullOrEmpty(settingsLoadErrorMessage))
     {
@@ -25,7 +25,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm text-gray-700 mb-1" for="systemTimeZone">System Time Zone</label>
+                    <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1" for="systemTimeZone">System Time Zone</label>
                     @if (isLoadingTimeZones)
                     {
                         <InputSelect id="systemTimeZone" class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" @bind-Value="SystemTimeZoneId" disabled>
@@ -56,7 +56,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm text-gray-700 mb-1" for="globalTheme">Global Theme</label>
+                    <label class="block text-sm text-gray-700 dark:text-gray-50 mb-1" for="globalTheme">Global Theme</label>
                     <InputSelect id="globalTheme" class="w-full p-2 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" @bind-Value="GlobalTheme">
                         <option value="Light">Light</option>
                         <option value="Dark">Dark</option>
@@ -64,8 +64,8 @@
                 </div>
             </div>
 
-            <div class="flex justify-start items-center mt-6">
-                <button type="submit" class="bg-purple-800 text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 transition" disabled="@isSaving">
+            <div class="flex flex-col justify-start items-start mt-6">
+                <button type="submit" class="bg-primary text-white px-6 py-2 rounded-full flex items-center gap-2 hover:bg-purple-900 transition cursor-pointer" disabled="@isSaving">
                     @if (isSaving)
                     {
                         <span class="inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
@@ -81,7 +81,7 @@
                 </button>
                 @if (!string.IsNullOrEmpty(SaveStatusMessage))
                 {
-                    <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") ml-4">
+                    <div class="my-auto @(IsSaveSuccess ? "text-green-600" : "text-red-600") mt-2">
                         @SaveStatusMessage
                     </div>
                 }
@@ -311,8 +311,12 @@
             };
             var saveSettingDto = new SaveSettingsDto { Settings = settingsToSave };
 
-            var saveResult = await ApiService.PostAsync("api/settings/update", saveSettingDto);
-            saveResult.EnsureSuccessStatusCode();
+            var result = await SettingsService.UpdateSettingsAsync(SystemTimeZoneId, GlobalTheme);
+
+            if(result)
+
+            // var saveResult = await ApiService.PostAsync("api/settings/update", saveSettingDto);
+            // saveResult.EnsureSuccessStatusCode();
 
             SaveStatusMessage = "Global Settings Saved Successfully.";
             IsSaveSuccess = true;

@@ -56,7 +56,7 @@ namespace SmartHome.Shared.Pages
                 await InvokeAsync(StateHasChanged);
             });
 
-            refreshService.OnRefreshRequested += HandleRefreshRequested;
+            
 
             foreach (var area in OverviewData!.Areas)
             {
@@ -78,21 +78,11 @@ namespace SmartHome.Shared.Pages
             InvokeAsync(StateHasChanged); // Ensure UI updates
         }
 
-        private void HandleRefreshRequested()
-        {
-            // Reload the page using NavigationManager.
-            navigationManager.NavigateTo(navigationManager.Uri, forceLoad: true);
-        }
+        
 
         private async void logout()
         {
             await authStateProvider.Logout();
-        }
-
-        public void Dispose()
-        {
-            // Unsubscribe to avoid memory leaks.
-            refreshService.OnRefreshRequested -= HandleRefreshRequested;
         }
     }
 

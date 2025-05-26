@@ -57,7 +57,7 @@ namespace SmartHome.App.Services
             _retryPolicy = Policy<HttpResponseMessage>
                 .Handle<HttpRequestException>()
                 .WaitAndRetryAsync(
-                    retryCount: 1, // You had 1 retry, keeping it. Adjust as needed.
+                    retryCount: 0, // Adjust as needed.
                     sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(1),
                     onRetry: (exception, timeSpan, retryAttempt, context) =>
                     {

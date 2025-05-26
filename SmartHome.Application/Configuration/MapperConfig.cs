@@ -9,13 +9,14 @@ using SmartHome.Dto.User;
 using SmartHome.Domain.Entities;
 using SmartHome.Dto.Controller;
 using SmartHome.Dto.DeviceType;
-using SmartHome.Dto.DeviceFunction;
 using SmartHome.Dto.Device;
 using SmartHome.Dto.Dashboard;
 using SmartHome.Dto.Log;
 using SmartHome.Dto.IPCamera;
 using SmartHome.Dto.Settings;
 using SmartHome.Dto.Email;
+using SmartHome.Domain.Necessities.Weather;
+using SmartHome.Dto.Weather;
 
 namespace SmartHome.Application.Configuration
 {
@@ -46,11 +47,11 @@ namespace SmartHome.Application.Configuration
             CreateMap<DeviceType, GetDeviceTypeDto>().ReverseMap();
             CreateMap<DeviceType, DeviceTypeDto>().ReverseMap();
 
-            CreateMap<DeviceFunction, CreateDeviceFunctionDto>().ReverseMap();
-            CreateMap<DeviceFunction, UpdateDeviceFunctionDto>().ReverseMap();
-            CreateMap<DeviceFunction, DeleteDeviceFunctionDto>().ReverseMap();
-            CreateMap<DeviceFunction, GetDeviceFunctionDto>().ReverseMap();
-            CreateMap<DeviceFunction, DeviceFunctionDto>().ReverseMap();
+            //CreateMap<DeviceFunction, CreateDeviceFunctionDto>().ReverseMap();
+            //CreateMap<DeviceFunction, UpdateDeviceFunctionDto>().ReverseMap();
+            //CreateMap<DeviceFunction, DeleteDeviceFunctionDto>().ReverseMap();
+            //CreateMap<DeviceFunction, GetDeviceFunctionDto>().ReverseMap();
+            //CreateMap<DeviceFunction, DeviceFunctionDto>().ReverseMap();
 
             CreateMap<Device, OverviewDeviceDto>().ReverseMap();
             CreateMap<Device, CreateDeviceDto>().ReverseMap();
@@ -74,6 +75,14 @@ namespace SmartHome.Application.Configuration
 
             CreateMap<DeviceDto, OverviewDeviceDto>().ReverseMap();
             CreateMap<IPCameraDto, OverviewCameraDto>().ReverseMap();
+
+            CreateMap<Dto.Weather.WeatherResponse, Domain.Necessities.Weather.WeatherResponse>().ReverseMap();
+            CreateMap<Dto.Weather.Coord, Domain.Necessities.Weather.Coord>().ReverseMap();
+            CreateMap<Dto.Weather.WeatherItem, Domain.Necessities.Weather.WeatherItem>().ReverseMap();
+            CreateMap<Dto.Weather.MainData, Domain.Necessities.Weather.MainData>().ReverseMap();
+            CreateMap<Dto.Weather.WindData, Domain.Necessities.Weather.WindData>().ReverseMap();
+            CreateMap<Dto.Weather.CloudsData, Domain.Necessities.Weather.CloudsData>().ReverseMap();
+            CreateMap<Dto.Weather.SystemData, Domain.Necessities.Weather.SystemData>().ReverseMap();
         }
     }
 }

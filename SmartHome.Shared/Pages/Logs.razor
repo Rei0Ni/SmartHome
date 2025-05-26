@@ -8,7 +8,7 @@
 
 <PageTitle>Logs</PageTitle>
 
-<div class="p-2 sm:p-6 bg-gray-100 min-h-screen">
+<div class="sm:p-6 bg-background min-h-screen">
     <!-- Filter Buttons -->
     <div class="flex flex-wrap gap-2 sm:space-x-4 sm:flex-nowrap mb-6 justify-center sm:justify-start">
         @foreach (var type in Enum.GetValues<Enums.LogLevel>())
@@ -22,27 +22,27 @@
     </div>
 
     <!-- Log Cards -->  
-    <div class="space-y-4 bg-white p-4 rounded-xl shadow-md border transition-opacity duration-500"  
-        style="opacity: @(IsTransitioning ? 0 : 1);">  
+    <div class="space-y-4 bg-surface p-4 rounded-xl shadow-md transition-opacity border border-gray-200 dark:border-gray-900 duration-500"
+         style="opacity: @(IsTransitioning ? 0 : 1);">  
         @if (FilteredLogs.Any())  
         {  
             @foreach (var log in FilteredLogs)  
-            {  
-                <div class="bg-gray-50 rounded-lg shadow-sm p-4 border">  
-                    <div class="text-gray-800 font-medium text-sm sm:text-base">@log.Message</div>  
-                    <div class="text-xs sm:text-sm text-gray-600 mt-1">  
+            {
+                <div class="bg-gray-50 dark:bg-gray-600 rounded-lg shadow-sm p-4 border border-gray-200 dark:border-gray-700">
+                    <div class="text-gray-800 dark:text-white text-lg">@log.Message</div>  
+                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">  
                         Device: <span class="font-semibold">@log.DeviceName</span> | Area: <span class="font-semibold">@log.AreaName</span>  
-                    </div>  
-                    <div class="text-xs sm:text-sm text-gray-600 mt-1">  
+                    </div>
+                    <div class="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mt-1">
                         by User: <span class="font-semibold">@log.UserName</span>  
-                    </div>  
-                    <div class="text-xs text-gray-500 text-right mt-2">@log.Timestamp.ToString("g")</div>  
+                    </div>
+                    <div class="text-xs text-gray-500 dark:text-gray-300 text-right mt-2">@log.Timestamp.ToString("g")</div>
                 </div>  
             }  
         }  
         else  
         {  
-            <div class="text-center text-gray-500 py-4">No logs found.</div>  
+            <div class="text-center text-gray-500 dark:text-gray-50 py-4">No logs found.</div>  
         }  
     </div>  
 </div>  

@@ -69,7 +69,7 @@ namespace SmartHome.API.Controllers
             return NoContent();
         }
 
-        [HttpPost("/config/update/{Id}")]
+        [HttpPost("config/update/{Id}")]
         public async Task<ActionResult> UpdateConfig(Guid Id)
         {
             var result = await _espConfigService.UpdateESPCotrollerConfig(Id);

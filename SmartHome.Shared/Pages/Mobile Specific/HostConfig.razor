@@ -73,16 +73,26 @@
 
     private void EnsureHttps(ref string hostname)
     {
-        if (!hostname.StartsWith("https://"))
+        if (Uri.TryCreate(hostname, UriKind.Absolute, out var uri))
         {
-            if (hostname.StartsWith("http://"))
+            if (uri.Scheme != Uri.UriSchemeHttps)
             {
-                hostname = "https://" + hostname.Substring(7);
+                var builder = new UriBuilder(uri)
+                    {
+                        Scheme = Uri.UriSchemeHttps,
+                        Port = uri.Port // Ensure the port is preserved
+                    };
+                hostname = builder.ToString().TrimEnd('/');
             }
             else
             {
-                hostname = "https://" + hostname;
+                hostname = uri.ToString().TrimEnd('/');
             }
         }
+        else if (Uri.TryCreate("https://" + hostname, UriKind.Absolute, out var fallbackUri))
+        {
+            hostname = fallbackUri.ToString().TrimEnd('/');
+        }
     }
+
 }
