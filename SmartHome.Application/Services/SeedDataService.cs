@@ -46,7 +46,7 @@ namespace SmartHome.Application.Services
 
             var defaultSettings = new List<Setting>
                    {
-                       new() { Key = "SystemTimeZone", Value = "UTC +02:00 - Egypt Standard Time" },
+                       new() { Key = "SystemTimeZone", Value = "Africa/Cairo" },
                        new() { Key = "GlobalTheme", Value = "Light" }
                    };
 

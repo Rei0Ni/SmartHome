@@ -25,7 +25,7 @@ namespace SmartHome.Web.Services
             var response = await _apiService.GetAsync("api/settings/get/all");
             var settings = await response.Content.ReadFromJsonAsync<List<SettingsDto>>();
 
-            SystemTimeZone = settings?.FirstOrDefault(s => s.Key == "SystemTimeZone")?.Value ?? "UTC";
+            SystemTimeZone = settings?.FirstOrDefault(s => s.Key == "SystemTimeZone")?.Value ?? "Etc/UTC";
             GlobalTheme = settings?.FirstOrDefault(s => s.Key == "GlobalTheme")?.Value ?? "Light";
 
             OnSettingsChanged?.Invoke(); // Notify listeners
@@ -37,7 +37,7 @@ namespace SmartHome.Web.Services
             {
                 Settings = new List<SettingsDto>
                 {
-                    new() { Key = "SystemTimeZone", Value = TZConvert.WindowsToIana(timeZone)},
+                    new() { Key = "SystemTimeZone", Value = timeZone},
                     new() { Key = "GlobalTheme", Value = theme }
                 }
             }; 

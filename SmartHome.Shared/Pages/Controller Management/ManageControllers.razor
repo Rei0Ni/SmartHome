@@ -230,5 +230,21 @@
             // Show error message in toast
             toastService.ShowError("Failed to Update the Controller Configuration.");
         }
+
+        isLoading = true;
+
+        var controllersResult = await ApiService.GetAsync("api/controller/get/all");
+        if (controllersResult.IsSuccessStatusCode)
+        {
+            var content = await controllersResult.Content.ReadFromJsonAsync<List<ControllerDto>>();
+            controllers = content;
+        }
+        else
+        {
+            // Show error message in toast
+        }
+
+        isLoading = false;
+        StateHasChanged();
     }
 }

@@ -142,6 +142,12 @@ namespace SmartHome.Application.Services
             {
                 throw new KeyNotFoundException("Device not found");
             }
+            var area = await _areaRepository.GetArea(device.AreaId);
+            var controller = await _controllerRepository.GetController(area.ControllerId);
+            area.Devices.Remove(device.Id);
+            controller.NeedsReconfiguration = true;
+            await _areaRepository.UpdateArea(area);
+            await _controllerRepository.UpdateController(controller);
             await _deviceRepository.DeleteDevice(device);
         }
 
@@ -211,6 +217,14 @@ namespace SmartHome.Application.Services
             if (device == null)
             {
                 throw new KeyNotFoundException("Device not found");
+            }
+
+            if(device.Pin != updateDeviceDto.Pin)
+            {
+                var area = await _areaRepository.GetArea(device.AreaId);
+                var controller = await _controllerRepository.GetController(area.ControllerId);
+                controller.NeedsReconfiguration = true;
+                await _controllerRepository.UpdateController(controller);
             }
 
             _mapper.Map(updateDeviceDto, device);

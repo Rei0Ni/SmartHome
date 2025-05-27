@@ -16,6 +16,7 @@ namespace SmartHome.Dto.Controller
         [Required(ErrorMessage = "MAC Address is Required")]
         [RegularExpression(@"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$", ErrorMessage = "Invalid MAC Address")]
         public string MACAddress { get; set; } // Unique identifier for the ESP32
+        public bool NeedsReconfiguration { get; set; }
         [Required(ErrorMessage = "IP Address is Required")]
         [RegularExpression(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", ErrorMessage = "Invalid IP Address")]
         public string IPAddress { get; set; } // Last known IP for communication

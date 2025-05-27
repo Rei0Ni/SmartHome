@@ -153,21 +153,21 @@
                             SystemTimeZoneId = DisplayableTimeZones.First(tz => tz.IanaId.Equals(storedTzValue, StringComparison.OrdinalIgnoreCase)).IanaId;
                         }
                         // If not a direct IANA match, try converting it from a Windows ID (if it is one)
-                        else if (TZConvert.TryWindowsToIana(storedTzValue, out string convertedIanaId))
+                        else if (TZConvert.TryGetTimeZoneInfo(storedTzValue, out TimeZoneInfo convertedIanaId))
                         {
-                            if (DisplayableTimeZones.Any(tz => tz.IanaId.Equals(convertedIanaId, StringComparison.OrdinalIgnoreCase)))
+                            if (DisplayableTimeZones.Any(tz => tz.IanaId.Equals(convertedIanaId.Id, StringComparison.OrdinalIgnoreCase)))
                             {
-                                SystemTimeZoneId = DisplayableTimeZones.First(tz => tz.IanaId.Equals(convertedIanaId, StringComparison.OrdinalIgnoreCase)).IanaId;
+                                SystemTimeZoneId = DisplayableTimeZones.First(tz => tz.IanaId.Equals(convertedIanaId.Id, StringComparison.OrdinalIgnoreCase)).IanaId;
                                 Console.WriteLine($"Converted stored Windows TimeZone ID '{storedTzValue}' to IANA '{SystemTimeZoneId}'.");
                             }
                             else
                             {
-                                Console.WriteLine($"Warning: Stored TimeZoneValue '{storedTzValue}' (Windows) converted to IANA '{convertedIanaId}', but not found in system list. Using component default '{SystemTimeZoneId}'.");
+                                Console.WriteLine($"Warning: Stored TimeZoneValue '{storedTzValue}' (Windows) converted to IANA '{convertedIanaId.Id}', but not found in system list. Using component default '{SystemTimeZoneId}'.");
                             }
                         }
                         else
                         {
-                            Console.WriteLine($"Warning: Loaded SystemTimeZoneValue '{storedTzValue}' is not a known IANA ID and could not be converted from a Windows ID. Using component default '{SystemTimeZoneId}'. The original error from logs ('ypt Standard Time') looks like a corrupted Windows ID.");
+                            Console.WriteLine($"Warning: Loaded SystemTimeZoneValue '{storedTzValue}' is not a known IANA ID and could not be converted from a Windows ID. Using component default '{SystemTimeZoneId}'.");
                         }
                     }
 

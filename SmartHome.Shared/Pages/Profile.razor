@@ -345,19 +345,6 @@
 		}
 	}
 
-	private void UpdateProfilePictureUrl(string? newUrl)
-	{
-		if (IsAdmin)
-		{
-			adminUser.ProfilePictureUrl = newUrl;
-		}
-		else
-		{
-			user.ProfilePictureUrl = newUrl;
-		}
-		StateHasChanged();
-	}
-
 	private async Task HandleFileUpload(InputFileChangeEventArgs e)
 	{
 		var file = e.File;

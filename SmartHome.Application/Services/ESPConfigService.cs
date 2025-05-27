@@ -101,6 +101,20 @@ namespace SmartHome.Application.Services
 
             // Send the restart request  
             var restartResponse = await _httpClient.GetAsync(restartUrl);
+
+            if (restartResponse.IsSuccessStatusCode)
+            {
+                var controllerUpdateDto = new UpdateControllerDto()
+                {
+                    Id = controller.Id,
+                    Name = controller.Name,
+                    MACAddress = controller.MACAddress,
+                    IPAddress = controller.IPAddress,
+                    NeedsReconfiguration = false
+                };
+                await _controllerService.UpdateController(controllerUpdateDto);
+            }
+
             return restartResponse.IsSuccessStatusCode;
         }
     }

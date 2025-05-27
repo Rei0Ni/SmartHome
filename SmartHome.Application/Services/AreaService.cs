@@ -15,6 +15,7 @@ using SmartHome.Application.Interfaces.UserAreas;
 using SmartHome.Domain.Entities;
 using Log = Serilog.Log;
 using SmartHome.Dto.Controller;
+using SmartHome.Application.Interfaces.Device;
 
 namespace SmartHome.Application.Services
 {
@@ -25,6 +26,7 @@ namespace SmartHome.Application.Services
         private readonly IValidator<CreateAreaDto> _createAreaDtoValidator;
         private readonly IValidator<DeleteAreaDto> _deleteAreaDtoValidator;
         private readonly IAreaRepository _areaRepository;
+        private readonly IDeviceRepository _deviceRepository;
         private readonly IControllerRepository _controllerRepository;
         private readonly IUserAreasRepository _userAreasRepository;
         private IMapper _mapper { get; set; }
@@ -105,7 +107,20 @@ namespace SmartHome.Application.Services
                 Log.Error("Area with ID: {Id} not found", deleteArea.Id);
                 throw new KeyNotFoundException(nameof(deleteArea.Id));
             }
+            var devices = await _deviceRepository.GetDevicesByArea(area.Id);
+
+            foreach(var device in devices)
+            {
+                await _deviceRepository.DeleteDevice(device);
+            }
+
+            var controller = await _controllerRepository.GetController(area.ControllerId);
+            controller.Areas.Remove(area.Id);
+            await _controllerRepository.UpdateController(controller);
+
             await _areaRepository.DeleteArea(area);
+
+            
             Log.Information("Area deleted successfully with ID: {Id}", deleteArea.Id);
         }
 
