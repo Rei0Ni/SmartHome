@@ -17,6 +17,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Production # Or Development, Staging
       - ASPNETCORE_URLS=http://0.0.0.0:62062 # Ensure Kestrel listens correctly inside the container
       - MQTTHOST=localhost
+      - REMOTEMQTTHOST=192.168.1.9 # Use your actual MQTT broker IP or hostname
       - MongoDBConfig__ConnectionURI=mongodb://localhost:27017/ # Use service name 'mongo' if running Mongo in compose
       - MongoDBConfig__DatabaseName=SmartHome
       - Jwt__Key=${JWT_KEY:-YourDefaultDevelopmentJwtKeyShouldBeChanged} # Use host env variable or default

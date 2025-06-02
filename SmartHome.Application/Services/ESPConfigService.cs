@@ -5,6 +5,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using SmartHome.Application.Interfaces.Area;
 using SmartHome.Application.Interfaces.Controller;
 using SmartHome.Application.Interfaces.Device;
@@ -20,17 +21,19 @@ namespace SmartHome.Application.Services
         private readonly IControllerService _controllerService;
         private readonly IAreaService _areaService;
         private readonly IDeviceService _deviceService;
+        private readonly IConfiguration _config;
         private readonly HttpClient _httpClient;
 
         public ESPConfigService(
             IControllerService controllerService,
             IAreaService areaService,
             IDeviceService deviceService,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory, IConfiguration config)
         {
             _controllerService = controllerService;
             _areaService = areaService;
             _deviceService = deviceService;
+            _config = config;
             _httpClient = httpClientFactory.CreateClient("ESPConfigClient");
         }
         public async Task<bool> UpdateESPCotrollerConfig(Guid controllerId)
@@ -49,7 +52,7 @@ namespace SmartHome.Application.Services
             {
                 Mqtt = new MqttConfigDto()
                 {
-                    server = "192.168.1.9",
+                    server = _config["REMOTEMQTTHOST"],
                     publishInterval = 5000
                 },
                 Devices = devices
