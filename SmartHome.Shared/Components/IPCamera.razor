@@ -10,8 +10,8 @@
 @implements IAsyncDisposable // Implement IAsyncDisposable for JS module cleanup
 
 <div class="rounded-xl p-2 flex flex-col items-center gap-2 shadow-sm press-effect origin-center cursor-pointer"
-     style="background-color: var(--ipcamera-card-bg-on);"
-     @onclick="OpenModal">
+style="background-color: var(--ipcamera-card-bg-on);"
+@onclick="OpenModal">
     @* Removed the redundant lambda *@
     <div class="flex items-center justify-between w-full">
         <div>
@@ -53,9 +53,9 @@
                     <img class="w-full h-full object-cover" src="@StreamUrl" alt="Live stream for @CameraModel.Name" @onerror="HandleStreamError" />
 
                     <button @onclick="ToggleFullscreen"
-                            title="@(isFullscreen ? "Exit Fullscreen" : "View Fullscreen")"
-                            class="absolute bottom-2 right-2 p-1.5 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-opacity duration-200 opacity-75 hover:opacity-100 z-10"
-                            aria-label="@(isFullscreen ? "Exit fullscreen mode" : "Enter fullscreen mode")">
+                    title="@(isFullscreen ? "Exit Fullscreen" : "View Fullscreen")"
+                    class="absolute bottom-2 right-2 p-1.5 bg-black bg-opacity-50 text-white rounded-full hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-50 transition-opacity duration-200 opacity-75 hover:opacity-100 z-10"
+                    aria-label="@(isFullscreen ? "Exit fullscreen mode" : "Enter fullscreen mode")">
                         @if (isFullscreen)
                         {
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
@@ -144,8 +144,18 @@
         // Assuming the API runs on port 62061 (as in your example)
         // If your API port is different or comes from configuration, adjust this line.
         var apiPort = 62061; // Or get this from configuration: config["ApiSettings:Port"]
-        var builder = new UriBuilder("https", baseUri.Host, apiPort, relativeApiPath);
-        StreamUrl = builder.ToString();
+        UriBuilder uriBuilder = null;
+        if(PlatformDetectionService.IsMobile()){
+			var apiHost = await ApiService.GetCurrentHost();
+
+            // Use the provided host directly without modifying the schema or port  
+            StreamUrl = $"{apiHost}{relativeApiPath}";
+		}
+        else{
+            uriBuilder = new UriBuilder("https", baseUri.Host, apiPort, relativeApiPath);
+            StreamUrl = uriBuilder.ToString();
+        }
+        
 
         streamError = false; // Reset error state when opening the modal
         showModal = true;

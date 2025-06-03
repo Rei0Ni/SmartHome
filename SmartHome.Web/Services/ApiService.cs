@@ -110,5 +110,10 @@ namespace SmartHome.Web.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<string> GetCurrentHost()
+        {
+            return _httpClient.BaseAddress.Host;
+        }
     }
 }

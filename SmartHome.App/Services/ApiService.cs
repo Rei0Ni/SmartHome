@@ -272,5 +272,52 @@ namespace SmartHome.App.Services
         {
             throw new NotImplementedException();
         }
+
+        public async Task<string> GetCurrentHost()
+        {
+            var (primaryHostname, secondaryHostname) = await _secureStorageService.GetHostnamesAsync();
+
+            // Handle case where hostnames are not properly configured in storage
+            if (string.IsNullOrWhiteSpace(primaryHostname) || string.IsNullOrWhiteSpace(secondaryHostname))
+            {
+                _logger.LogError("Hostnames are not properly configured in secure storage. Signalling host error.");
+                _hostStatusService.SetHostConfigurationError(true); // Signal the host configuration error
+                return null;
+            }
+
+            var token = await _jwtStorageService.GetTokenAsync();
+
+            // Helper function to check if a host is reachable
+            async Task<bool> IsHostWorkingAsync(string hostname)
+            {
+                try
+                {
+                    using var httpClient = CreateHttpClient(hostname);
+                    if (!string.IsNullOrEmpty(token))
+                    {
+                        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                    }
+                    var response = await httpClient.GetAsync("/api/health");
+                    return response.IsSuccessStatusCode;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+
+            if (await IsHostWorkingAsync(primaryHostname))
+            {
+                return primaryHostname;
+            }
+            if (await IsHostWorkingAsync(secondaryHostname))
+            {
+                return secondaryHostname;
+            }
+
+            _logger.LogError("Neither primary nor secondary host is reachable.");
+            _hostStatusService.SetHostConfigurationError(true);
+            return null;
+        }
     }
 }

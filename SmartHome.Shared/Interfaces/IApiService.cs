@@ -12,6 +12,7 @@ namespace SmartHome.Shared.Interfaces
     public interface IApiService
     {
         Task RefreshHostnamesAsync();
+        Task<string> GetCurrentHost();
         Task<HttpResponseMessage> SendAsync<TRequest>(HttpMethod method, string endpointPath, TRequest requestPayload = default);
         Task<HttpResponseMessage> GetAsync(string endpointPath);
         Task<HttpResponseMessage> PostAsync<TRequest>(string endpointPath, TRequest requestPayload);
