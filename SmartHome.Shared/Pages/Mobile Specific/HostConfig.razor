@@ -13,7 +13,7 @@
         <div>
             <label for="primaryHostname" class="mb-1">Local Hostname:</label>
             <InputText type="text" id="primaryHostname"
-                class="block w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg shadow-sm placeholder-slate-500 text-slate-100
+                class="block w-full px-4 py-2.5 bg-white border border-slate-600 rounded-lg shadow-sm placeholder-slate-500 text-slate-100
                         focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                 placeholder="e.g., 192.168.1.1 or mylocal.dev" @bind-value="HostSettings.PrimaryHost" />
             <ValidationMessage For="@(() => HostSettings.PrimaryHost)"
@@ -23,7 +23,7 @@
         <div>
             <label for="secondaryHostname" class="mb-1">Secondary Hostname:</label>
             <InputText type="text" id="secondaryHostname"
-                class="block w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-lg shadow-sm placeholder-slate-500 text-slate-100
+                class="block w-full px-4 py-2.5 bg-white border border-slate-600 rounded-lg shadow-sm placeholder-slate-500 text-slate-100
                         focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                 placeholder="e.g., remote-api.example.com" @bind-value="HostSettings.SecondaryHost" />
             <ValidationMessage For="@(() => HostSettings.SecondaryHost)"
@@ -31,7 +31,7 @@
         </div>
     </div>
 
-    <div class="pt-2 flex justify-content-center mt-4">
+    <div class="pt-2 flex justify-center mt-4">
         <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white"
                 style="background-color:var(--primary)">
             Save Configurations
